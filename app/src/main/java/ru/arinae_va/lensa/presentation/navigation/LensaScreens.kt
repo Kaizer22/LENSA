@@ -1,0 +1,25 @@
+package ru.arinae_va.lensa.presentation.navigation
+
+enum class LensaScreens {
+    COMMON_ERROR_SCREEN,
+
+    SPLASH_SCREEN,
+    ONBOARDING_SCREEN,
+
+    AUTH_SCREEN,
+    OTP_SCREEN,
+
+    REGISTRATION_ROLE_SELECTOR_SCREEN,
+    REGISTRATION_SCREEN,
+
+    FEED_SCREEN,
+    SPECIALIST_DETAILS_SCREEN,
+    FILTER_SCREEN, // or fragment?
+
+    PROFILE_SCREEN,
+    EDIT_PROFILE_SCREEN,
+
+    SETTINGS_SCREEN,
+    FEEDBACK_SCREEN,
+    ABOUT_APP_SCREEN,
+}

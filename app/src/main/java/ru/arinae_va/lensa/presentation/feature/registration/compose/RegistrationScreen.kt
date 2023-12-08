@@ -11,6 +11,7 @@ import ru.arinae_va.lensa.presentation.theme.LensaTheme
 @Composable
 fun RegistrationScreen(
     navController: NavController,
+    viewModel: RegistrationViewModel,
 ){
     setSystemUiColor()
 }

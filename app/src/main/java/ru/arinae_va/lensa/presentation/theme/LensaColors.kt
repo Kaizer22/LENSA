@@ -1,7 +1,6 @@
 package ru.arinae_va.lensa.presentation.theme
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 val black = Color(0xFF131513)

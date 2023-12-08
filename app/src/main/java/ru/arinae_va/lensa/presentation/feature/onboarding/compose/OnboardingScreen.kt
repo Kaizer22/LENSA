@@ -23,6 +23,7 @@ import ru.arinae_va.lensa.presentation.common.component.LensaIconButton
 import ru.arinae_va.lensa.presentation.common.component.LensaLogo
 import ru.arinae_va.lensa.presentation.common.component.LensaPager
 import ru.arinae_va.lensa.presentation.common.component.PageModel
+import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
@@ -30,9 +31,11 @@ import ru.arinae_va.lensa.presentation.theme.LensaTheme
 @Composable
 fun OnboardingScreen(
     navController: NavController,
+    viewModel: OnboardingViewModel,
 ) {
     setSystemUiColor()
     Screen(onNextClick = {
+        viewModel.setOnboardingShown()
         navController.navigate(LensaScreens.AUTH_SCREEN.name)
     })
 }
@@ -80,13 +83,17 @@ private fun Screen(
             )
     ) {
         LensaHeader()
-        LensaPager(pageCount = pageModels.size) { pageNumber ->
+        LensaPager(
+            modifier = Modifier.weight(1f),
+            pageCount = pageModels.size,
+            ) { pageNumber ->
             OnboardingPage(
                 model = pageModels[pageNumber],
                 onNextButtonClick = onNextClick,
                 showNextButton = pageModels.size == pageNumber + 1
             )
         }
+        VSpace(h = 40.dp)
     }
 }
 

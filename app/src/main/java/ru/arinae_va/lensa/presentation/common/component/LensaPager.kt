@@ -50,6 +50,7 @@ fun LensaPager(
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         HorizontalPager(
             pageCount = pageCount,
@@ -69,11 +70,11 @@ fun LensaPager(
 fun LensaPagerIndicator(
     currentPage: Int,
     pageCount: Int,
+    space: Dp = 8.dp,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(space),
     ) {
         for(i in 0 until pageCount) {
             PageIndicatorView(

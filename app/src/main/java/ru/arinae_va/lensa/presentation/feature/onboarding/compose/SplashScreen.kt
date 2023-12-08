@@ -23,7 +23,8 @@ import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 @Composable
 fun LensaSplashScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: OnboardingViewModel,
 ) {
     val opacity = remember {
         androidx.compose.animation.core.Animatable(0f)
@@ -41,7 +42,11 @@ fun LensaSplashScreen(
                 })
         )
         delay(1000L)
-        navController.navigate(LensaScreens.ONBOARDING_SCREEN.name)
+        if (viewModel.isNeedOnboarding()) {
+            navController.navigate(LensaScreens.ONBOARDING_SCREEN.name)
+        } else {
+            navController.navigate(LensaScreens.AUTH_SCREEN.name)
+        }
     }
     Screen(
         modifier = Modifier.alpha(opacity.value)

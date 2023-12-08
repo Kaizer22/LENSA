@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaButton
 import ru.arinae_va.lensa.presentation.common.component.LensaHeader
+import ru.arinae_va.lensa.presentation.common.component.LensaInput
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
@@ -25,6 +26,7 @@ import ru.arinae_va.lensa.presentation.theme.LensaTheme
 @Composable
 fun AuthScreen(
     navController: NavController,
+    viewModel: AuthViewModel,
 ) {
     setSystemUiColor()
     Screen()
@@ -48,12 +50,12 @@ private fun Screen() {
             style = LensaTheme.typography.text,
         )
         Column(modifier = Modifier.padding(horizontal = 16.dp)){
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 52.dp),
-                value = "+7",
-                onValueChange = {})
+            LensaInput(
+                modifier = Modifier.fillMaxWidth(),
+                defaultValue = "+7",
+                onValueChanged = {}
+            )
+            VSpace(h = 52.dp)
             LensaButton(
                 text = "ПОЛУЧИТЬ КОД",
                 onClick = { /*TODO*/ },

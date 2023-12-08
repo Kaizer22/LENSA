@@ -13,7 +13,7 @@ private fun Screen() {
 
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun SettingsScreenPreview() {
 

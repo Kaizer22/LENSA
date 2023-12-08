@@ -27,7 +27,8 @@ fun LensaLogo(
             style = when(size){
                 LensaLogoSize.BIG -> LensaTheme.typography.logoBig
                 LensaLogoSize.SMALL -> LensaTheme.typography.logoSmall
-            }
+            },
+            color = LensaTheme.colors.textColor,
         )
     }
 }

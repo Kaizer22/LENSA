@@ -50,10 +50,10 @@ object LensaTheme {
 //        @ReadOnlyComposable
 //        get() = LocalLensaButtonColors.current
 
-//    val shapes: LensaShapes
-//        @Composable
-//        @ReadOnlyComposable
-//        get() = LocalLensaShapes.current
+    val shapes: LensaShapes
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalLensaShapes.current
 
     val typography: LensaTypography
         @Composable

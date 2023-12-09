@@ -2,21 +2,30 @@ package ru.arinae_va.lensa.presentation.common.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material.LocalMinimumTouchTargetEnforcement
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,13 +38,15 @@ import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LensaButton(
     modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit,
+    enabled: Boolean = true,
     contentPadding: PaddingValues = PaddingValues(16.dp),
-    shape: Shape = LensaTheme.shapes.defaultButtonShape,
+    shape: Shape = LensaTheme.shapes.noRoundedCornersShape,
     borderStroke: BorderStroke? = BorderStroke(
         width = 1.dp,
         color = LensaTheme.colors.textColor,
@@ -43,6 +54,8 @@ fun LensaButton(
     buttonColors: ButtonColors = ButtonDefaults.buttonColors(
         backgroundColor = LensaTheme.colors.defaultButtonBg,
         contentColor = LensaTheme.colors.textColor,
+        disabledBackgroundColor = LensaTheme.colors.defaultButtonBg.copy(alpha = 0.5f),
+        disabledContentColor = LensaTheme.colors.textColor.copy(alpha = 0.5f)
     ),
     elevation: ButtonElevation = ButtonDefaults.elevation(),
     textStyle: TextStyle = LensaTheme.typography.textButton,
@@ -56,32 +69,42 @@ fun LensaButton(
     @DrawableRes icon: Int? = null,
 ) {
     val iconLeftPainter = icon?.let { painterResource(id = it) }
-    Button(
-        modifier = modifier,
-        onClick = onClick,
-        shape = shape,
-        colors = buttonColors,
-        contentPadding = contentPadding,
-        border = borderStroke,
-        elevation = elevation
+    CompositionLocalProvider(
+        LocalMinimumInteractiveComponentEnforcement provides false,
     ) {
-        Row(
-            modifier = if (isFillMaxWidth) Modifier.fillMaxWidth() else Modifier,
-            horizontalArrangement = contentArrangement,
-            verticalAlignment = contentAlignment,
+        Button(
+            modifier = modifier
+                .background(color = Color.Green)
+                .defaultMinSize(1.dp, 1.dp),
+            onClick = onClick,
+            enabled = enabled,
+            shape = shape,
+            colors = buttonColors,
+            contentPadding = contentPadding,
+            border = borderStroke,
+            elevation = elevation
         ) {
-            Text(
-                text = text,
-                style = textStyle,
-                color = textColor,
-            )
-            Spacer(modifier = Modifier.width(iconPadding))
-            iconLeftPainter?.let {
-                Icon(
-                    painter = it,
-                    contentDescription = null,
-                    modifier = Modifier.height(iconHeight).width(iconWidth)
+            Row(
+                modifier = if (isFillMaxWidth) Modifier.fillMaxWidth() else Modifier.background(color=Color.Red),
+                horizontalArrangement = contentArrangement,
+                verticalAlignment = contentAlignment,
+            ) {
+                Text(
+                    modifier = Modifier.padding(0.dp),
+                    text = text,
+                    style = textStyle,
+                    color = textColor,
                 )
+                iconLeftPainter?.let {
+                    Spacer(modifier = Modifier.width(iconPadding))
+                    Icon(
+                        painter = it,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(iconHeight)
+                            .width(iconWidth)
+                    )
+                }
             }
         }
     }
@@ -90,9 +113,9 @@ fun LensaButton(
 @Composable
 fun LensaIconButton(
     modifier: Modifier = Modifier,
+    onClick: () -> Unit,
     @DrawableRes icon: Int,
     iconSize: Dp,
-    onClick: () -> Unit
 ) {
     LensaButton(
         modifier = modifier,
@@ -122,7 +145,7 @@ fun LensaButtonWithIcon(
     isFillMaxWidth: Boolean = false,
     type: ButtonWithIconType = ButtonWithIconType.BIG,
 ) {
-    val iconSize = when(type) {
+    val iconSize = when (type) {
         ButtonWithIconType.BIG -> 28.dp
         ButtonWithIconType.MEDIUM -> 16.dp
     }
@@ -158,9 +181,38 @@ enum class ButtonWithIconType {
 @Composable
 fun LensaTextButton(
     text: String,
-    onClick: () -> String,
+    onClick: () -> Unit,
+    type: LensaTextButtonType,
+    isFillMaxWidth: Boolean = false,
 ) {
+    LensaButton(
+        text = text,
+        onClick = onClick,
+        borderStroke = null,
+        isFillMaxWidth = isFillMaxWidth,
+        buttonColors = ButtonDefaults.buttonColors(
+            backgroundColor = Color.Transparent,
+            contentColor = LensaTheme.colors.textColor,
+        ),
+        elevation = ButtonDefaults.elevation(
+            defaultElevation = 0.dp,
+        ),
+        contentPadding = PaddingValues(0.dp),
+        textStyle = when (type) {
+            LensaTextButtonType.ACCENT -> LensaTheme.typography.accentTextButton
+            LensaTextButtonType.DEFAULT -> LensaTheme.typography.textButtonDefault
+            LensaTextButtonType.SECONDARY -> LensaTheme.typography.signature
+        },
+        textColor = when (type) {
+            LensaTextButtonType.ACCENT -> LensaTheme.colors.textColorAccent
+            LensaTextButtonType.DEFAULT -> LensaTheme.colors.textColor
+            LensaTextButtonType.SECONDARY -> LensaTheme.colors.textColorSecondary
+        },
+    )
+}
 
+enum class LensaTextButtonType {
+    ACCENT, SECONDARY, DEFAULT
 }
 
 @Composable
@@ -177,20 +229,26 @@ fun ButtonsPreview() {
                 text = "КНОПКА",
                 onClick = {},
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            VSpace(h = 16.dp)
             LensaIconButton(
                 iconSize = 60.dp,
                 icon = R.drawable.ic_arrow_forward,
                 onClick = {}
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            VSpace(h = 16.dp)
+            LensaIconButton(
+                iconSize = 24.dp,
+                icon = R.drawable.ic_arrow_forward,
+                onClick = {}
+            )
+            VSpace(h = 16.dp)
             LensaButtonWithIcon(
                 isFillMaxWidth = true,
                 icon = R.drawable.ic_arrow_forward_2,
                 text = "КНОПКА\nСТРЕЛКА ",
                 onClick = {},
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            VSpace(h = 16.dp)
             LensaButtonWithIcon(
                 isFillMaxWidth = true,
                 icon = R.drawable.ic_arrow_bottom,
@@ -198,7 +256,24 @@ fun ButtonsPreview() {
                 onClick = {},
                 type = ButtonWithIconType.MEDIUM,
             )
+            VSpace(h = 16.dp)
+            LensaTextButton(
+                text = "Текстовая кнопка",
+                type = LensaTextButtonType.ACCENT,
+                onClick = {}
+            )
+            VSpace(h = 16.dp)
+            LensaTextButton(
+                text = "Текстовая кнопка",
+                type = LensaTextButtonType.DEFAULT,
+                onClick = {}
+            )
+            VSpace(h = 16.dp)
+            LensaTextButton(
+                text = "Текстовая кнопка",
+                type = LensaTextButtonType.SECONDARY,
+                onClick = {},
+            )
         }
-
     }
 }

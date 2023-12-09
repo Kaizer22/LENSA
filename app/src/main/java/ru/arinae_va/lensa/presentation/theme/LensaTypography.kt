@@ -71,9 +71,14 @@ data class LensaTypography(
         fontWeight = FontWeight.W600,
     ),
     val textButton: TextStyle = TextStyle(
-        fontSize = 20.sp,
+        fontSize = 24.sp,
         fontFamily = FigtreeFontFamily,
         fontWeight = FontWeight.W400,
+    ),
+    val textButtonDefault: TextStyle = TextStyle(
+        fontSize = 24.sp,
+        fontFamily = FigtreeFontFamily,
+        fontWeight = FontWeight.W700,
     ),
 )
 

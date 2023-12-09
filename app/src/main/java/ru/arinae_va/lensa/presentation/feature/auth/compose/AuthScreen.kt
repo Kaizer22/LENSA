@@ -21,6 +21,7 @@ import ru.arinae_va.lensa.presentation.common.component.LensaHeader
 import ru.arinae_va.lensa.presentation.common.component.LensaInput
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
+import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 @Composable
@@ -29,11 +30,17 @@ fun AuthScreen(
     viewModel: AuthViewModel,
 ) {
     setSystemUiColor()
-    Screen()
+    Screen(
+        onGetCodeClick = {
+            navController.navigate(LensaScreens.OTP_SCREEN.name)
+        },
+    )
 }
 
 @Composable
-private fun Screen() {
+private fun Screen(
+    onGetCodeClick: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -49,7 +56,7 @@ private fun Screen() {
             text = "Номер телефона",
             style = LensaTheme.typography.text,
         )
-        Column(modifier = Modifier.padding(horizontal = 16.dp)){
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             LensaInput(
                 modifier = Modifier.fillMaxWidth(),
                 defaultValue = "+7",
@@ -58,7 +65,7 @@ private fun Screen() {
             VSpace(h = 52.dp)
             LensaButton(
                 text = "ПОЛУЧИТЬ КОД",
-                onClick = { /*TODO*/ },
+                onClick = onGetCodeClick,
                 isFillMaxWidth = true,
             )
             FSpace()
@@ -66,7 +73,7 @@ private fun Screen() {
             Text(
                 modifier = Modifier.padding(40.dp),
                 text = "Продолжая авторизацию, вы автоматически соглашаетесь с " +
-                    "политикой конфиденциальности и условиями сервиса",
+                        "политикой конфиденциальности и условиями сервиса",
                 color = LensaTheme.colors.textColorSecondary,
                 style = LensaTheme.typography.signature,
             )
@@ -78,6 +85,8 @@ private fun Screen() {
 @Composable
 fun AuthScreenPreview() {
     LensaTheme {
-        Screen()
+        Screen(
+            onGetCodeClick = {},
+        )
     }
 }

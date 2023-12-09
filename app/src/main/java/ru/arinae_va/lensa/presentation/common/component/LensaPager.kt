@@ -74,7 +74,6 @@ fun LensaPagerIndicator(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(space),
     ) {
         for(i in 0 until pageCount) {
             PageIndicatorView(

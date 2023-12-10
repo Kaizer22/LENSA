@@ -32,6 +32,8 @@ import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
+import ru.arinae_va.lensa.presentation.feature.registration.compose.dialog.PriceListCreatorDialog
+import ru.arinae_va.lensa.presentation.feature.registration.compose.dialog.SocialMediaCreatorDialog
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
@@ -52,7 +54,25 @@ fun RegistrationScreen(
 private fun Screen(
     onSaveClick: () -> Unit,
 ) {
-    var isNextEnabled by remember{mutableStateOf(true)}
+    var isNextEnabled by remember { mutableStateOf(true) }
+    var showPriceListDialog by remember { mutableStateOf(false) }
+    if (showPriceListDialog) {
+        PriceListCreatorDialog(
+            onSaveClick = { /*TODO*/ },
+            onDismissClick = {
+                showPriceListDialog = false
+            },
+        )
+    }
+    var showSocialMediaDialog by remember { mutableStateOf(false) }
+    if (showSocialMediaDialog) {
+        SocialMediaCreatorDialog(
+            onSaveClick = { /*TODO*/ },
+            onDismissClick = {
+                showSocialMediaDialog = false
+            },
+        )
+    }
     Column(
         modifier = Modifier
             .background(color = LensaTheme.colors.backgroundColor)
@@ -94,6 +114,7 @@ private fun Screen(
             }
             VSpace(h = 24.dp)
             LensaInput(
+                showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
                 defaultValue = "",
@@ -101,6 +122,7 @@ private fun Screen(
             )
             VSpace(h = 12.dp)
             LensaInput(
+                showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
                 defaultValue = "",
@@ -108,6 +130,7 @@ private fun Screen(
             )
             VSpace(h = 12.dp)
             LensaInput(
+                showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
                 defaultValue = "",
@@ -126,6 +149,7 @@ private fun Screen(
             )
             VSpace(h = 12.dp)
             LensaInput(
+                showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
                 defaultValue = "",
@@ -133,6 +157,7 @@ private fun Screen(
             )
             VSpace(h = 12.dp)
             LensaInput(
+                showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
                 defaultValue = "",
@@ -172,13 +197,25 @@ private fun Screen(
             )
             VSpace(h = 12.dp)
             LensaInput(
+                readOnly = true,
+                showTrailingIcon = true,
+                trailingIconRes = R.drawable.ic_plus,
+                onTrailingIconClick = {
+                    showSocialMediaDialog = true
+                },
                 modifier = Modifier.fillMaxWidth(),
-                onValueChanged = {},
+                onValueChanged = { },
                 defaultValue = "",
                 placeholder = "Социальная сеть"
             )
             VSpace(h = 12.dp)
             LensaInput(
+                readOnly = true,
+                showTrailingIcon = true,
+                trailingIconRes = R.drawable.ic_plus,
+                onTrailingIconClick = {
+                    showPriceListDialog = true
+                },
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
                 defaultValue = "",

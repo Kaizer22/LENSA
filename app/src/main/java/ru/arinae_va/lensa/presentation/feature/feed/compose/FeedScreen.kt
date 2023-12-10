@@ -35,7 +35,7 @@ fun FeedScreen(
     Screen(
         onSearchTextChanged = {},
         onProfileClick = {
-            navController.navigate(LensaScreens.PROFILE_SCREEN.name)
+            navController.navigate(LensaScreens.SPECIALIST_DETAILS_SCREEN.name)
         },
         onCardClick = {
             navController.navigate(LensaScreens.SPECIALIST_DETAILS_SCREEN.name)

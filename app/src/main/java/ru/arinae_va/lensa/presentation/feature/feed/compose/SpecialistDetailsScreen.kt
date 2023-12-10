@@ -33,6 +33,7 @@ import ru.arinae_va.lensa.presentation.common.component.LensaRating
 import ru.arinae_va.lensa.presentation.common.component.LensaStateButton
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
+import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 import java.time.LocalDateTime
 
@@ -43,6 +44,14 @@ fun SpecialistDetailsScreen(
 ) {
     setSystemUiColor()
     Screen(
+        isSelf = true,
+        onFavouritesClick = {
+            navController.navigate(LensaScreens.FAVOURITES_SCREEN.name)
+        },
+        onAddToFavouritesClick = {},
+        onSettingsClick = {
+            navController.navigate(LensaScreens.SETTINGS_SCREEN.name)
+        },
         onBackPressed = {
             navController.popBackStack()
         },
@@ -166,6 +175,10 @@ enum class SocialMediaType(
 @Composable
 private fun Screen(
     onBackPressed: () -> Unit,
+    onAddToFavouritesClick: () -> Unit,
+    onFavouritesClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    isSelf: Boolean,
     model: SpecialistModel,
 ) {
     Column(
@@ -177,6 +190,10 @@ private fun Screen(
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             VSpace(h = 30.dp)
             HeaderSection(
+                isSelf = isSelf,
+                onAddToFavouritesClick = onAddToFavouritesClick,
+                onFavouritesClick = onFavouritesClick,
+                onSettingsClick = onSettingsClick,
                 onBackPressed = onBackPressed,
                 model = model,
             )
@@ -215,22 +232,26 @@ private fun Screen(
 
 @Composable
 fun ReviewsSection() {
-    TODO("Not yet implemented")
+
 }
 
 @Composable
 fun AddReviewSection() {
-    TODO("Not yet implemented")
+
 }
 
 @Composable
 fun PortfolioSection() {
-    TODO("Not yet implemented")
+
 }
 
 @Composable
 fun HeaderSection(
     onBackPressed: () -> Unit,
+    onFavouritesClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onAddToFavouritesClick: () -> Unit,
+    isSelf: Boolean,
     model: SpecialistModel,
 ) {
     Row {
@@ -240,8 +261,28 @@ fun HeaderSection(
             iconSize = 30.dp,
         )
         FSpace()
-        LensaStateButton()
-        HSpace(w = 16.dp)
+        if (isSelf) {
+            LensaIconButton(
+                onClick = onFavouritesClick,
+                icon = R.drawable.ic_heart_outlined,
+                iconSize = 28.dp
+            )
+            HSpace(w = 16.dp)
+            LensaIconButton(
+                onClick = onSettingsClick,
+                icon = R.drawable.ic_settings,
+                iconSize = 28.dp
+            )
+        } else {
+            LensaStateButton(
+                onClick = {
+                    onAddToFavouritesClick()
+                },
+                iconEnabledRes = R.drawable.ic_heart_filled,
+                iconDisabledRes = R.drawable.ic_heart_outlined
+            )
+            HSpace(w = 16.dp)
+        }
     }
     VSpace(h = 24.dp)
     Text(
@@ -326,6 +367,10 @@ fun SpecialistDetailsField(
 fun SpecialistDetailsScreenPreview() {
     LensaTheme {
         Screen(
+            isSelf = true,
+            onSettingsClick = {},
+            onFavouritesClick = {},
+            onAddToFavouritesClick = {},
             onBackPressed = {},
             model = SpecialistModel(
                 name = "Арина",

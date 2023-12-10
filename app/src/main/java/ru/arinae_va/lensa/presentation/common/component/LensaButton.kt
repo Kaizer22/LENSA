@@ -26,6 +26,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -216,8 +220,22 @@ enum class LensaTextButtonType {
 }
 
 @Composable
-fun LensaStateButton() {
-
+fun LensaStateButton(
+    defaultEnabled: Boolean = false,
+    onClick: (Boolean) -> Unit,
+    iconSize: Dp = 24.dp,
+    @DrawableRes iconEnabledRes: Int,
+    @DrawableRes iconDisabledRes: Int,
+) {
+    var isEnabled by remember { mutableStateOf(defaultEnabled) }
+    LensaIconButton(
+        onClick = {
+            isEnabled != isEnabled
+            onClick(isEnabled)
+        },
+        icon = if (isEnabled) iconEnabledRes else iconDisabledRes,
+        iconSize = iconSize,
+    )
 }
 
 @Preview(showSystemUi = true, showBackground = true)

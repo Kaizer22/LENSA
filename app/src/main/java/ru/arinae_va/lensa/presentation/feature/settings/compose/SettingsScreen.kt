@@ -1,5 +1,6 @@
 package ru.arinae_va.lensa.presentation.feature.settings.compose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -7,6 +8,10 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -14,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.presentation.common.component.FSpace
+import ru.arinae_va.lensa.presentation.common.component.LensaAlertDialog
 import ru.arinae_va.lensa.presentation.common.component.LensaIconButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
@@ -57,7 +63,36 @@ private fun Screen(
     onExitClick: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+    var showExitDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showExitDialog) {
+        LensaAlertDialog(
+            onConfirmClick = onExitClick,
+            onDismissClick = { showExitDialog = false },
+            title = "ВЫХОД",
+            subtitle = "ВЫ ДЕЙСТВИТЕЛЬНО ХОТИТЕ ВЫЙТИ ИЗ АККАУНТА?",
+            confirmText = "ВЫЙТИ",
+            dismissText = "ОТМЕНИТЬ",
+        )
+    }
+
+    if (showDeleteDialog) {
+        LensaAlertDialog(
+            onConfirmClick = onExitClick,
+            onDismissClick = { showExitDialog = false },
+            title = "УДАЛЕНИЕ\nАККАУНТА",
+            subtitle = "ВЫ ДЕЙСТВИТЕЛЬНО ХОТИТЕ УДАЛИТЬ АККАУНТ?",
+            confirmText = "УДАЛИТЬ",
+            dismissText = "ОТМЕНИТЬ",
+        )
+    }
+
+    Column(
+        modifier = Modifier
+            .background(color = LensaTheme.colors.backgroundColor)
+            .padding(horizontal = 16.dp)
+    ) {
         VSpace(h = 28.dp)
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -86,7 +121,8 @@ private fun Screen(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "ТЕМА",
-                style = LensaTheme.typography.textButton,
+                style = LensaTheme.typography.textButtonDefault,
+                color = LensaTheme.colors.textColor,
             )
             FSpace()
             // TODO custom switch
@@ -124,14 +160,16 @@ private fun Screen(
         FSpace()
         LensaTextButton(
             text = "ВЫЙТИ",
-            onClick = onExitClick,
+            onClick = {
+                showExitDialog = true
+            },
             type = LensaTextButtonType.DEFAULT,
         )
         VSpace(h = 16.dp)
         LensaTextButton(
             text = "Удалить аккаунт",
             onClick = {
-                // TODO
+                showDeleteDialog = true
             },
             type = LensaTextButtonType.ACCENT,
         )

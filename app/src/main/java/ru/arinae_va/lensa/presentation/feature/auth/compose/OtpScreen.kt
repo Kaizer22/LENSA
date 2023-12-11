@@ -70,7 +70,7 @@ private fun Screen(
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             LensaInput(
                 modifier = Modifier.fillMaxWidth(),
-                defaultValue = "",
+                value = "",
                 placeholder = "0000",
                 onValueChanged = {}
             )

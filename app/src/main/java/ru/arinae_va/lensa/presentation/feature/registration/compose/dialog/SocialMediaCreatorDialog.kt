@@ -62,7 +62,7 @@ fun SocialMediaCreatorDialog(
                         showLeadingIcon = true,
                         leadingIconRes = socialMediaType.icon,
                         onValueChanged = {},
-                        defaultValue = "",
+                        value = "",
                     )
                     VSpace(h = 12.dp)
                 }

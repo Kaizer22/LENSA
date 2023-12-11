@@ -117,7 +117,7 @@ private fun Screen(
                 showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
-                defaultValue = "",
+                value = "",
                 placeholder = "Фамилия"
             )
             VSpace(h = 12.dp)
@@ -125,7 +125,7 @@ private fun Screen(
                 showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
-                defaultValue = "",
+                value = "",
                 placeholder = "Имя"
             )
             VSpace(h = 12.dp)
@@ -133,7 +133,7 @@ private fun Screen(
                 showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
-                defaultValue = "",
+                value = "",
                 placeholder = "Специализация"
             )
             VSpace(h = 12.dp)
@@ -152,7 +152,7 @@ private fun Screen(
                 showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
-                defaultValue = "",
+                value = "",
                 placeholder = "Страна"
             )
             VSpace(h = 12.dp)
@@ -160,28 +160,28 @@ private fun Screen(
                 showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
-                defaultValue = "",
+                value = "",
                 placeholder = "Город"
             )
             VSpace(h = 12.dp)
             LensaInput(
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
-                defaultValue = "",
+                value = "",
                 placeholder = "Номер телефона"
             )
             VSpace(h = 12.dp)
             LensaInput(
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
-                defaultValue = "",
+                value = "",
                 placeholder = "Почта"
             )
             VSpace(h = 12.dp)
             LensaInput(
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
-                defaultValue = "",
+                value = "",
                 placeholder = "О себе"
             )
             VSpace(h = 28.dp)
@@ -192,7 +192,7 @@ private fun Screen(
             LensaInput(
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
-                defaultValue = "",
+                value = "",
                 placeholder = "Сайт"
             )
             VSpace(h = 12.dp)
@@ -205,7 +205,7 @@ private fun Screen(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = { },
-                defaultValue = "",
+                value = "",
                 placeholder = "Социальная сеть"
             )
             VSpace(h = 12.dp)
@@ -218,7 +218,7 @@ private fun Screen(
                 },
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = {},
-                defaultValue = "",
+                value = "",
                 placeholder = "Прайс"
             )
             VSpace(h = 60.dp)

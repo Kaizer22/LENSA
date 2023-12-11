@@ -1,7 +1,9 @@
 package ru.arinae_va.lensa.presentation.feature.settings.compose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
@@ -9,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.presentation.common.component.LensaHeader
 import ru.arinae_va.lensa.presentation.common.component.LensaIconButton
@@ -17,14 +20,26 @@ import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 @Composable
-fun AboutAppScreen() {
+fun AboutAppScreen(
+    navController: NavController,
+) {
     setSystemUiColor()
-    Screen()
+    Screen(
+        onBackPressed = {
+            navController.popBackStack()
+        },
+    )
 }
 
 @Composable
-private fun Screen() {
-    Column {
+private fun Screen(
+    onBackPressed: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = LensaTheme.colors.backgroundColor)
+    ) {
         LensaHeader()
         Spacer(modifier = Modifier.height(100.dp))
         Text(
@@ -45,9 +60,7 @@ private fun Screen() {
             modifier = Modifier.padding(start = 16.dp),
             icon = R.drawable.ic_arrow_back,
             iconSize = 60.dp,
-            onClick = {
-                //TODO
-            },
+            onClick = onBackPressed,
         )
     }
 }
@@ -56,6 +69,8 @@ private fun Screen() {
 @Composable
 fun AboutAppScreenPreview() {
     LensaTheme {
-        Screen()
+        Screen(
+            onBackPressed = {},
+        )
     }
 }

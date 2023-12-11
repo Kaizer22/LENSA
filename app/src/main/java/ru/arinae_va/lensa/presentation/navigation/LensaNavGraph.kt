@@ -20,6 +20,8 @@ import ru.arinae_va.lensa.presentation.feature.profile.compose.ProfileViewModel
 import ru.arinae_va.lensa.presentation.feature.registration.compose.RegistrationRoleSelectorScreen
 import ru.arinae_va.lensa.presentation.feature.registration.compose.RegistrationScreen
 import ru.arinae_va.lensa.presentation.feature.registration.compose.RegistrationViewModel
+import ru.arinae_va.lensa.presentation.feature.settings.compose.AboutAppScreen
+import ru.arinae_va.lensa.presentation.feature.settings.compose.FeedbackScreen
 import ru.arinae_va.lensa.presentation.feature.settings.compose.SettingsScreen
 import ru.arinae_va.lensa.presentation.feature.settings.compose.SettingsViewModel
 
@@ -98,6 +100,18 @@ fun LensaNavGraph() {
             SpecialistDetailsScreen(
                 navController = navController,
                 viewModel = viewModel,
+            )
+        }
+        composable(route = LensaScreens.FEEDBACK_SCREEN.name) {
+            val viewModel = hiltViewModel<SettingsViewModel>()
+            FeedbackScreen(
+                navController = navController,
+                viewModel = viewModel,
+            )
+        }
+        composable(route = LensaScreens.ABOUT_APP_SCREEN.name) {
+            AboutAppScreen(
+                navController = navController,
             )
         }
     }

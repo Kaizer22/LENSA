@@ -73,19 +73,19 @@ fun TariffSection() {
     Column {
         LensaInput(
             onValueChanged = {},
-            defaultValue = "",
+            value = "",
             placeholder = "Название",
         )
         VSpace(h = 12.dp)
         LensaInput(
             onValueChanged = {},
-            defaultValue = "",
+            value = "",
             placeholder = "Описание",
         )
         VSpace(h = 12.dp)
         LensaInput(
             onValueChanged = {},
-            defaultValue = "",
+            value = "",
             showTrailingIcon = true,
             trailingIconRes = R.drawable.ic_rouble,
             placeholder = "Стоимость",

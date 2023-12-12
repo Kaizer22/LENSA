@@ -28,7 +28,7 @@ import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 @Composable
 fun SocialMediaCreatorDialog(
-    onSaveClick: () -> Unit,
+    onSaveClick: (Map<SocialMediaType, String>) -> Unit,
     onDismissClick: () -> Unit,
 ) {
     Dialog(
@@ -70,7 +70,9 @@ fun SocialMediaCreatorDialog(
                 LensaButton(
                     text = "СОХРАНИТЬ",
                     isFillMaxWidth = true,
-                    onClick = onSaveClick,
+                    onClick = {
+                        onSaveClick(mapOf())
+                    },
                 )
                 VSpace(h = 20.dp)
                 LensaTextButton(

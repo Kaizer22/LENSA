@@ -1,17 +1,17 @@
 package ru.arinae_va.lensa.presentation.feature.auth.compose
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -21,7 +21,6 @@ import ru.arinae_va.lensa.presentation.common.component.LensaHeader
 import ru.arinae_va.lensa.presentation.common.component.LensaInput
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
-import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 @Composable
@@ -31,16 +30,15 @@ fun AuthScreen(
 ) {
     setSystemUiColor()
     Screen(
-        onGetCodeClick = {
-            navController.navigate(LensaScreens.OTP_SCREEN.name)
-        },
+        onSendVerificationCodeClick = viewModel::onEnterPhone,
     )
 }
 
 @Composable
 private fun Screen(
-    onGetCodeClick: () -> Unit,
+    onSendVerificationCodeClick: (String) -> Unit,
 ) {
+    var phoneInput by remember { mutableStateOf("+7") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -59,13 +57,19 @@ private fun Screen(
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             LensaInput(
                 modifier = Modifier.fillMaxWidth(),
-                value = "+7",
-                onValueChanged = {}
+                value = phoneInput,
+                onValueChanged = {
+                    phoneInput = it
+                }
             )
             VSpace(h = 52.dp)
             LensaButton(
                 text = "ПОЛУЧИТЬ КОД",
-                onClick = onGetCodeClick,
+                onClick = {
+                    if (phoneInput.length == 12) {
+                        onSendVerificationCodeClick(phoneInput)
+                    }
+                },
                 isFillMaxWidth = true,
             )
             FSpace()
@@ -86,7 +90,7 @@ private fun Screen(
 fun AuthScreenPreview() {
     LensaTheme {
         Screen(
-            onGetCodeClick = {},
+            onSendVerificationCodeClick = {},
         )
     }
 }

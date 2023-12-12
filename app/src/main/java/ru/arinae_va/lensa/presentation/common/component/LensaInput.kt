@@ -59,29 +59,29 @@ fun LensaInput(
 
     ) {
     var input by remember { mutableStateOf(value) }
-    val interactionSource = remember { MutableInteractionSource() }
+    //val interactionSource = remember { MutableInteractionSource() }
 
     var needToDrawRequiredIcon by remember { mutableStateOf(showRequired) }
-
-    val trailingIcon: @Composable (() -> Unit)? = if (showTrailingIcon || needToDrawRequiredIcon) {
-        {
-            val iconRes = if (needToDrawRequiredIcon) R.drawable.ic_4_star else trailingIconRes
-            LensaIconButton(
-                onClick = onTrailingIconClick,
-                icon = iconRes,
-                iconSize = 24.dp,
-            )
-        }
-    } else null
-    val leadingIcon: @Composable (() -> Unit)? = if (showLeadingIcon) {
-        {
-            LensaIconButton(
-                onClick = onLeadingIconClick,
-                icon = leadingIconRes,
-                iconSize = 24.dp,
-            )
-        }
-    } else null
+//
+//    val trailingIcon: @Composable (() -> Unit)? = if (showTrailingIcon || needToDrawRequiredIcon) {
+//        {
+//            val iconRes = if (needToDrawRequiredIcon) R.drawable.ic_4_star else trailingIconRes
+//            LensaIconButton(
+//                onClick = onTrailingIconClick,
+//                icon = iconRes,
+//                iconSize = 24.dp,
+//            )
+//        }
+//    } else null
+//    val leadingIcon: @Composable (() -> Unit)? = if (showLeadingIcon) {
+//        {
+//            LensaIconButton(
+//                onClick = onLeadingIconClick,
+//                icon = leadingIconRes,
+//                iconSize = 24.dp,
+//            )
+//        }
+//    } else null
     BasicTextField(
         modifier = modifier,
         value = input,
@@ -116,12 +116,14 @@ fun LensaInput(
                     )
             ) {
                 Row() {
-                    LensaIconButton(
-                        onClick = { /*TODO*/ },
-                        icon = R.drawable.ic_4_star,
-                        iconSize = 24.dp,
-                    )
-                    HSpace(w = 12.dp)
+                    if (showLeadingIcon) {
+                        LensaIconButton(
+                            onClick = onLeadingIconClick,
+                            icon = leadingIconRes,
+                            iconSize = 24.dp,
+                        )
+                        HSpace(w = 12.dp)
+                    }
                     Box {
                         if (value.isBlank()) {
                             Text(
@@ -132,12 +134,18 @@ fun LensaInput(
                         }
                         innerTextField()
                     }
-                    HSpace(w = 12.dp)
-                    LensaIconButton(
-                        onClick = { /*TODO*/ },
-                        icon = R.drawable.ic_4_star,
-                        iconSize = 24.dp,
-                    )
+                    if (showTrailingIcon || needToDrawRequiredIcon) {
+                        val iconRes = if (needToDrawRequiredIcon)
+                            R.drawable.ic_4_star
+                        else
+                            trailingIconRes
+                        HSpace(w = 12.dp)
+                        LensaIconButton(
+                            onClick = onTrailingIconClick,
+                            icon = iconRes,
+                            iconSize = 24.dp,
+                        )
+                    }
                 }
 
             }

@@ -30,22 +30,24 @@ import ru.arinae_va.lensa.presentation.theme.LensaTheme
 fun OtpScreen(
     navController: NavController,
     viewModel: AuthViewModel,
+    phoneNumber: String,
 ) {
+    viewModel.verifyPhoneNumber(phoneNumber)
     setSystemUiColor()
     Screen(
-        onNextClick = {
-            navController.navigate(
-                LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name
-            )
-        }
+        onNextClick = viewModel::verifyCode
+//            navController.navigate(
+//                LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name
+//            )
     )
 }
 
 @Composable
 private fun Screen(
-    onNextClick: () -> Unit,
+    onNextClick: (String) -> Unit,
 ) {
     var isResendEnabled by remember { mutableStateOf(false) }
+    var otpInput by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -70,9 +72,11 @@ private fun Screen(
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             LensaInput(
                 modifier = Modifier.fillMaxWidth(),
-                value = "",
-                placeholder = "0000",
-                onValueChanged = {}
+                value = otpInput,
+                placeholder = "000000",
+                onValueChanged = {
+                    otpInput = it
+                }
             )
             VSpace(h = 16.dp)
             LensaTextButton(
@@ -90,7 +94,9 @@ private fun Screen(
             VSpace(h = 16.dp)
             LensaButton(
                 text = "ПРОДОЛЖИТЬ",
-                onClick = onNextClick,
+                onClick = {
+                    onNextClick(otpInput)
+                },
                 isFillMaxWidth = true,
             )
             FSpace()

@@ -24,6 +24,11 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import org.jetbrains.annotations.Async
 import ru.arinae_va.lensa.R
+import ru.arinae_va.lensa.domain.model.Price
+import ru.arinae_va.lensa.domain.model.PriceCurrency
+import ru.arinae_va.lensa.domain.model.Review
+import ru.arinae_va.lensa.domain.model.SocialMedia
+import ru.arinae_va.lensa.domain.model.SpecialistModel
 import ru.arinae_va.lensa.presentation.common.component.ExpandableButton
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.HSpace
@@ -36,6 +41,7 @@ import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Composable
 fun SpecialistDetailsScreen(
@@ -56,6 +62,7 @@ fun SpecialistDetailsScreen(
             navController.popBackStack()
         },
         model = SpecialistModel(
+            id = "",
             name = "Арина",
             surname = "Еремеева",
             specialization = "Фотограф",
@@ -90,7 +97,7 @@ fun SpecialistDetailsScreen(
                             "Срок обработки до 3-х недель\n" +
                             "Помощь в создании образов, подготовка референсов\n" +
                             "Подбор и бронирование студии*",
-                    price = 8000.0,
+                    price = 8000,
                     currency = PriceCurrency.RUB,
                 ),
                 Price(
@@ -102,7 +109,7 @@ fun SpecialistDetailsScreen(
                             "Срок обработки до 3-х недель\n" +
                             "Помощь в создании образов, подготовка референсов\n" +
                             "Подбор и бронирование студии*",
-                    price = 8000.0,
+                    price = 8000,
                     currency = PriceCurrency.RUB,
                 )
             ),
@@ -117,48 +124,6 @@ fun SpecialistDetailsScreen(
         )
     )
 }
-
-data class SpecialistModel(
-    val name: String,
-    val surname: String,
-    val specialization: String,
-    val rating: Float,
-    val avatarUrl: String,
-    val country: String,
-    val city: String,
-    val personalSite: String,
-    val email: String,
-    val socialMedias: List<SocialMedia>,
-    val about: String,
-    val portfolioUrls: List<String>,
-    val prices: List<Price>,
-    val reviews: List<Review>,
-)
-
-data class Review(
-    val name: String,
-    val surname: String,
-    val avatarUrl: String,
-    val dateTime: LocalDateTime,
-)
-
-data class Price(
-    val name: String,
-    val text: String,
-    val price: Double,
-    val currency: PriceCurrency,
-)
-
-enum class PriceCurrency(
-    val symbol: String,
-) {
-    RUB(symbol = "₽")
-}
-
-data class SocialMedia(
-    val link: String,
-    val type: SocialMediaType,
-)
 
 enum class SocialMediaType(
     @DrawableRes val icon: Int
@@ -373,6 +338,7 @@ fun SpecialistDetailsScreenPreview() {
             onAddToFavouritesClick = {},
             onBackPressed = {},
             model = SpecialistModel(
+                id = "",
                 name = "Арина",
                 surname = "Еремеева",
                 specialization = "Фотограф",
@@ -406,7 +372,7 @@ fun SpecialistDetailsScreenPreview() {
                                 "Срок обработки до 3-х недель\n" +
                                 "Помощь в создании образов, подготовка референсов\n" +
                                 "Подбор и бронирование студии*",
-                        price = 8000.0,
+                        price = 8000,
                         currency = PriceCurrency.RUB,
                     ),
                     Price(
@@ -418,7 +384,7 @@ fun SpecialistDetailsScreenPreview() {
                                 "Срок обработки до 3-х недель\n" +
                                 "Помощь в создании образов, подготовка референсов\n" +
                                 "Подбор и бронирование студии*",
-                        price = 8000.0,
+                        price = 8000,
                         currency = PriceCurrency.RUB,
                     )
                 ),

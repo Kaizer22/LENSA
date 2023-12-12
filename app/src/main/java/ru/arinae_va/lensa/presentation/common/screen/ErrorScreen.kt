@@ -1,5 +1,6 @@
 package ru.arinae_va.lensa.presentation.common.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
@@ -17,29 +18,41 @@ import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 @Composable
-fun AuthScreen(
+fun ErrorScreen(
     navController: NavController,
-){
+    text: String = "ПРОИЗО\nШЛА\nКАКАЯ-\nТО\nОШИБКА",
+) {
     setSystemUiColor()
-    Screen()
+    Screen(
+        onBackPressed = navController::popBackStack,
+        text = text,
+    )
 }
 
 @Composable
-private fun Screen() {
-    Column {
+private fun Screen(
+    onBackPressed: () -> Unit,
+    text: String,
+) {
+    Column(
+        modifier = Modifier.background(
+            color = LensaTheme.colors.backgroundColor,
+        )
+    ) {
         LensaHeader()
         VSpace(100.dp)
         Text(
             modifier = Modifier.padding(start = 16.dp),
             style = LensaTheme.typography.header1,
-            text = "ПРОИЗО\nШЛА\nКАКАЯ-\nТО\nОШИБКА"
+            color = LensaTheme.colors.textColor,
+            text = text,
         )
         FSpace()
         LensaIconButton(
             modifier = Modifier.padding(start = 16.dp),
             icon = R.drawable.ic_arrow_back,
             iconSize = 60.dp,
-            onClick = {}
+            onClick = onBackPressed,
         )
         VSpace(100.dp)
     }
@@ -49,6 +62,9 @@ private fun Screen() {
 @Composable
 fun AuthScreenPreview() {
     LensaTheme {
-        Screen()
+        Screen(
+            onBackPressed = {},
+            text = "ПРОИЗО\nШЛА\nКАКАЯ-\nТО\nОШИБКА"
+        )
     }
 }

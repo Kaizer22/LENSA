@@ -58,7 +58,10 @@ private fun Screen(
     var showPriceListDialog by remember { mutableStateOf(false) }
     if (showPriceListDialog) {
         PriceListCreatorDialog(
-            onSaveClick = { /*TODO*/ },
+            onSaveClick = { list ->
+                list.size
+                showPriceListDialog = false
+            },
             onDismissClick = {
                 showPriceListDialog = false
             },
@@ -67,7 +70,9 @@ private fun Screen(
     var showSocialMediaDialog by remember { mutableStateOf(false) }
     if (showSocialMediaDialog) {
         SocialMediaCreatorDialog(
-            onSaveClick = { /*TODO*/ },
+            onSaveClick = { socialMediasMap ->
+                showSocialMediaDialog = false
+            },
             onDismissClick = {
                 showSocialMediaDialog = false
             },

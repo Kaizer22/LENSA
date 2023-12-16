@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -25,6 +26,7 @@ import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
+import ru.arinae_va.lensa.presentation.common.utils.todo
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
@@ -34,23 +36,24 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
 ) {
     setSystemUiColor()
+    val context = LocalContext.current
     Screen(
         onAboutClick = {
             navController.navigate(LensaScreens.ABOUT_APP_SCREEN.name)
         },
+        onDeleteClick = viewModel::onDeleteClick,
         onBackPressed = {
             navController.popBackStack()
         },
         onEditProfileClick = {
-            navController.navigate(LensaScreens.PROFILE_SCREEN.name)
+            todo(context)
+            //navController.navigate(LensaScreens.PROFILE_SCREEN.name)
         },
         onThemeSwitched = {},
         onFeedbackClick = {
             navController.navigate(LensaScreens.FEEDBACK_SCREEN.name)
         },
-        onExitClick = {
-            navController.navigate(LensaScreens.AUTH_SCREEN.name)
-        }
+        onExitClick = viewModel::onExitClick
     )
 }
 
@@ -61,6 +64,7 @@ private fun Screen(
     onEditProfileClick: () -> Unit,
     onFeedbackClick: () -> Unit,
     onExitClick: () -> Unit,
+    onDeleteClick: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
     var showExitDialog by remember { mutableStateOf(false) }
@@ -79,8 +83,8 @@ private fun Screen(
 
     if (showDeleteDialog) {
         LensaAlertDialog(
-            onConfirmClick = onExitClick,
-            onDismissClick = { showExitDialog = false },
+            onConfirmClick = onDeleteClick,
+            onDismissClick = { showDeleteDialog = false },
             title = "УДАЛЕНИЕ\nАККАУНТА",
             subtitle = "ВЫ ДЕЙСТВИТЕЛЬНО ХОТИТЕ УДАЛИТЬ АККАУНТ?",
             confirmText = "УДАЛИТЬ",
@@ -182,6 +186,7 @@ private fun Screen(
 fun SettingsScreenPreview() {
     LensaTheme {
         Screen(
+            onDeleteClick = {},
             onAboutClick = {},
             onBackPressed = {},
             onEditProfileClick = {},

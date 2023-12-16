@@ -230,7 +230,7 @@ fun LensaStateButton(
     var isEnabled by remember { mutableStateOf(defaultEnabled) }
     LensaIconButton(
         onClick = {
-            isEnabled != isEnabled
+            isEnabled = !isEnabled
             onClick(isEnabled)
         },
         icon = if (isEnabled) iconEnabledRes else iconDisabledRes,

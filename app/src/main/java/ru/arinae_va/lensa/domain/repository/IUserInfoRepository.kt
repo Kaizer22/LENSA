@@ -41,4 +41,5 @@ interface IUserInfoRepository {
     fun removeFavourite()
 
     suspend fun sendFeedback(userUid: String?, text: String)
+    suspend fun getProfileById(userUid: String): SpecialistModel
 }

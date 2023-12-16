@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,15 +39,16 @@ fun FeedbackScreen(
         onBackPressed = {
             navController.popBackStack()
         },
-        onSendPressed = {},
+        onSendPressed = viewModel::onSendFeedbackClick,
     )
 }
 
 @Composable
 private fun Screen(
     onBackPressed: () -> Unit,
-    onSendPressed: () -> Unit,
+    onSendPressed: (String) -> Unit,
 ) {
+    var text by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,8 +65,10 @@ private fun Screen(
             VSpace(h = 48.dp)
             LensaMultilineInput(
                 modifier = Modifier.fillMaxWidth(),
-                onValueChanged = {},
-                value = "",
+                onValueChanged = {
+                    text = it
+                },
+                value = text,
                 linesCount = 6,
                 placeholder = "Обратная связь",
             )
@@ -70,7 +77,9 @@ private fun Screen(
                 FSpace()
                 LensaTextButton(
                     text = "ОТПРАВИТЬ",
-                    onClick = onSendPressed,
+                    onClick = {
+                        onSendPressed(text)
+                    },
                     type = LensaTextButtonType.DEFAULT,
                 )
             }

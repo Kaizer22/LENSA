@@ -42,7 +42,8 @@ fun LensaSplashScreen(
                 })
         )
         delay(1000L)
-        if (viewModel.isNeedOnboarding()) {
+        // TODO
+        if (!viewModel.isNeedOnboarding()) {
             navController.navigate(LensaScreens.ONBOARDING_SCREEN.name)
         } else {
             navController.navigate(LensaScreens.AUTH_SCREEN.name)

@@ -46,14 +46,16 @@ private fun Screen(
             modifier = Modifier.padding(start = 16.dp),
             text = "ВЕРСИЯ",
             style = LensaTheme.typography.header1,
+            color = LensaTheme.colors.textColor,
         )
         Text(
             modifier = Modifier.padding(
                 start = 32.dp,
                 top = 32.dp,
             ),
-            text = "1.0.0\nBETA",
+            text = "0.0.1\nDEV",
             style = LensaTheme.typography.header2,
+            color = LensaTheme.colors.textColor,
         )
         VSpace(168.dp)
         LensaIconButton(

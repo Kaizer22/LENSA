@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -204,6 +205,7 @@ private fun Screen(
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = { phoneNumber = it },
                 value = phoneNumber,
+                inputType = KeyboardType.Number,
                 placeholder = "Номер телефона"
             )
             VSpace(h = 12.dp)

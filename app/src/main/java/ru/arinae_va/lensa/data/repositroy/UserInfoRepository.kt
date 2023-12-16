@@ -159,4 +159,8 @@ class UserInfoRepository @Inject constructor(
     override suspend fun sendFeedback(userUid: String?, text: String) {
         userInfoStorage.sendFeedback(userUid, text)
     }
+
+    override suspend fun getProfileById(userUid: String): SpecialistModel {
+        return userInfoStorage.getProfileById(userUid)
+    }
 }

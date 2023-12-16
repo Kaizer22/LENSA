@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -27,6 +28,7 @@ import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
+import ru.arinae_va.lensa.presentation.common.utils.todo
 import ru.arinae_va.lensa.presentation.feature.feed.compose.component.SpecialistCard
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
@@ -71,7 +73,7 @@ private fun Screen(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-
+    val context = LocalContext.current
     LazyColumn(
         modifier = Modifier
             .background(
@@ -83,7 +85,8 @@ private fun Screen(
         item {
             LensaActionBar(
                 modifier = Modifier.fillMaxWidth(),
-                onMenuClick = {},
+                onMenuClick = { todo(context) },
+                onSearchClick = { todo(context) },
                 onSearchTextChanged = onSearchTextChanged,
                 onProfileClick = onProfileClick,
             )

@@ -35,6 +35,7 @@ fun OtpScreen(
     viewModel.verifyPhoneNumber(phoneNumber)
     setSystemUiColor()
     Screen(
+        phoneNumber = phoneNumber,
         onNextClick = viewModel::verifyCode
 //            navController.navigate(
 //                LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name
@@ -44,6 +45,7 @@ fun OtpScreen(
 
 @Composable
 private fun Screen(
+    phoneNumber: String,
     onNextClick: (String) -> Unit,
 ) {
     var isResendEnabled by remember { mutableStateOf(false) }
@@ -66,7 +68,7 @@ private fun Screen(
         Text(
             color = LensaTheme.colors.textColor,
             modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
-            text = "Отправили код на *номер телефона*",
+            text = "Отправили код на $phoneNumber",
             style = LensaTheme.typography.signature,
         )
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -116,6 +118,7 @@ private fun Screen(
 @Composable
 fun OtpScreenPreview() = LensaTheme {
     Screen(
+        phoneNumber = "",
         onNextClick = {},
     )
 }

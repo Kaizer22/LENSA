@@ -15,6 +15,7 @@ import ru.arinae_va.lensa.R
 fun LensaActionBar(
     modifier: Modifier = Modifier,
     onMenuClick: () -> Unit,
+    onSearchClick: () -> Unit,
     onSearchTextChanged: (String) -> Unit,
     onProfileClick: () -> Unit,
 ) {
@@ -39,7 +40,7 @@ fun LensaActionBar(
             LensaIconButton(
                 icon = R.drawable.ic_loupe,
                 iconSize = 24.dp,
-                onClick = {}
+                onClick = onSearchClick,
             )
             HSpace(w = 16.dp)
             LensaIconButton(

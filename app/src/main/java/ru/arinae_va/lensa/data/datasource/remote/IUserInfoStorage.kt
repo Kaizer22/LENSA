@@ -34,6 +34,7 @@ interface IUserInfoStorage {
 
     suspend fun getFeed(): List<SpecialistModel>
     suspend fun sendFeedback(userUid: String?, text: String)
+    suspend fun getProfileById(userUid: String?): SpecialistModel
 }
 
 private const val PROFILES_COLLECTION = "profile"
@@ -186,6 +187,22 @@ class FirebaseUserInfoStorage @Inject constructor() : IUserInfoStorage {
         } else {
             false
         }
+    }
+
+    override suspend fun getProfileById(userUid: String?): SpecialistModel {
+        var result = SpecialistModel.EMPTY
+        database.collection(PROFILES_COLLECTION)
+            .whereEqualTo(ID_FIELD, userUid)
+            .limit(1)
+            .get()
+            .addOnSuccessListener {
+                result = it.documents[0].toObject(SpecialistResponseModel::class.java)
+                    ?.mapToSpecialistModel()
+                    ?: SpecialistModel.EMPTY
+            }
+            .await()
+
+        return result
     }
 }
 

@@ -21,7 +21,23 @@ data class SpecialistModel(
     val portfolioUrls: List<String>? = null,
     val prices: List<Price>,
     val reviews: List<Review>? = null,
-)
+) {
+    companion object {
+        val EMPTY = SpecialistModel(
+            id = "",
+            name = "",
+            surname = "",
+            specialization = "",
+            country = "",
+            city = "",
+            personalSite = "",
+            email = "",
+            socialMedias = listOf(),
+            about = "",
+            prices = listOf(),
+        )
+    }
+}
 
 class SpecialistResponseModel(
     val id: String? = null,

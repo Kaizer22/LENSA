@@ -1,5 +1,6 @@
 package ru.arinae_va.lensa.presentation.feature.feed.compose
 
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.scrollable
@@ -15,7 +16,10 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,11 +50,15 @@ import java.util.UUID
 
 @Composable
 fun SpecialistDetailsScreen(
-    model: SpecialistModel,
+    //model: SpecialistModel,
+    specialistUid: String,
     isSelf: Boolean,
     navController: NavController,
     viewModel: SpecialistDetailsViewModel,
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.loadSpecialistProfile(specialistUid)
+    }
     setSystemUiColor()
     Screen(
         isSelf = isSelf,
@@ -64,7 +72,7 @@ fun SpecialistDetailsScreen(
         onBackPressed = {
             navController.popBackStack()
         },
-        model = model,
+        model = viewModel.screenState.value,
     )
 }
 
@@ -112,6 +120,7 @@ private fun Screen(
                     .aspectRatio(1f),
                 model = model.avatarUrl,
                 contentDescription = null,
+                contentScale = ContentScale.Crop,
             )
             VSpace(h = 24.dp)
             PersonalInfoSection(model = model)
@@ -125,7 +134,7 @@ private fun Screen(
             VSpace(h = 24.dp)
             PriceSection(prices = model.prices)
             VSpace(h = 24.dp)
-            PortfolioSection()
+            PortfolioSection(portfolioUrls = model.portfolioUrls ?: listOf())
             VSpace(h = 24.dp)
             Divider(color = LensaTheme.colors.dividerColor)
             VSpace(h = 24.dp)
@@ -149,8 +158,33 @@ fun AddReviewSection() {
 }
 
 @Composable
-fun PortfolioSection() {
-
+fun PortfolioSection(
+    portfolioUrls: List<String>,
+) {
+    Column {
+        if (portfolioUrls.isNotEmpty()) {
+            repeat(portfolioUrls.size / 2 + 1) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    if (it * 2 < portfolioUrls.size) {
+                        AsyncImage(
+                            modifier = Modifier.aspectRatio(1f).weight(0.5f),
+                            model = portfolioUrls[it * 2],
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    if (it * 2 + 1 < portfolioUrls.size) {
+                        AsyncImage(
+                            modifier = Modifier.aspectRatio(1f).weight(0.5f),
+                            model = portfolioUrls[it * 2 + 1],
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -162,6 +196,7 @@ fun HeaderSection(
     isSelf: Boolean,
     model: SpecialistModel,
 ) {
+    val context = LocalContext.current
     Row {
         LensaIconButton(
             onClick = onBackPressed,
@@ -185,6 +220,7 @@ fun HeaderSection(
             LensaStateButton(
                 onClick = {
                     onAddToFavouritesClick()
+                    Toast.makeText(context, "TODO", Toast.LENGTH_LONG).show()
                 },
                 iconEnabledRes = R.drawable.ic_heart_filled,
                 iconDisabledRes = R.drawable.ic_heart_outlined
@@ -238,6 +274,7 @@ fun PriceSection(
     Text(
         text = "ПРАЙС",
         style = LensaTheme.typography.header2,
+        color = LensaTheme.colors.textColor,
     )
     VSpace(h = 12.dp)
     prices.forEach {

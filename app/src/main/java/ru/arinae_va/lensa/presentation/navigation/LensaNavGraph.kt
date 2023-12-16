@@ -37,17 +37,17 @@ import java.net.URLEncoder
 const val PHONE_ID_KEY = "phone"
 const val ERROR_TEXT_KEY = "errorText"
 const val IS_SPECIALIST_KEY = "isSpecialist"
-const val PROFILE_KEY = "profile"
+const val PROFILE_UID_KEY = "profileUid"
 const val IS_SELF_PROFILE_KEY = "isSelf"
 
 fun <A> String?.fromJson(type: Class<A>): A {
-    return Gson().fromJson(this, type)
-    //return Gson().fromJson(URLDecoder.decode(this, type)
+    //return Gson().fromJson(this, type)
+    return Gson().fromJson(URLDecoder.decode(this, "utf-8"), type)
 }
 
 fun <A> A.toJson(): String {
-    return Gson().toJson(this)
-    //return URLEncoder.encode(Gson().toJson(this), "utf-8")
+    //return Gson().toJson(this)
+    return URLEncoder.encode(Gson().toJson(this), "utf-8")
 }
 
 @Composable
@@ -59,6 +59,7 @@ fun LensaNavGraph(
         navController = navController,
         startDestination = LensaScreens.SPLASH_SCREEN.name,
     ) {
+
         composable(route = LensaScreens.SPLASH_SCREEN.name) {
             val viewModel = hiltViewModel<OnboardingViewModel>()
             LensaSplashScreen(
@@ -150,10 +151,10 @@ fun LensaNavGraph(
             )
         }
         composable(route = "${LensaScreens.SPECIALIST_DETAILS_SCREEN.name}/" +
-                "{$PROFILE_KEY}/" +
+                "{$PROFILE_UID_KEY}/" +
                 "{$IS_SELF_PROFILE_KEY}",
             arguments = listOf(
-                navArgument(PROFILE_KEY) {
+                navArgument(PROFILE_UID_KEY) {
                     type = NavType.StringType
                 },
                 navArgument(IS_SELF_PROFILE_KEY) {
@@ -163,13 +164,12 @@ fun LensaNavGraph(
         ) { backStackEntry ->
             val arguments = requireNotNull(backStackEntry.arguments)
             val viewModel = hiltViewModel<SpecialistDetailsViewModel>()
-            arguments.getString(PROFILE_KEY)?.fromJson(SpecialistModel::class.java)?.let {
-                //val b = it.copy(avatarUrl = it.avatarUrl?.replace("%2F", "/"))
+            arguments.getString(PROFILE_UID_KEY)?.let {
                 SpecialistDetailsScreen(
                     navController = navController,
                     viewModel = viewModel,
                     isSelf = arguments.getBoolean(IS_SELF_PROFILE_KEY),
-                    model = it
+                    specialistUid =  it,
                 )
             }
         }

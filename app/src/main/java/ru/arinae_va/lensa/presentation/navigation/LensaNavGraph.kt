@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.gson.Gson
+import ru.arinae_va.lensa.domain.model.SpecialistModel
 import ru.arinae_va.lensa.presentation.common.screen.ErrorScreen
 import ru.arinae_va.lensa.presentation.feature.auth.compose.AuthScreen
 import ru.arinae_va.lensa.presentation.feature.auth.compose.AuthViewModel
@@ -29,16 +31,30 @@ import ru.arinae_va.lensa.presentation.feature.settings.compose.AboutAppScreen
 import ru.arinae_va.lensa.presentation.feature.settings.compose.FeedbackScreen
 import ru.arinae_va.lensa.presentation.feature.settings.compose.SettingsScreen
 import ru.arinae_va.lensa.presentation.feature.settings.compose.SettingsViewModel
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 const val PHONE_ID_KEY = "phone"
 const val ERROR_TEXT_KEY = "errorText"
+const val IS_SPECIALIST_KEY = "isSpecialist"
+const val PROFILE_KEY = "profile"
+const val IS_SELF_PROFILE_KEY = "isSelf"
+
+fun <A> String?.fromJson(type: Class<A>): A {
+    return Gson().fromJson(this, type)
+    //return Gson().fromJson(URLDecoder.decode(this, type)
+}
+
+fun <A> A.toJson(): String {
+    return Gson().toJson(this)
+    //return URLEncoder.encode(Gson().toJson(this), "utf-8")
+}
 
 @Composable
 fun LensaNavGraph(
     navController: NavHostController,
 ) {
     // TODO вложенные графы для фичей, шаринг вью моделей
-    //val navController = rememberNavController()
     return NavHost(
         navController = navController,
         startDestination = LensaScreens.SPLASH_SCREEN.name,
@@ -91,15 +107,25 @@ fun LensaNavGraph(
             )
         }
         composable(route = LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name) {
+            val viewModel = hiltViewModel<RegistrationViewModel>()
             RegistrationRoleSelectorScreen(
                 navController = navController,
+                viewModel = viewModel,
             )
         }
-        composable(route = LensaScreens.REGISTRATION_SCREEN.name) {
+        composable(
+            route = "${LensaScreens.REGISTRATION_SCREEN.name}/{$IS_SPECIALIST_KEY}",
+            arguments = listOf(
+                navArgument(IS_SPECIALIST_KEY) {
+                    type = NavType.BoolType
+                }
+            ),
+        ) { backStackEntry ->
+            val arguments = requireNotNull(backStackEntry.arguments)
             val viewModel = hiltViewModel<RegistrationViewModel>()
             RegistrationScreen(
-                navController = navController,
                 viewModel = viewModel,
+                isSpecialist = arguments.getBoolean(IS_SPECIALIST_KEY)
             )
         }
         composable(route = LensaScreens.FEED_SCREEN.name) {
@@ -123,12 +149,29 @@ fun LensaNavGraph(
                 viewModel = viewModel,
             )
         }
-        composable(route = LensaScreens.SPECIALIST_DETAILS_SCREEN.name) {
-            val viewModel = hiltViewModel<SpecialistDetailsViewModel>()
-            SpecialistDetailsScreen(
-                navController = navController,
-                viewModel = viewModel,
+        composable(route = "${LensaScreens.SPECIALIST_DETAILS_SCREEN.name}/" +
+                "{$PROFILE_KEY}/" +
+                "{$IS_SELF_PROFILE_KEY}",
+            arguments = listOf(
+                navArgument(PROFILE_KEY) {
+                    type = NavType.StringType
+                },
+                navArgument(IS_SELF_PROFILE_KEY) {
+                    type = NavType.BoolType
+                }
             )
+        ) { backStackEntry ->
+            val arguments = requireNotNull(backStackEntry.arguments)
+            val viewModel = hiltViewModel<SpecialistDetailsViewModel>()
+            arguments.getString(PROFILE_KEY)?.fromJson(SpecialistModel::class.java)?.let {
+                //val b = it.copy(avatarUrl = it.avatarUrl?.replace("%2F", "/"))
+                SpecialistDetailsScreen(
+                    navController = navController,
+                    viewModel = viewModel,
+                    isSelf = arguments.getBoolean(IS_SELF_PROFILE_KEY),
+                    model = it
+                )
+            }
         }
         composable(route = LensaScreens.FEEDBACK_SCREEN.name) {
             val viewModel = hiltViewModel<SettingsViewModel>()

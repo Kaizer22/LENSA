@@ -1,5 +1,6 @@
 package ru.arinae_va.lensa.data.repositroy
 
+import android.net.Uri
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
@@ -8,11 +9,12 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
 import com.google.firebase.auth.auth
 import ru.arinae_va.lensa.data.datasource.remote.IUserInfoStorage
+import ru.arinae_va.lensa.domain.model.SpecialistModel
 import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-// TODO разделить на репозитории
+// TODO разделить на репозитории по функционалу
 class UserInfoRepository @Inject constructor(
     private val userInfoStorage: IUserInfoStorage,
 ) : IUserInfoRepository {
@@ -79,37 +81,67 @@ class UserInfoRepository @Inject constructor(
                                 }
                             }
                         )
-
                     } else {
                         onSignInFailed()
                     }
                 } else {
-//                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
-//                        // The verification code entered was invalid
-//                    }
                     onSignInFailed()
                 }
+            }
+            .addOnSuccessListener { result ->
+                val userUid = result.user?.uid
+                if (userUid != null) {
+                    userInfoStorage.checkUid(
+                        userUid,
+                        onCheckResult = { isNewUser ->
+                            if (isNewUser) {
+                                onSignUpSuccess(userUid)
+                            } else {
+                                onSignInSuccess(userUid)
+                            }
+                        }
+                    )
+                } else {
+                    onSignInFailed()
+                }
+            }.addOnFailureListener {
+                onSignInFailed()
+            }.addOnCanceledListener {
+                onSignInFailed()
             }
     }
 
     override fun logOut() {
-        TODO("Not yet implemented")
+        Firebase.auth.signOut()
     }
 
-    override fun deleteAccount() {
-        TODO("Not yet implemented")
+    override suspend fun deleteAccount(userUid: String) {
+        userInfoStorage.deleteAccount(userUid)
     }
 
-    override fun trySignInUser() {
-        TODO("Not yet implemented")
+    override suspend fun upsertProfile(
+        model: SpecialistModel,
+        avatarUri: Uri?,
+        portfolioUris: List<Uri>?,
+        isNewUser: Boolean,
+    ) {
+        if (isNewUser) {
+            userInfoStorage.createProfile(profile = model)
+        } else {
+            userInfoStorage.updateProfile(model)
+        }
+        avatarUri?.let {
+            userInfoStorage.uploadAvatarImage(model.id, it)
+        }
+        portfolioUris?.let {
+            it.forEach { imageUri ->
+                userInfoStorage.uploadPortfolioImage(model.id, imageUri)
+            }
+        }
     }
 
-    override fun editProfile() {
-        TODO("Not yet implemented")
-    }
-
-    override fun getFeed() {
-        TODO("Not yet implemented")
+    override suspend fun getFeed(): List<SpecialistModel> {
+        return userInfoStorage.getFeed()
     }
 
     override fun postReview() {
@@ -124,7 +156,7 @@ class UserInfoRepository @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun sendFeedBack() {
-        TODO("Not yet implemented")
+    override suspend fun sendFeedback(userUid: String?, text: String) {
+        userInfoStorage.sendFeedback(userUid, text)
     }
 }

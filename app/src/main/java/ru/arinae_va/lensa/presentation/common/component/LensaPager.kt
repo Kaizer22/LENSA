@@ -78,8 +78,8 @@ fun LensaPagerIndicator(
         for(i in 0 until pageCount) {
             PageIndicatorView(
                 isSelected = currentPage == i,
-                selectedColor = LensaTheme.colors.textColor,
-                defaultColor = LensaTheme.colors.textColorAccent,
+                selectedColor = LensaTheme.colors.textColorAccent,
+                defaultColor = LensaTheme.colors.textColorSecondary,
                 defaultRadius = 16.dp,
                 selectedLength = 44.dp,
                 animationDurationInMillis = 600,

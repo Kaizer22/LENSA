@@ -7,6 +7,7 @@ import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 
 @Composable
 fun ProfileScreen(
+    
     navController: NavController,
     viewModel: ProfileViewModel,
 ){

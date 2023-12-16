@@ -43,14 +43,17 @@ import ru.arinae_va.lensa.presentation.theme.LensaTheme
 import java.time.LocalDateTime
 import java.util.UUID
 
+
 @Composable
 fun SpecialistDetailsScreen(
+    model: SpecialistModel,
+    isSelf: Boolean,
     navController: NavController,
     viewModel: SpecialistDetailsViewModel,
 ) {
     setSystemUiColor()
     Screen(
-        isSelf = true,
+        isSelf = isSelf,
         onFavouritesClick = {
             navController.navigate(LensaScreens.FAVOURITES_SCREEN.name)
         },
@@ -61,67 +64,7 @@ fun SpecialistDetailsScreen(
         onBackPressed = {
             navController.popBackStack()
         },
-        model = SpecialistModel(
-            id = "",
-            name = "Арина",
-            surname = "Еремеева",
-            specialization = "Фотограф",
-            rating = 4.9f,
-            avatarUrl = "https://pixelbox.ru/wp-content/uploads/2021/11/black-white-avatars-steam-pixelbox.ru-27.jpg",
-            country = "Россия",
-            city = "Санкт-Петербург",
-            personalSite = "tttttttttt",
-            email = "tttttttttttt",
-            socialMedias = listOf(
-                SocialMedia(
-                    link = "",
-                    type = SocialMediaType.INSTAGRAM,
-                ),
-                SocialMedia(
-                    link = "",
-                    type = SocialMediaType.TELEGRAM,
-                ),
-            ),
-            about = "Фотограф со стажем 2 года. Фотографирую портреты и творческие съемки. " +
-                    "Записаться можно на моем сайте по ссылке",
-            portfolioUrls = listOf(
-                "", "",
-            ),
-            prices = listOf(
-                Price(
-                    name = "BASIC",
-                    text = "1 час съемки\n" +
-                            "1-2 образа\n" +
-                            "5 фотографий в ретуши по вашему выбору\n" +
-                            "150+ кадров без ретуши в профессиональной обработке\n" +
-                            "Срок обработки до 3-х недель\n" +
-                            "Помощь в создании образов, подготовка референсов\n" +
-                            "Подбор и бронирование студии*",
-                    price = 8000,
-                    currency = PriceCurrency.RUB,
-                ),
-                Price(
-                    name = "STANDARD",
-                    text = "1 час съемки\n" +
-                            "1-2 образа\n" +
-                            "5 фотографий в ретуши по вашему выбору\n" +
-                            "150+ кадров без ретуши в профессиональной обработке\n" +
-                            "Срок обработки до 3-х недель\n" +
-                            "Помощь в создании образов, подготовка референсов\n" +
-                            "Подбор и бронирование студии*",
-                    price = 8000,
-                    currency = PriceCurrency.RUB,
-                )
-            ),
-            reviews = listOf(
-                Review(
-                    name = "Test",
-                    surname = "Test",
-                    avatarUrl = "",
-                    dateTime = LocalDateTime.now(),
-                )
-            )
-        )
+        model = model,
     )
 }
 
@@ -263,7 +206,7 @@ fun HeaderSection(
             color = LensaTheme.colors.textColor,
         )
         FSpace()
-        LensaRating(rating = model.rating)
+        LensaRating(rating = model.rating ?: 0.0f)
     }
 }
 

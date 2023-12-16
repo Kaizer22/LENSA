@@ -74,11 +74,13 @@ dependencies {
 
     // Data
     implementation("androidx.datastore:datastore-preferences:1.1.0-alpha04")
+    implementation("com.google.code.gson:gson:2.10.1")
 
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
     implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
 
     // DI
     implementation("com.google.dagger:hilt-android:2.44")

@@ -1,7 +1,9 @@
 package ru.arinae_va.lensa.domain.repository
 
+import android.net.Uri
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import ru.arinae_va.lensa.domain.model.SpecialistModel
 
 interface IUserInfoRepository {
     fun verifyPhoneNumber(
@@ -21,13 +23,16 @@ interface IUserInfoRepository {
 
     fun logOut()
 
-    fun deleteAccount()
+    suspend fun deleteAccount(userUid: String)
 
-    fun trySignInUser()
+    suspend fun upsertProfile(
+        model: SpecialistModel,
+        avatarUri: Uri? = null,
+        portfolioUris: List<Uri>? = null,
+        isNewUser: Boolean = false,
+    )
 
-    fun editProfile()
-
-    fun getFeed() // by filter
+    suspend fun getFeed(): List<SpecialistModel> // by filter
 
     fun postReview()
 
@@ -35,6 +40,5 @@ interface IUserInfoRepository {
 
     fun removeFavourite()
 
-    fun sendFeedBack()
-
+    suspend fun sendFeedback(userUid: String?, text: String)
 }

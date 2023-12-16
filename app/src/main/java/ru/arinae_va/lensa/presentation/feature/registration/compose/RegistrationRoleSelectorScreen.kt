@@ -20,14 +20,15 @@ import ru.arinae_va.lensa.presentation.theme.LensaTheme
 @Composable
 fun RegistrationRoleSelectorScreen(
     navController: NavController,
+    viewModel: RegistrationViewModel,
 ) {
     setSystemUiColor()
     Screen(
         onSpecialistClick = {
-            navController.navigate(LensaScreens.REGISTRATION_SCREEN.name)
+            viewModel.onSelectAccountTypeClick(isSpecialist = true)
         },
         onCustomerClick = {
-            navController.navigate(LensaScreens.REGISTRATION_SCREEN.name)
+            viewModel.onSelectAccountTypeClick(isSpecialist = false)
         }
     )
 }

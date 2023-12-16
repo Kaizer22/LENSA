@@ -11,6 +11,10 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -26,11 +30,15 @@ import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.feature.feed.compose.SocialMediaType
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
+internal val defaultMediasMap = SocialMediaType.values()
+    .associateBy({ it }, { "" })
 @Composable
 fun SocialMediaCreatorDialog(
+    defaultMedias: Map<SocialMediaType, String> = defaultMediasMap,
     onSaveClick: (Map<SocialMediaType, String>) -> Unit,
     onDismissClick: () -> Unit,
 ) {
+    var mediasMap by remember { mutableStateOf(defaultMedias) }
     Dialog(
         onDismissRequest = onDismissClick,
         properties = DialogProperties(
@@ -61,8 +69,12 @@ fun SocialMediaCreatorDialog(
                         modifier = Modifier.fillMaxWidth(),
                         showLeadingIcon = true,
                         leadingIconRes = socialMediaType.icon,
-                        onValueChanged = {},
-                        value = "",
+                        onValueChanged = {
+                            val bufState = mediasMap.toMutableMap()
+                            bufState[socialMediaType] = it
+                            mediasMap = bufState
+                        },
+                        value = mediasMap[socialMediaType] ?: "",
                     )
                     VSpace(h = 12.dp)
                 }
@@ -71,7 +83,7 @@ fun SocialMediaCreatorDialog(
                     text = "СОХРАНИТЬ",
                     isFillMaxWidth = true,
                     onClick = {
-                        onSaveClick(mapOf())
+                        onSaveClick(mediasMap)
                     },
                 )
                 VSpace(h = 20.dp)

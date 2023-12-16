@@ -115,7 +115,7 @@ fun LensaInput(
                         vertical = 8.dp,
                     )
             ) {
-                Row() {
+                Row {
                     if (showLeadingIcon) {
                         LensaIconButton(
                             onClick = onLeadingIconClick,
@@ -124,7 +124,7 @@ fun LensaInput(
                         )
                         HSpace(w = 12.dp)
                     }
-                    Box {
+                    Box(modifier = Modifier.weight(1f)) {
                         if (value.isBlank()) {
                             Text(
                                 text = placeholder,
@@ -251,7 +251,17 @@ fun LensaInputPreview() {
                 onValueChanged = {}
             )
             VSpace(h = 16.dp)
-            LensaInput(onValueChanged = {}, value = "Test", showLeadingIcon = true)
+            LensaInput(
+                onValueChanged = {},
+                value = "Test",
+                showLeadingIcon = true)
+            VSpace(h = 16.dp)
+            LensaInput(
+                onValueChanged = {},
+                value = "Test",
+                showLeadingIcon = true,
+                showTrailingIcon = true,
+            )
             VSpace(h = 16.dp)
             LensaMultilineInput(
                 placeholder = "Test", value = ""

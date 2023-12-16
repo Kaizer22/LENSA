@@ -78,7 +78,7 @@ fun LensaButton(
     ) {
         Button(
             modifier = modifier
-                .background(color = Color.Green)
+                //.background(color = Color.Green)
                 .defaultMinSize(1.dp, 1.dp),
             onClick = onClick,
             enabled = enabled,
@@ -89,7 +89,7 @@ fun LensaButton(
             elevation = elevation
         ) {
             Row(
-                modifier = if (isFillMaxWidth) Modifier.fillMaxWidth() else Modifier.background(color=Color.Red),
+                modifier = if (isFillMaxWidth) Modifier.fillMaxWidth() else Modifier,//.background(color = Color.Red),
                 horizontalArrangement = contentArrangement,
                 verticalAlignment = contentAlignment,
             ) {

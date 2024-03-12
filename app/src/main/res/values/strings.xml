@@ -14,4 +14,12 @@
     <string name="onboarding_step_3_text">Если ты являешься заказчиком, то здесь ты сможешь найти подходящих специалистов для проекта \n\nНапример, ты работаешь в компании и хочешь найти фотографа для съемки \n\nДля этого тебе нужно всего лишь полистать ленту с фотографами и связаться с подходящим, для быстрого поиска ты можешь выставить подходящие фильтры</string>
     <string name="onboarding_step_4_title">ПОГНАЛИ!</string>
     <string name="onboarding_step_4_text">Найди лучшего специалиста для своего проекта прямо сейчас</string>
+    <string name="otp_screen_continue_btn">ПРОДОЛЖИТЬ</string>
+    <string name="wrong_otp_code_error">Введен неверный код</string>
+    <string name="otp_screen_otp_resent_hint">Код был выслан повторно\nЕсли код не приходит, попробуйте позже</string>
+    <string name="otp_screen_send_new_code">Отправить новый код</string>
+    <string name="otp_screen_resend_counter_hint">Отправить еще раз через %1$s:%2$s</string>
+    <string name="otp_screen_otp_input_placeholder">000000</string>
+    <string name="otp_screen_sent_message">Отправили код на %1$s</string>
+    <string name="otp_screen_input_label">Код из СМС</string>
 </resources>

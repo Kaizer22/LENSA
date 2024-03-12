@@ -74,7 +74,7 @@ private fun Screen(
             state.validationErrors[AuthScreenField.PHONE_NUMBER]?.let {
                 Text(
                     text = it,
-                    style = LensaTheme.typography.hint,
+                    style = LensaTheme.typography.signature,
                     color = LensaTheme.colors.textColorSecondary,
                 )
             }

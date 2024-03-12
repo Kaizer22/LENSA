@@ -6,6 +6,7 @@ internal enum class OtpScreenInputField {
 internal data class OtpScreenState(
     val phoneNumber: String,
     val otpInput: String,
+    val isOtpCodeResent: Boolean,
     val isResendEnabled: Boolean,
     val isButtonNextEnabled: Boolean,
     val validationErrors: Map<OtpScreenInputField, String>,

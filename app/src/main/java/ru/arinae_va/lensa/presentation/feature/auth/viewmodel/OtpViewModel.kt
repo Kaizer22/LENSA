@@ -19,6 +19,7 @@ import javax.inject.Inject
 
 // todo move to constants
 internal const val OTP_CODE_LENGTH = 6
+
 @HiltViewModel
 class OtpViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -26,13 +27,16 @@ class OtpViewModel @Inject constructor(
     private val userInfoRepository: IUserInfoRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(OtpScreenState(
-        phoneNumber = "",
-        otpInput = "",
-        isButtonNextEnabled = false,
-        isResendEnabled = false,
-        validationErrors = emptyMap(),
-    ))
+    private val _state = MutableStateFlow(
+        OtpScreenState(
+            phoneNumber = "",
+            otpInput = "",
+            isOtpCodeResent = false,
+            isButtonNextEnabled = false,
+            isResendEnabled = false,
+            validationErrors = emptyMap(),
+        )
+    )
     internal val state: StateFlow<OtpScreenState> = _state
 
     private var verificationId: String? = null
@@ -48,7 +52,7 @@ class OtpViewModel @Inject constructor(
     }
 
     fun onOtpInputChanged(otpInput: String) {
-        val errors = if(isValidOtp(otpInput)) emptyMap()
+        val errors = if (isValidOtp(otpInput)) emptyMap()
         else {
             mapOf(
                 OtpScreenInputField.OTP_CODE to context.getString(R.string.otp_validation_error)
@@ -56,6 +60,7 @@ class OtpViewModel @Inject constructor(
         }
         _state.tryEmit(
             state.value.copy(
+                otpInput = otpInput,
                 validationErrors = errors,
                 isButtonNextEnabled = errors.isEmpty(),
             )
@@ -97,8 +102,13 @@ class OtpViewModel @Inject constructor(
             userInfoRepository.signInWithPhoneAuthCredential(
                 credential,
                 onSignInFailed = {
-                    navHostController.navigate(
-                        route = "${LensaScreens.COMMON_ERROR_SCREEN.name}/{ОШИБКА2}"
+                    _state.tryEmit(
+                        state.value.copy(
+                            validationErrors = mapOf(
+                                OtpScreenInputField.OTP_CODE
+                                        to context.getString(R.string.wrong_otp_code_error)
+                            )
+                        )
                     )
                 },
                 onSignUpSuccess = {
@@ -110,7 +120,21 @@ class OtpViewModel @Inject constructor(
             )
         }
     }
-    fun onResendOtp() {
 
+    fun onResendOtp() {
+        _state.tryEmit(
+            state.value.copy(
+                isOtpCodeResent = true,
+                isResendEnabled = false,
+            )
+        )
+    }
+
+    fun enableResend() {
+        _state.tryEmit(
+            state.value.copy(
+                isResendEnabled = true,
+            )
+        )
     }
 }

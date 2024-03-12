@@ -1,20 +1,20 @@
 package ru.arinae_va.lensa.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.gson.Gson
-import ru.arinae_va.lensa.domain.model.SpecialistModel
 import ru.arinae_va.lensa.presentation.common.screen.ErrorScreen
 import ru.arinae_va.lensa.presentation.feature.auth.compose.AuthScreen
-import ru.arinae_va.lensa.presentation.feature.auth.compose.AuthViewModel
+import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.AuthViewModel
 import ru.arinae_va.lensa.presentation.feature.auth.compose.OtpScreen
+import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpViewModel
 import ru.arinae_va.lensa.presentation.feature.feed.compose.FeedScreen
 import ru.arinae_va.lensa.presentation.feature.feed.compose.FeedViewModel
 import ru.arinae_va.lensa.presentation.feature.feed.compose.SpecialistDetailsScreen
@@ -76,8 +76,8 @@ fun LensaNavGraph(
         }
         composable(route = LensaScreens.AUTH_SCREEN.name) {
             val viewModel = hiltViewModel<AuthViewModel>()
+
             AuthScreen(
-                navController = navController,
                 viewModel = viewModel,
             )
         }
@@ -87,12 +87,15 @@ fun LensaNavGraph(
                     type = NavType.StringType
                 }
             )) { backStackEntry ->
-            val viewModel = hiltViewModel<AuthViewModel>()
-            val arguments = requireNotNull(backStackEntry.arguments)
+            val viewModel = hiltViewModel<OtpViewModel>()
+            val phoneNumber = remember {
+                requireNotNull(backStackEntry.arguments).getString(PHONE_ID_KEY, "")
+            }
+            LaunchedEffect(true) {
+                viewModel.onAttach(phoneNumber)
+            }
             OtpScreen(
-                navController = navController,
                 viewModel = viewModel,
-                phoneNumber = arguments.getString(PHONE_ID_KEY, "")
             )
         }
         composable(route = "${LensaScreens.COMMON_ERROR_SCREEN.name}/{$ERROR_TEXT_KEY}",

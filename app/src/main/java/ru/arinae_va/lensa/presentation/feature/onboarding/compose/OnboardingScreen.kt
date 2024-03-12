@@ -8,19 +8,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.presentation.common.component.LensaHeader
 import ru.arinae_va.lensa.presentation.common.component.LensaIconButton
-import ru.arinae_va.lensa.presentation.common.component.LensaLogo
 import ru.arinae_va.lensa.presentation.common.component.LensaPager
 import ru.arinae_va.lensa.presentation.common.component.PageModel
 import ru.arinae_va.lensa.presentation.common.component.VSpace
@@ -46,33 +44,20 @@ private fun Screen(
 ) {
     val pageModels = listOf(
         PageModel(
-            titleText = "ПРИВЕТ, ДРУГ",
-            subtitleText = "Это приложение создано для специалистов из фотоиндустрии: " +
-                    "для фотографов, моделей, визажистов, стилистов и других\n\n" +
-                    "А также для заказчиков, которые ищут подходящего специалиста " +
-                    "для своего проекта"
+            titleText = stringResource(R.string.onboarding_step_1_title),
+            subtitleText = stringResource(R.string.onboarding_step_1_text)
         ),
         PageModel(
-            titleText = "СПЕЦИАЛИСТ",
-            subtitleText = "Если ты являешься специалистом, то здесь ты сможешь найти " +
-                    "коллег для сотрудничества\n\nНапример, ты фотограф и хочешь найти модель " +
-                    "для съемки \n\nДля этого тебе нужно всего лишь полистать ленту " +
-                    "с моделями и связаться с подходящей, а еще для быстрого поиска " +
-                    "ты можешь выставить подходящие фильтры"
+            titleText = stringResource(R.string.onboarding_step_2_title),
+            subtitleText = stringResource(R.string.onboarding_step_2_text)
         ),
         PageModel(
-            titleText = "ЗАКАЗЧИК",
-            subtitleText = "Если ты являешься заказчиком, то здесь ты сможешь найти " +
-                    "подходящих специалистов для проекта " +
-                    "\n\nНапример, ты работаешь в компании и хочешь найти фотографа " +
-                    "для съемки " +
-                    "\n\nДля этого тебе нужно всего лишь полистать ленту с фотографами " +
-                    "и связаться с подходящим, для быстрого поиска ты можешь выставить " +
-                    "подходящие фильтры"
+            titleText = stringResource(R.string.onboarding_step_3_title),
+            subtitleText = stringResource(R.string.onboarding_step_3_text)
         ),
         PageModel(
-            titleText = "ПОГНАЛИ!",
-            subtitleText = "Найди лучшего специалиста для своего проекта прямо сейчас"
+            titleText = stringResource(R.string.onboarding_step_4_title),
+            subtitleText = stringResource(R.string.onboarding_step_4_text)
         )
     )
     Column(

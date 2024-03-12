@@ -7,14 +7,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaButton
 import ru.arinae_va.lensa.presentation.common.component.LensaHeader
@@ -23,19 +21,20 @@ import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
-import ru.arinae_va.lensa.presentation.navigation.LensaScreens
+import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpScreenInputField
+import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpScreenState
+import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpViewModel
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 @Composable
 fun OtpScreen(
-    navController: NavController,
-    viewModel: AuthViewModel,
-    phoneNumber: String,
+    viewModel: OtpViewModel,
 ) {
-    viewModel.verifyPhoneNumber(phoneNumber)
+    val state by viewModel.state.collectAsState()
     setSystemUiColor()
     Screen(
-        phoneNumber = phoneNumber,
+        state = state,
+        onOtpInputChanged = viewModel::onOtpInputChanged,
         onNextClick = viewModel::verifyCode
 //            navController.navigate(
 //                LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name
@@ -45,11 +44,12 @@ fun OtpScreen(
 
 @Composable
 private fun Screen(
-    phoneNumber: String,
-    onNextClick: (String) -> Unit,
+    state: OtpScreenState,
+    onOtpInputChanged: (String) -> Unit,
+    onNextClick: () -> Unit,
 ) {
-    var isResendEnabled by remember { mutableStateOf(false) }
-    var otpInput by remember { mutableStateOf("") }
+    // var isResendEnabled by remember { mutableStateOf(false) }
+    // var otpInput by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,37 +68,41 @@ private fun Screen(
         Text(
             color = LensaTheme.colors.textColor,
             modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
-            text = "Отправили код на $phoneNumber",
+            text = "Отправили код на ${state.phoneNumber}",
             style = LensaTheme.typography.signature,
         )
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             LensaInput(
                 modifier = Modifier.fillMaxWidth(),
-                value = otpInput,
+                value = state.otpInput,
+                inputType = KeyboardType.Number,
                 placeholder = "000000",
-                onValueChanged = {
-                    otpInput = it
-                }
+                onValueChanged = onOtpInputChanged,
             )
+            state.validationErrors[OtpScreenInputField.OTP_CODE]?.let {
+                Text(
+                    text = it,
+                    style = LensaTheme.typography.hint,
+                    color = LensaTheme.colors.textColorSecondary,
+                )
+            }
             VSpace(h = 16.dp)
             LensaTextButton(
                 isFillMaxWidth = true,
-                text = if (isResendEnabled) {
+                text = if (state.isResendEnabled) {
                     "Отправить новый код"
                 } else {
                     "Отправить еще раз через 01:00"
                 },
                 onClick = {},
 
-                type = if (isResendEnabled) LensaTextButtonType.ACCENT
+                type = if (state.isResendEnabled) LensaTextButtonType.ACCENT
                 else LensaTextButtonType.SECONDARY,
             )
             VSpace(h = 16.dp)
             LensaButton(
                 text = "ПРОДОЛЖИТЬ",
-                onClick = {
-                    onNextClick(otpInput)
-                },
+                onClick = onNextClick,
                 isFillMaxWidth = true,
             )
             FSpace()
@@ -118,7 +122,14 @@ private fun Screen(
 @Composable
 fun OtpScreenPreview() = LensaTheme {
     Screen(
-        phoneNumber = "",
+        state = OtpScreenState(
+            phoneNumber = "",
+            otpInput = "",
+            isResendEnabled = false,
+            isButtonNextEnabled = false,
+            validationErrors = emptyMap(),
+        ),
         onNextClick = {},
+        onOtpInputChanged = {},
     )
 }

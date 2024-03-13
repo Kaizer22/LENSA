@@ -58,8 +58,6 @@ private fun Screen(
     onEnableResend: () -> Unit,
     onNextClick: () -> Unit,
 ) {
-    // var isResendEnabled by remember { mutableStateOf(false) }
-    // var otpInput by remember { mutableStateOf("") }
     // TODO add loaders
     var timeToResend by remember { mutableStateOf(RESEND_DELAY_SECONDS) }
     LaunchedEffect(Unit) {

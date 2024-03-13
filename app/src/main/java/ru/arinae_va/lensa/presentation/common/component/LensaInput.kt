@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,6 +40,7 @@ fun LensaInput(
     showRequired: Boolean = false,
     acceptRequiredCheck: (String) -> Boolean = { newInput: String -> newInput.isNotEmpty() },
     enabled: Boolean = true,
+    onFocusChanged: (isFocused: Boolean) -> Unit = {},
     readOnly: Boolean = false,
     maxLines: Int = 1,
     minLines: Int = 1,
@@ -49,9 +51,8 @@ fun LensaInput(
     onTrailingIconClick: () -> Unit = {},
     trailingIconRes: Int = R.drawable.ic_4_star,
     leadingIconRes: Int = R.drawable.ic_4_star,
-
-    ) {
-    var input by remember { mutableStateOf(value) }
+) {
+    var input by remember(value) { mutableStateOf(value) }
     //val interactionSource = remember { MutableInteractionSource() }
 
     var needToDrawRequiredIcon by remember { mutableStateOf(showRequired) }
@@ -76,7 +77,9 @@ fun LensaInput(
 //        }
 //    } else null
     BasicTextField(
-        modifier = modifier,
+        modifier = modifier.onFocusChanged { focusState ->
+            onFocusChanged(focusState.isFocused)
+        },
         value = input,
         enabled = enabled,
         readOnly = readOnly,
@@ -179,11 +182,6 @@ fun LensaInput(
     )
 }
 
-@Composable
-fun LensaDropdownInput() {
-
-}
-
 private const val MULTILINE_INPUT_MAX_LENGTH = 3000
 private const val MULTILINE_INPUT_LINES_COUNT = 10
 
@@ -247,7 +245,8 @@ fun LensaInputPreview() {
             LensaInput(
                 onValueChanged = {},
                 value = "Test",
-                showLeadingIcon = true)
+                showLeadingIcon = true
+            )
             VSpace(h = 16.dp)
             LensaInput(
                 onValueChanged = {},
@@ -259,6 +258,7 @@ fun LensaInputPreview() {
             LensaMultilineInput(
                 placeholder = "Test", value = ""
             )
+            VSpace(h = 16.dp)
         }
     }
 }

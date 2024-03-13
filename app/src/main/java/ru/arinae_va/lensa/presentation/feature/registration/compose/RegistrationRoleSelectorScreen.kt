@@ -14,7 +14,7 @@ import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaButtonWithIcon
 import ru.arinae_va.lensa.presentation.common.component.LensaHeader
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
-import ru.arinae_va.lensa.presentation.navigation.LensaScreens
+import ru.arinae_va.lensa.presentation.feature.registration.viewmodel.RegistrationViewModel
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 @Composable

@@ -26,7 +26,7 @@ import ru.arinae_va.lensa.presentation.feature.profile.compose.ProfileScreen
 import ru.arinae_va.lensa.presentation.feature.profile.compose.ProfileViewModel
 import ru.arinae_va.lensa.presentation.feature.registration.compose.RegistrationRoleSelectorScreen
 import ru.arinae_va.lensa.presentation.feature.registration.compose.RegistrationScreen
-import ru.arinae_va.lensa.presentation.feature.registration.compose.RegistrationViewModel
+import ru.arinae_va.lensa.presentation.feature.registration.viewmodel.RegistrationViewModel
 import ru.arinae_va.lensa.presentation.feature.settings.compose.AboutAppScreen
 import ru.arinae_va.lensa.presentation.feature.settings.compose.FeedbackScreen
 import ru.arinae_va.lensa.presentation.feature.settings.compose.SettingsScreen
@@ -127,9 +127,11 @@ fun LensaNavGraph(
         ) { backStackEntry ->
             val arguments = requireNotNull(backStackEntry.arguments)
             val viewModel = hiltViewModel<RegistrationViewModel>()
+            LaunchedEffect(Unit) {
+                viewModel.setType(arguments.getBoolean(IS_SPECIALIST_KEY))
+            }
             RegistrationScreen(
                 viewModel = viewModel,
-                isSpecialist = arguments.getBoolean(IS_SPECIALIST_KEY)
             )
         }
         composable(route = LensaScreens.FEED_SCREEN.name) {

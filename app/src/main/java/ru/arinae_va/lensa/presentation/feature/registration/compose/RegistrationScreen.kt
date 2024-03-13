@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,33 +25,41 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.Price
 import ru.arinae_va.lensa.presentation.common.component.HSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaButton
+import ru.arinae_va.lensa.presentation.common.component.LensaDropdownInput
 import ru.arinae_va.lensa.presentation.common.component.LensaImagePicker
 import ru.arinae_va.lensa.presentation.common.component.LensaInput
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
-import ru.arinae_va.lensa.presentation.feature.feed.compose.SocialMediaType
 import ru.arinae_va.lensa.presentation.feature.registration.compose.dialog.PriceListCreatorDialog
 import ru.arinae_va.lensa.presentation.feature.registration.compose.dialog.SocialMediaCreatorDialog
 import ru.arinae_va.lensa.presentation.feature.registration.compose.dialog.defaultMediasMap
-import ru.arinae_va.lensa.presentation.feature.registration.compose.model.RegistrationScreenData
-import ru.arinae_va.lensa.presentation.navigation.LensaScreens
+import ru.arinae_va.lensa.presentation.feature.registration.viewmodel.RegistrationScreenState
+import ru.arinae_va.lensa.presentation.feature.registration.viewmodel.RegistrationViewModel
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 @Composable
 fun RegistrationScreen(
-    isSpecialist: Boolean,
     viewModel: RegistrationViewModel,
 ) {
     setSystemUiColor()
+    val state by viewModel.state.collectAsState()
     Screen(
-        isSpecialist = isSpecialist,
+        state = state,
+        onNameChanged = viewModel::onNameChanged,
+        onSurnameChanged = viewModel::onSurnameChanged,
+        onAboutChanged = viewModel::onAboutChanged,
+        onCityChanged = viewModel::onCityChanged,
+        onCountryChanged = viewModel::onCountryChanged,
+        onEmailChanged = viewModel::onEmailChanged,
+        onPhoneNumberChanged = viewModel::onPhoneNumberChanged,
+        onSpecializationChanged = viewModel::onSpecializationChanged,
+        onPersonalWebsiteChanged = viewModel::onPersonalWebsiteChanged,
         onGetInTouchClick = viewModel::onGetInTouchClick,
         onSaveClick = viewModel::onSaveClick,
     )
@@ -58,40 +67,25 @@ fun RegistrationScreen(
 
 @Composable
 private fun Screen(
-    isSpecialist: Boolean,
-    onSaveClick: (RegistrationScreenData) -> Unit,
+    state: RegistrationScreenState,
+    onNameChanged: (String) -> Unit,
+    onSurnameChanged: (String) -> Unit,
+    onSpecializationChanged: (String) -> Unit,
+    onCountryChanged: (String) -> Unit,
+    onCityChanged: (String) -> Unit,
+    onPhoneNumberChanged: (String) -> Unit,
+    onEmailChanged: (String) -> Unit,
+    onAboutChanged: (String) -> Unit,
+    onPersonalWebsiteChanged: (String) -> Unit,
+    onSaveClick: () -> Unit,
     onGetInTouchClick: () -> Unit,
 ) {
-    var name by remember { mutableStateOf("") }
-    var surname by remember { mutableStateOf("") }
-    var specialization by remember { mutableStateOf("") }
-    var country by remember { mutableStateOf("") }
-    var city by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var about by remember { mutableStateOf("") }
-    var site by remember { mutableStateOf("") }
     var socialMedia by remember { mutableStateOf(defaultMediasMap) }
     var priceList by remember { mutableStateOf(listOf<Price>()) }
     var avatarUri by remember { mutableStateOf<Uri?>(null) }
     var portfolioUris by remember { mutableStateOf<List<Uri>>(listOf()) }
     var portfolioUrls by remember { mutableStateOf<List<String>>(listOf()) }
 
-    val isNextEnabled = validateRegistrationForm(
-        isSpecialist = isSpecialist,
-        isAvatarSelected = avatarUri != null,
-        name = name,
-        surname = surname,
-        specialization = specialization,
-        country = country,
-        city = city,
-        phoneNumber = phoneNumber,
-        email = email,
-        about = about,
-        site = site,
-        socialMedia = socialMedia,
-        priceList = priceList,
-    )
     var showPriceListDialog by remember { mutableStateOf(false) }
     if (showPriceListDialog) {
         PriceListCreatorDialog(
@@ -162,68 +156,76 @@ private fun Screen(
             }
             VSpace(h = 24.dp)
             LensaInput(
+                inputType = KeyboardType.Text,
                 showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChanged = { surname = it },
-                value = surname,
+                onValueChanged = onSurnameChanged,
+                value = state.surname,
                 placeholder = "Фамилия"
             )
             VSpace(h = 12.dp)
             LensaInput(
+                inputType = KeyboardType.Text,
                 showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChanged = { name = it },
-                value = name,
+                onValueChanged = onNameChanged,
+                value = state.name,
                 placeholder = "Имя"
             )
-            if (isSpecialist) {
+            if (state.isSpecialistRegistrationScreen) {
                 VSpace(h = 12.dp)
                 SpecializationSection(
-                    specializationValue = specialization,
-                    onValueChanged = { specialization = it },
+                    specializationValue = state.specialization,
+                    onValueChanged = onSpecializationChanged,
                     onGetInTouchClick = onGetInTouchClick,
                 )
             }
             VSpace(h = 12.dp)
-            LensaInput(
+            LensaDropdownInput(
+                inputType = KeyboardType.Text,
+                allowFreeInput = true,
                 showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChanged = { country = it },
-                value = country,
-                placeholder = "Страна"
+                onValueChanged = onCountryChanged,
+                value = state.country,
+                placeholder = "Страна",
+                items = listOf(
+                    "Россия", "Азербайджан", "Армения", "Грузия"
+                ),
+            )
+            VSpace(h = 12.dp)
+            LensaDropdownInput(
+                allowFreeInput = true,
+                showRequired = true,
+                modifier = Modifier.fillMaxWidth(),
+                onValueChanged = onCityChanged,
+                placeholder = "Город",
+                items = listOf("Санкт-Петербург", "Москва")
             )
             VSpace(h = 12.dp)
             LensaInput(
-                showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
-                onValueChanged = { city = it },
-                value = city,
-                placeholder = "Город"
-            )
-            VSpace(h = 12.dp)
-            LensaInput(
-                modifier = Modifier.fillMaxWidth(),
-                onValueChanged = { phoneNumber = it },
-                value = phoneNumber,
+                onValueChanged = onPhoneNumberChanged,
+                value = state.phoneNumber,
                 inputType = KeyboardType.Number,
                 placeholder = "Номер телефона"
             )
             VSpace(h = 12.dp)
             LensaInput(
                 modifier = Modifier.fillMaxWidth(),
-                onValueChanged = { email = it },
-                value = email,
+                onValueChanged = onEmailChanged,
+                value = state.email,
                 placeholder = "Почта"
             )
             VSpace(h = 12.dp)
             LensaInput(
                 modifier = Modifier.fillMaxWidth(),
-                onValueChanged = { about = it },
-                value = about,
+                onValueChanged = onAboutChanged,
+                value = state.about,
                 placeholder = "О себе"
             )
         }
-        if (isSpecialist) {
+        if (state.isSpecialistRegistrationScreen) {
             VSpace(h = 28.dp)
             PortfolioCarousel(
                 onListChanged = {
@@ -236,8 +238,8 @@ private fun Screen(
             VSpace(h = 12.dp)
             LensaInput(
                 modifier = Modifier.fillMaxWidth(),
-                onValueChanged = { site = it },
-                value = site,
+                onValueChanged = onPersonalWebsiteChanged,
+                value = state.personalSite,
                 placeholder = "Сайт"
             )
             VSpace(h = 12.dp)
@@ -253,7 +255,7 @@ private fun Screen(
                 value = "",
                 placeholder = "Социальная сеть"
             )
-            if (isSpecialist) {
+            if (state.isSpecialistRegistrationScreen) {
                 VSpace(h = 12.dp)
                 LensaInput(
                     readOnly = true,
@@ -270,27 +272,10 @@ private fun Screen(
             }
             VSpace(h = 60.dp)
             LensaButton(
-                enabled = isNextEnabled,
                 text = "СОХРАНИТЬ",
                 isFillMaxWidth = true,
                 onClick = {
-                    avatarUri?.let {
-                        val result = RegistrationScreenData(
-                            name = name,
-                            surname = surname,
-                            specialization = specialization,
-                            avatarUri = it,
-                            country = country,
-                            city = city,
-                            personalSite = site,
-                            email = email,
-                            socialMedias = socialMedia,
-                            about = about,
-                            portfolioUris = portfolioUris,
-                            prices = priceList,
-                        )
-                        onSaveClick(result)
-                    }
+                    onSaveClick()
                 },
             )
             VSpace(h = 20.dp)
@@ -304,41 +289,19 @@ private fun Screen(
     }
 }
 
-fun validateRegistrationForm(
-    isSpecialist: Boolean,
-    isAvatarSelected: Boolean,
-    name: String,
-    surname: String,
-    specialization: String,
-    country: String,
-    city: String,
-    phoneNumber: String,
-    email: String,
-    about: String,
-    site: String,
-    socialMedia: Map<SocialMediaType, String>,
-    priceList: List<Price>
-): Boolean = name.isNotBlank() &&
-        surname.isNotBlank() &&
-        country.isNotBlank() &&
-        city.isNotBlank() &&
-        (isSpecialist && specialization.isNotBlank()) &&
-        priceList.isNotEmpty() &&
-        isAvatarSelected
-
-
 @Composable
 fun SpecializationSection(
     specializationValue: String,
     onValueChanged: (String) -> Unit,
     onGetInTouchClick: () -> Unit,
 ) {
-    LensaInput(
+    LensaDropdownInput(
+        allowFreeInput = false,
         showRequired = true,
         modifier = Modifier.fillMaxWidth(),
         onValueChanged = onValueChanged,
-        value = specializationValue,
-        placeholder = "Специализация"
+        items = listOf("Фотограф", "Модель", "Стилист"),
+        placeholder = "Специализация",
     )
     VSpace(h = 12.dp)
     Text(
@@ -388,14 +351,23 @@ fun PortfolioCarousel(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 fun RegistrationScreenPreview() {
     LensaTheme {
         Screen(
-            isSpecialist = false,
-            onSaveClick = {},
+            state = RegistrationScreenState.INITIAL,
+            onNameChanged = {},
+            onSurnameChanged = {},
+            onAboutChanged = {},
+            onCityChanged = {},
+            onCountryChanged = {},
+            onEmailChanged = {},
+            onPhoneNumberChanged = {},
+            onSpecializationChanged = {},
+            onPersonalWebsiteChanged = {},
             onGetInTouchClick = {},
+            onSaveClick = {},
         )
     }
 }

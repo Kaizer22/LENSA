@@ -18,7 +18,7 @@ import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpViewModel
 import ru.arinae_va.lensa.presentation.feature.feed.compose.FeedScreen
 import ru.arinae_va.lensa.presentation.feature.feed.compose.FeedViewModel
 import ru.arinae_va.lensa.presentation.feature.feed.compose.SpecialistDetailsScreen
-import ru.arinae_va.lensa.presentation.feature.feed.compose.SpecialistDetailsViewModel
+import ru.arinae_va.lensa.presentation.feature.feed.compose.ProfileDetailsViewModel
 import ru.arinae_va.lensa.presentation.feature.onboarding.compose.LensaSplashScreen
 import ru.arinae_va.lensa.presentation.feature.onboarding.compose.OnboardingScreen
 import ru.arinae_va.lensa.presentation.feature.onboarding.compose.OnboardingViewModel
@@ -168,7 +168,7 @@ fun LensaNavGraph(
             )
         ) { backStackEntry ->
             val arguments = requireNotNull(backStackEntry.arguments)
-            val viewModel = hiltViewModel<SpecialistDetailsViewModel>()
+            val viewModel = hiltViewModel<ProfileDetailsViewModel>()
             arguments.getString(PROFILE_UID_KEY)?.let {
                 SpecialistDetailsScreen(
                     navController = navController,

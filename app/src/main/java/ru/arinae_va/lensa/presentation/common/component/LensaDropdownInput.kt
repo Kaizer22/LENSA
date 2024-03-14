@@ -59,7 +59,9 @@ fun LensaDropdownInput(
                 ExposedDropdownMenu(
                     expanded = expanded,
                     onDismissRequest = {
-                        if (!allowFreeInput && !items.contains(input)) {
+                        if (!allowFreeInput && !items.any {
+                                it.equals(input, ignoreCase = true)
+                            }) {
                             input = ""
                         }
                     }

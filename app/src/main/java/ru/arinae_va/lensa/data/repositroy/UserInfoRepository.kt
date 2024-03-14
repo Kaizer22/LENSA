@@ -9,7 +9,7 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
 import com.google.firebase.auth.auth
 import ru.arinae_va.lensa.data.datasource.remote.IUserInfoStorage
-import ru.arinae_va.lensa.domain.model.SpecialistModel
+import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -120,7 +120,7 @@ class UserInfoRepository @Inject constructor(
     }
 
     override suspend fun upsertProfile(
-        model: SpecialistModel,
+        model: UserProfileModel,
         avatarUri: Uri?,
         portfolioUris: List<Uri>?,
         isNewUser: Boolean,
@@ -128,7 +128,7 @@ class UserInfoRepository @Inject constructor(
         if (isNewUser) {
             userInfoStorage.createProfile(profile = model)
         } else {
-            userInfoStorage.updateProfile(model)
+            userInfoStorage.updateProfile(profile = model)
         }
         avatarUri?.let {
             userInfoStorage.uploadAvatarImage(model.id, it)
@@ -140,7 +140,7 @@ class UserInfoRepository @Inject constructor(
         }
     }
 
-    override suspend fun getFeed(): List<SpecialistModel> {
+    override suspend fun getFeed(): List<UserProfileModel> {
         return userInfoStorage.getFeed()
     }
 
@@ -160,7 +160,7 @@ class UserInfoRepository @Inject constructor(
         userInfoStorage.sendFeedback(userUid, text)
     }
 
-    override suspend fun getProfileById(userUid: String): SpecialistModel {
+    override suspend fun getProfileById(userUid: String): UserProfileModel {
         return userInfoStorage.getProfileById(userUid)
     }
 }

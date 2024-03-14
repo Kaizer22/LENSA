@@ -1,6 +1,5 @@
 package ru.arinae_va.lensa.presentation.feature.feed.compose
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -10,10 +9,9 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.arinae_va.lensa.domain.model.SpecialistModel
+import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
-import ru.arinae_va.lensa.presentation.navigation.toJson
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,8 +20,8 @@ class FeedViewModel @Inject constructor(
     private val userInfoRepository: IUserInfoRepository,
 ) : ViewModel() {
 
-    private val _feedList = mutableStateListOf<SpecialistModel>()
-    val feedList: SnapshotStateList<SpecialistModel> = _feedList
+    private val _feedList = mutableStateListOf<UserProfileModel>()
+    val feedList: SnapshotStateList<UserProfileModel> = _feedList
 
     init {
         loadFeed()

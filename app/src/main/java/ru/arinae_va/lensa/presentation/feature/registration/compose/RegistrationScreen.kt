@@ -32,13 +32,14 @@ import ru.arinae_va.lensa.presentation.common.component.LensaButton
 import ru.arinae_va.lensa.presentation.common.component.LensaDropdownInput
 import ru.arinae_va.lensa.presentation.common.component.LensaImagePicker
 import ru.arinae_va.lensa.presentation.common.component.LensaInput
+import ru.arinae_va.lensa.presentation.common.component.LensaMultilineInput
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
+import ru.arinae_va.lensa.presentation.feature.feed.compose.SocialMediaType
 import ru.arinae_va.lensa.presentation.feature.registration.compose.dialog.PriceListCreatorDialog
 import ru.arinae_va.lensa.presentation.feature.registration.compose.dialog.SocialMediaCreatorDialog
-import ru.arinae_va.lensa.presentation.feature.registration.compose.dialog.defaultMediasMap
 import ru.arinae_va.lensa.presentation.feature.registration.viewmodel.RegistrationScreenState
 import ru.arinae_va.lensa.presentation.feature.registration.viewmodel.RegistrationViewModel
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
@@ -61,6 +62,10 @@ fun RegistrationScreen(
         onSpecializationChanged = viewModel::onSpecializationChanged,
         onPersonalWebsiteChanged = viewModel::onPersonalWebsiteChanged,
         onGetInTouchClick = viewModel::onGetInTouchClick,
+        onPricesListChanged = viewModel::onPricesChanged,
+        onSocialMediasChanged = viewModel::onSocialMediasChanged,
+        onAvatarChanged = viewModel::onAvatarChanged,
+        onPortfolioChanged = viewModel::onPortfolioChanged,
         onSaveClick = viewModel::onSaveClick,
     )
 }
@@ -77,21 +82,20 @@ private fun Screen(
     onEmailChanged: (String) -> Unit,
     onAboutChanged: (String) -> Unit,
     onPersonalWebsiteChanged: (String) -> Unit,
+    onPricesListChanged: (List<Price>) -> Unit,
+    onSocialMediasChanged: (Map<SocialMediaType, String>) -> Unit,
+    onAvatarChanged: (Uri) -> Unit,
+    onPortfolioChanged: (List<Uri>) -> Unit,
     onSaveClick: () -> Unit,
     onGetInTouchClick: () -> Unit,
 ) {
-    var socialMedia by remember { mutableStateOf(defaultMediasMap) }
-    var priceList by remember { mutableStateOf(listOf<Price>()) }
-    var avatarUri by remember { mutableStateOf<Uri?>(null) }
-    var portfolioUris by remember { mutableStateOf<List<Uri>>(listOf()) }
-    var portfolioUrls by remember { mutableStateOf<List<String>>(listOf()) }
 
     var showPriceListDialog by remember { mutableStateOf(false) }
     if (showPriceListDialog) {
         PriceListCreatorDialog(
-            defaultPricesList = priceList,
+            defaultPricesList = state.prices,
             onSaveClick = { list ->
-                priceList = list
+                onPricesListChanged.invoke(list)
                 showPriceListDialog = false
             },
             onDismissClick = {
@@ -102,9 +106,9 @@ private fun Screen(
     var showSocialMediaDialog by remember { mutableStateOf(false) }
     if (showSocialMediaDialog) {
         SocialMediaCreatorDialog(
-            defaultMedias = socialMedia,
+            defaultMedias = state.socialMedias,
             onSaveClick = { socialMediasMap ->
-                socialMedia = socialMediasMap
+                onSocialMediasChanged(socialMediasMap)
                 showSocialMediaDialog = false
             },
             onDismissClick = {
@@ -128,9 +132,7 @@ private fun Screen(
             ) {
                 LensaImagePicker(
                     modifier = Modifier.size(216.dp),
-                    onImagePicked = { uri ->
-                        avatarUri = uri
-                    },
+                    onImagePicked = onAvatarChanged,
                     emptyStateButtonSize = 48.dp,
                 )
             }
@@ -218,7 +220,7 @@ private fun Screen(
                 placeholder = "Почта"
             )
             VSpace(h = 12.dp)
-            LensaInput(
+            LensaMultilineInput(
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = onAboutChanged,
                 value = state.about,
@@ -228,9 +230,7 @@ private fun Screen(
         if (state.isSpecialistRegistrationScreen) {
             VSpace(h = 28.dp)
             PortfolioCarousel(
-                onListChanged = {
-                    portfolioUris = it
-                }
+                onListChanged = onPortfolioChanged,
             )
             VSpace(h = 16.dp)
         }
@@ -367,6 +367,10 @@ fun RegistrationScreenPreview() {
             onSpecializationChanged = {},
             onPersonalWebsiteChanged = {},
             onGetInTouchClick = {},
+            onAvatarChanged = {},
+            onPortfolioChanged = {},
+            onPricesListChanged = {},
+            onSocialMediasChanged = {},
             onSaveClick = {},
         )
     }

@@ -9,10 +9,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
+import ru.arinae_va.lensa.utils.Constants
+import ru.arinae_va.lensa.utils.isValidPhoneNumber
 import javax.inject.Inject
-
-private val RUSSIA_COUNTRY_CODE = "+7"
-private val RUSSIAN_PHONE_NUMBER_LENGTH = 12
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
@@ -23,7 +22,7 @@ class AuthViewModel @Inject constructor(
     private val _state = MutableStateFlow(
         AuthScreenState(
             isEnabledNextButton = false,
-            phoneNumber = RUSSIA_COUNTRY_CODE,
+            phoneNumber = Constants.RUSSIA_COUNTRY_CODE,
         )
     )
     internal val state: StateFlow<AuthScreenState> = _state
@@ -49,9 +48,6 @@ class AuthViewModel @Inject constructor(
     fun onEnterPhoneNumber() {
         navHostController.navigate("${LensaScreens.OTP_SCREEN.name}/${state.value.phoneNumber}")
     }
-
-    private fun isValidPhoneNumber(phoneNumber: String) = phoneNumber
-        .startsWith(RUSSIA_COUNTRY_CODE) && phoneNumber.length == RUSSIAN_PHONE_NUMBER_LENGTH
 
     fun onBackPressed() {
         navHostController.popBackStack()

@@ -3,7 +3,6 @@ package ru.arinae_va.lensa.presentation.feature.feed.compose
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -21,18 +20,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import org.jetbrains.annotations.Async
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.Price
 import ru.arinae_va.lensa.domain.model.PriceCurrency
 import ru.arinae_va.lensa.domain.model.Review
 import ru.arinae_va.lensa.domain.model.SocialMedia
-import ru.arinae_va.lensa.domain.model.SpecialistModel
+import ru.arinae_va.lensa.domain.model.UserProfileModel
+import ru.arinae_va.lensa.domain.model.UserProfileType
 import ru.arinae_va.lensa.presentation.common.component.ExpandableButton
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.HSpace
@@ -45,7 +43,6 @@ import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 import java.time.LocalDateTime
-import java.util.UUID
 
 
 @Composable
@@ -54,7 +51,7 @@ fun SpecialistDetailsScreen(
     specialistUid: String,
     isSelf: Boolean,
     navController: NavController,
-    viewModel: SpecialistDetailsViewModel,
+    viewModel: ProfileDetailsViewModel,
 ) {
     LaunchedEffect(Unit) {
         viewModel.loadSpecialistProfile(specialistUid)
@@ -95,7 +92,7 @@ private fun Screen(
     onFavouritesClick: () -> Unit,
     onSettingsClick: () -> Unit,
     isSelf: Boolean,
-    model: SpecialistModel,
+    model: UserProfileModel,
 ) {
     Column(
         modifier = Modifier
@@ -194,7 +191,7 @@ fun HeaderSection(
     onSettingsClick: () -> Unit,
     onAddToFavouritesClick: () -> Unit,
     isSelf: Boolean,
-    model: SpecialistModel,
+    model: UserProfileModel,
 ) {
     val context = LocalContext.current
     Row {
@@ -248,7 +245,7 @@ fun HeaderSection(
 
 @Composable
 fun PersonalInfoSection(
-    model: SpecialistModel,
+    model: UserProfileModel,
 ) {
     SpecialistDetailsField(label = "Страна", text = model.country)
     SpecialistDetailsField(label = "Город", text = model.city)
@@ -317,8 +314,9 @@ fun SpecialistDetailsScreenPreview() {
             onFavouritesClick = {},
             onAddToFavouritesClick = {},
             onBackPressed = {},
-            model = SpecialistModel(
+            model = UserProfileModel(
                 id = "",
+                type = UserProfileType.SPECIALIST,
                 name = "Арина",
                 surname = "Еремеева",
                 specialization = "Фотограф",

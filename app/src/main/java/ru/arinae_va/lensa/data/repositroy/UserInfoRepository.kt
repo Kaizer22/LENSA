@@ -9,6 +9,7 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
 import com.google.firebase.auth.auth
 import ru.arinae_va.lensa.data.datasource.remote.IUserInfoStorage
+import ru.arinae_va.lensa.domain.model.FeedFilter
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
 import java.util.concurrent.TimeUnit
@@ -140,7 +141,7 @@ class UserInfoRepository @Inject constructor(
         }
     }
 
-    override suspend fun getFeed(): List<UserProfileModel> {
+    override suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel> {
         return userInfoStorage.getFeed()
     }
 

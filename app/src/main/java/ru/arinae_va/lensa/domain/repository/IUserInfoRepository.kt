@@ -3,6 +3,7 @@ package ru.arinae_va.lensa.domain.repository
 import android.net.Uri
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import ru.arinae_va.lensa.domain.model.FeedFilter
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 
 interface IUserInfoRepository {
@@ -32,7 +33,9 @@ interface IUserInfoRepository {
         isNewUser: Boolean = false,
     )
 
-    suspend fun getFeed(): List<UserProfileModel> // by filter
+    suspend fun getFeed(
+        feedFilter: FeedFilter?
+    ): List<UserProfileModel> // by filter
 
     fun postReview()
 

@@ -35,12 +35,11 @@ class OtpViewModel @Inject constructor(
             isButtonNextEnabled = false,
             isResendEnabled = false,
             validationErrors = emptyMap(),
+            verificationId = null,
+            token = null,
         )
     )
     internal val state: StateFlow<OtpScreenState> = _state
-
-    private var verificationId: String? = null
-    private var token: PhoneAuthProvider.ForceResendingToken? = null
 
     fun onAttach(phoneNumber: String) {
         verifyPhoneNumber(phoneNumber)
@@ -62,7 +61,7 @@ class OtpViewModel @Inject constructor(
             state.value.copy(
                 otpInput = otpInput,
                 validationErrors = errors,
-                isButtonNextEnabled = errors.isEmpty(),
+                isButtonNextEnabled = errors.isEmpty() && state.value.verificationId != null,
             )
         )
     }
@@ -70,13 +69,19 @@ class OtpViewModel @Inject constructor(
     private fun isValidOtp(otpInput: String) = otpInput.isDigitsOnly() &&
             otpInput.length == OTP_CODE_LENGTH
 
+    // TODO загрузка пока отправляется код
     private fun verifyPhoneNumber(phoneNumber: String) {
         viewModelScope.launch {
             userInfoRepository.verifyPhoneNumber(
                 phoneNumber = phoneNumber,
                 onCodeSent = { vId, t ->
-                    verificationId = vId
-                    token = t
+                    _state.tryEmit(
+                        state.value.copy(
+                            verificationId = vId,
+                            token = t,
+                            isButtonNextEnabled = state.value.validationErrors.isEmpty()
+                        )
+                    )
                 },
                 onSignInCompleted = {
                     navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
@@ -98,28 +103,31 @@ class OtpViewModel @Inject constructor(
     fun verifyCode() {
         val code = state.value.otpInput
         viewModelScope.launch {
-            val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
-            userInfoRepository.signInWithPhoneAuthCredential(
-                credential,
-                onSignInFailed = {
-                    _state.tryEmit(
-                        state.value.copy(
-                            validationErrors = mapOf(
-                                OtpScreenInputField.OTP_CODE
-                                        to context.getString(R.string.wrong_otp_code_error)
+            state.value.verificationId?.let { vId ->
+                val credential = PhoneAuthProvider.getCredential(vId, code)
+                userInfoRepository.signInWithPhoneAuthCredential(
+                    credential,
+                    onSignInFailed = {
+                        _state.tryEmit(
+                            state.value.copy(
+                                validationErrors = mapOf(
+                                    OtpScreenInputField.OTP_CODE
+                                            to context.getString(R.string.wrong_otp_code_error)
+                                )
                             )
                         )
-                    )
-                },
-                onSignUpSuccess = {
-                    navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
-                },
-                onSignInSuccess = { userId ->
-                    navHostController.navigate(LensaScreens.FEED_SCREEN.name)
-                }
-            )
+                    },
+                    onSignUpSuccess = {
+                        navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
+                    },
+                    onSignInSuccess = { userId ->
+                        navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+                    }
+                )
+            }
         }
     }
+
 
     fun onResendOtp() {
         _state.tryEmit(

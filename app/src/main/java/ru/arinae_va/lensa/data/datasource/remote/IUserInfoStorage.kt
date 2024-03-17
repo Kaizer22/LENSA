@@ -42,7 +42,7 @@ private const val FEEDBACK_COLLECTION = "feedback"
 private const val AVATAR_FIELD = "avatarUrl"
 private const val PORTFOLIO_PICTURES_FIELD = "portfolioUrls"
 private const val ID_FIELD = "id"
-private const val PROFILE_TYPE_FIELD = "profileType"
+private const val PROFILE_TYPE_FIELD = "type"
 
 private const val AVATARS_STORAGE_ROOT_FOLDER = "avatars/"
 private const val PORTFOLIOS_STORAGE_ROOT_FOLDER = "portfolios/"

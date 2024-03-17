@@ -16,9 +16,9 @@ import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.AuthViewModel
 import ru.arinae_va.lensa.presentation.feature.auth.compose.OtpScreen
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpViewModel
 import ru.arinae_va.lensa.presentation.feature.feed.compose.FeedScreen
-import ru.arinae_va.lensa.presentation.feature.feed.compose.FeedViewModel
-import ru.arinae_va.lensa.presentation.feature.feed.compose.SpecialistDetailsScreen
-import ru.arinae_va.lensa.presentation.feature.feed.compose.ProfileDetailsViewModel
+import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.FeedViewModel
+import ru.arinae_va.lensa.presentation.feature.feed.compose.ProfileDetailsScreen
+import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.ProfileDetailsViewModel
 import ru.arinae_va.lensa.presentation.feature.onboarding.compose.LensaSplashScreen
 import ru.arinae_va.lensa.presentation.feature.onboarding.compose.OnboardingScreen
 import ru.arinae_va.lensa.presentation.feature.onboarding.compose.OnboardingViewModel
@@ -67,6 +67,7 @@ fun LensaNavGraph(
                 viewModel = viewModel,
             )
         }
+
         composable(route = LensaScreens.ONBOARDING_SCREEN.name) {
             val viewModel = hiltViewModel<OnboardingViewModel>()
             OnboardingScreen(
@@ -74,6 +75,7 @@ fun LensaNavGraph(
                 viewModel = viewModel,
             )
         }
+
         composable(route = LensaScreens.AUTH_SCREEN.name) {
             val viewModel = hiltViewModel<AuthViewModel>()
 
@@ -81,6 +83,7 @@ fun LensaNavGraph(
                 viewModel = viewModel,
             )
         }
+
         composable(route = "${LensaScreens.OTP_SCREEN.name}/{$PHONE_ID_KEY}",
             arguments = listOf(
                 navArgument(PHONE_ID_KEY) {
@@ -98,6 +101,7 @@ fun LensaNavGraph(
                 viewModel = viewModel,
             )
         }
+
         composable(route = "${LensaScreens.COMMON_ERROR_SCREEN.name}/{$ERROR_TEXT_KEY}",
             arguments = listOf(
                 navArgument(ERROR_TEXT_KEY) {
@@ -110,6 +114,7 @@ fun LensaNavGraph(
                 text = arguments.getString(ERROR_TEXT_KEY, "")
             )
         }
+
         composable(route = LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name) {
             val viewModel = hiltViewModel<RegistrationViewModel>()
             RegistrationRoleSelectorScreen(
@@ -117,6 +122,7 @@ fun LensaNavGraph(
                 viewModel = viewModel,
             )
         }
+
         composable(
             route = "${LensaScreens.REGISTRATION_SCREEN.name}/{$IS_SPECIALIST_KEY}",
             arguments = listOf(
@@ -134,13 +140,14 @@ fun LensaNavGraph(
                 viewModel = viewModel,
             )
         }
+
         composable(route = LensaScreens.FEED_SCREEN.name) {
             val viewModel = hiltViewModel<FeedViewModel>()
             FeedScreen(
-                navController = navController,
                 viewModel = viewModel,
             )
         }
+
         composable(route = LensaScreens.SETTINGS_SCREEN.name) {
             val viewModel = hiltViewModel<SettingsViewModel>()
             SettingsScreen(
@@ -148,6 +155,7 @@ fun LensaNavGraph(
                 viewModel = viewModel,
             )
         }
+
         composable(route = LensaScreens.PROFILE_SCREEN.name) {
             val viewModel = hiltViewModel<ProfileViewModel>()
             ProfileScreen(
@@ -155,6 +163,7 @@ fun LensaNavGraph(
                 viewModel = viewModel,
             )
         }
+
         composable(route = "${LensaScreens.SPECIALIST_DETAILS_SCREEN.name}/" +
                 "{$PROFILE_UID_KEY}/" +
                 "{$IS_SELF_PROFILE_KEY}",
@@ -169,15 +178,21 @@ fun LensaNavGraph(
         ) { backStackEntry ->
             val arguments = requireNotNull(backStackEntry.arguments)
             val viewModel = hiltViewModel<ProfileDetailsViewModel>()
-            arguments.getString(PROFILE_UID_KEY)?.let {
-                SpecialistDetailsScreen(
+
+            arguments.getString(PROFILE_UID_KEY)?.let { uid ->
+                LaunchedEffect(Unit) {
+                    viewModel.loadUserProfile(
+                        userUid = uid,
+                        isSelf = arguments.getBoolean(IS_SELF_PROFILE_KEY)
+                    )
+                }
+                ProfileDetailsScreen(
                     navController = navController,
                     viewModel = viewModel,
-                    isSelf = arguments.getBoolean(IS_SELF_PROFILE_KEY),
-                    specialistUid =  it,
                 )
             }
         }
+
         composable(route = LensaScreens.FEEDBACK_SCREEN.name) {
             val viewModel = hiltViewModel<SettingsViewModel>()
             FeedbackScreen(
@@ -185,6 +200,7 @@ fun LensaNavGraph(
                 viewModel = viewModel,
             )
         }
+
         composable(route = LensaScreens.ABOUT_APP_SCREEN.name) {
             AboutAppScreen(
                 navController = navController,

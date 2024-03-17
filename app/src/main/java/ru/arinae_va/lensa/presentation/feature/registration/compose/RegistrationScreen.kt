@@ -43,6 +43,7 @@ import ru.arinae_va.lensa.presentation.feature.registration.compose.dialog.Socia
 import ru.arinae_va.lensa.presentation.feature.registration.viewmodel.RegistrationScreenState
 import ru.arinae_va.lensa.presentation.feature.registration.viewmodel.RegistrationViewModel
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
+import ru.arinae_va.lensa.utils.Constants
 
 @Composable
 fun RegistrationScreen(
@@ -191,9 +192,7 @@ private fun Screen(
                 onValueChanged = onCountryChanged,
                 value = state.country,
                 placeholder = "Страна",
-                items = listOf(
-                    "Россия", "Азербайджан", "Армения", "Грузия"
-                ),
+                items = Constants.COUNTRIES_LIST,
             )
             VSpace(h = 12.dp)
             LensaDropdownInput(
@@ -202,7 +201,7 @@ private fun Screen(
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = onCityChanged,
                 placeholder = "Город",
-                items = listOf("Санкт-Петербург", "Москва")
+                items = Constants.RUSSIAN_CITIES_LIST,
             )
             VSpace(h = 12.dp)
             LensaInput(
@@ -271,7 +270,16 @@ private fun Screen(
                 )
             }
             VSpace(h = 60.dp)
+            if (state.validationErrors.isNotEmpty()) {
+                Text(
+                    text = state.validationErrors.values.first(),
+                    style = LensaTheme.typography.signature,
+                    color = LensaTheme.colors.textColorSecondary,
+                )
+                VSpace(h = 20.dp)
+            }
             LensaButton(
+                enabled = state.isButtonNextEnabled,
                 text = "СОХРАНИТЬ",
                 isFillMaxWidth = true,
                 onClick = {
@@ -285,6 +293,7 @@ private fun Screen(
                 isFillMaxWidth = true,
                 onClick = {}
             )
+            VSpace(h = 20.dp)
         }
     }
 }
@@ -300,7 +309,7 @@ fun SpecializationSection(
         showRequired = true,
         modifier = Modifier.fillMaxWidth(),
         onValueChanged = onValueChanged,
-        items = listOf("Фотограф", "Модель", "Стилист"),
+        items = Constants.SPECIALIZATIONS_LIST,
         placeholder = "Специализация",
     )
     VSpace(h = 12.dp)

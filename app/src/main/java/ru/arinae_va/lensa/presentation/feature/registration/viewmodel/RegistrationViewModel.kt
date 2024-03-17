@@ -145,7 +145,6 @@ class RegistrationViewModel @Inject constructor(
             } else {
                 registerCustomer()
             }
-            navHostController.navigate(LensaScreens.FEED_SCREEN.name)
         }
     }
 
@@ -176,6 +175,7 @@ class RegistrationViewModel @Inject constructor(
                     avatarUri = avatarUri,
                     isNewUser = true,
                 )
+                navHostController.navigate(LensaScreens.FEED_SCREEN.name)
             }
         }
     }
@@ -208,6 +208,7 @@ class RegistrationViewModel @Inject constructor(
                     portfolioUris = portfolioUris,
                     isNewUser = true,
                 )
+                navHostController.navigate(LensaScreens.FEED_SCREEN.name)
             }
         }
     }
@@ -251,15 +252,18 @@ class RegistrationViewModel @Inject constructor(
             if (city.isBlank())
                 validationErrors[RegistrationScreenInputField.CITY] =
                     context.getString(R.string.registration_screen_city_validation_error)
-            if (specialization.isNotBlank())
+            if (specialization.isBlank())
                 validationErrors[RegistrationScreenInputField.SPECIALIZATION] =
                     context.getString(R.string.registration_screen_specialization_validation_error)
-            if (prices.isNotEmpty())
+            if (prices.isEmpty())
                 validationErrors[RegistrationScreenInputField.PRICES] =
                     context.getString(R.string.registration_screen_prices_validation_error)
-            if (avatarUri != null)
+            if (avatarUri == null)
                 validationErrors[RegistrationScreenInputField.AVATAR] =
                     context.getString(R.string.registration_screen_avatar_validation_error)
+            if (portfolioUris.isEmpty())
+                validationErrors[RegistrationScreenInputField.PORTFOLIO] =
+                    context.getString(R.string.registration_screen_portfolio_validation_error)
 
             _state.tryEmit(
                 state.value.copy(

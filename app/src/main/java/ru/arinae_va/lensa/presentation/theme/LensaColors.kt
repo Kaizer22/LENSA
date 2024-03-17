@@ -10,6 +10,7 @@ val purple = Color(0xFFA94FFF)
 
 data class LensaColors(
     val logoColor: Color,
+    val fadeColor: Color,
     val dividerColor: Color,
     val backgroundColor: Color,
     val defaultButtonBg: Color,
@@ -21,6 +22,7 @@ data class LensaColors(
 @Composable
 fun lensaLightColors() = LensaColors(
     logoColor = black,
+    fadeColor = gray.copy(alpha = 0.8f),
     dividerColor = black,
     backgroundColor = white,
     textColor = black,
@@ -32,6 +34,7 @@ fun lensaLightColors() = LensaColors(
 @Composable
 fun lensaDarkColors() = LensaColors(
     logoColor = white,
+    fadeColor = gray.copy(alpha = 0.8f),
     dividerColor = white,
     backgroundColor = black,
     textColor = white,

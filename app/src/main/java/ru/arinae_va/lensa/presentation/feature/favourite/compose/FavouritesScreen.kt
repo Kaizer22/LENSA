@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
-import ru.arinae_va.lensa.presentation.feature.feed.compose.FeedViewModel
+import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.FeedViewModel
 
 @Composable
 fun FavouritesScreen(

@@ -13,8 +13,7 @@ internal enum class RegistrationScreenInputField {
     SOCIAL_MEDIA_VK, SOCIAL_MEDIA_WHATSAPP, SOCIAL_MEDIA_PINTEREST,
     SOCIAL_MEDIA_YOUTUBE, SOCIAL_MEDIA_BEHANCE,
 
-    PRICES
-
+    PRICES, PORTFOLIO
 }
 
 internal data class RegistrationScreenState(
@@ -52,7 +51,7 @@ internal data class RegistrationScreenState(
             prices = emptyList(),
             phoneNumber = Constants.RUSSIA_COUNTRY_CODE,
             validationErrors = emptyMap(),
-            isButtonNextEnabled = false,
+            isButtonNextEnabled = true,
         )
     }
 }

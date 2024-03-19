@@ -208,8 +208,8 @@ private fun Screen(
                 modifier = Modifier.fillMaxWidth(),
                 onValueChanged = onPhoneNumberChanged,
                 value = state.phoneNumber,
-                inputType = KeyboardType.Number,
-                placeholder = "Номер телефона"
+                inputType = KeyboardType.Phone,
+                placeholder = "Номер телефона (+7...)"
             )
             VSpace(h = 12.dp)
             LensaInput(

@@ -3,11 +3,11 @@ package ru.arinae_va.lensa.presentation.feature.registration.viewmodel
 import android.net.Uri
 import ru.arinae_va.lensa.domain.model.Price
 import ru.arinae_va.lensa.presentation.feature.feed.compose.SocialMediaType
-import ru.arinae_va.lensa.utils.Constants
 
 internal enum class RegistrationScreenInputField {
     NAME, SURNAME, SPECIALIZATION, AVATAR,
     COUNTRY, CITY, PHONE_NUMBER, EMAIL, ABOUT,
+    PERSONAL_WEBSITE,
 
     SOCIAL_MEDIA_INSTAGRAM, SOCIAL_MEDIA_TELEGRAM,
     SOCIAL_MEDIA_VK, SOCIAL_MEDIA_WHATSAPP, SOCIAL_MEDIA_PINTEREST,
@@ -49,7 +49,7 @@ internal data class RegistrationScreenState(
             about = "",
             portfolioUris = emptyList(),
             prices = emptyList(),
-            phoneNumber = Constants.RUSSIA_COUNTRY_CODE,
+            phoneNumber = "",
             validationErrors = emptyMap(),
             isButtonNextEnabled = true,
         )

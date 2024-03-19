@@ -11,6 +11,8 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.tasks.await
 import ru.arinae_va.lensa.data.model.UserProfileResponse
+import ru.arinae_va.lensa.domain.model.FeedFilter
+import ru.arinae_va.lensa.domain.model.OrderType
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.model.UserProfileType
 import java.time.LocalDateTime
@@ -31,7 +33,7 @@ interface IUserInfoStorage {
     suspend fun addPortfolioPicture(userUid: String, downloadUrl: String): Boolean
     suspend fun deleteAccount(userUid: String): Boolean
 
-    suspend fun getFeed(): List<UserProfileModel>
+    suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel>
     suspend fun sendFeedback(userUid: String?, text: String)
     suspend fun getProfileById(userUid: String?): UserProfileModel
 }
@@ -43,6 +45,11 @@ private const val AVATAR_FIELD = "avatarUrl"
 private const val PORTFOLIO_PICTURES_FIELD = "portfolioUrls"
 private const val ID_FIELD = "id"
 private const val PROFILE_TYPE_FIELD = "type"
+private const val SPECIALIZATION_FIELD = "specialization"
+private const val COUNTRY_FIELD = "country"
+private const val RATING_FIELD = "rating"
+private const val MIN_PRICE_FIELD = "minPrice"
+private const val MAX_PRICE_FIELD = "maxPrice"
 
 private const val AVATARS_STORAGE_ROOT_FOLDER = "avatars/"
 private const val PORTFOLIOS_STORAGE_ROOT_FOLDER = "portfolios/"
@@ -99,15 +106,20 @@ class FirebaseUserInfoStorage @Inject constructor() : IUserInfoStorage {
         return res
     }
 
-    override suspend fun getFeed(): List<UserProfileModel> {
+    override suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel> {
         var result = listOf<UserProfileModel>()
-        database.collection(PROFILES_COLLECTION)
+        var baseQuery = database.collection(PROFILES_COLLECTION)
             .whereEqualTo(PROFILE_TYPE_FIELD, UserProfileType.SPECIALIST.name)
             .whereNotEqualTo(ID_FIELD, Firebase.auth.currentUser?.uid)
-            .get()
+        // TODO caching
+        baseQuery.get()
             .addOnSuccessListener {
                 result = it.documents.mapNotNull { doc ->
                     doc.toObject<UserProfileResponse>()?.mapToSpecialistModel()
+                }
+                // TODO filter on backend + pagination
+                feedFilter?.let { filter ->
+                    result = applyFilter(result, filter)
                 }
             }
             .addOnFailureListener {
@@ -115,6 +127,43 @@ class FirebaseUserInfoStorage @Inject constructor() : IUserInfoStorage {
             }
             .await()
         return result
+    }
+
+    private fun applyFilter(
+        list: List<UserProfileModel>,
+        feedFilter: FeedFilter
+    ): List<UserProfileModel> {
+        with(feedFilter) {
+            var result = list
+                .filter {
+                    if (specialization.isNotEmpty()) it.specialization == specialization else true
+                }
+                .filter {
+                    if (city.isNotEmpty()) it.city.contains(city, ignoreCase = true) else true
+                }
+                .filter { if (country.isNotEmpty()) it.country == country else true }
+                .filter {
+                    (it.maximalPrice ?: Int.MAX_VALUE) >= priceFrom &&
+                            (it.minimalPrice ?: Int.MIN_VALUE) <= priceTo
+                }
+
+            if (searchQuery.isNotEmpty())
+                result = search(searchQuery)
+
+            result = when (order) {
+                OrderType.RATING_ASC ->
+                    result.sortedBy { it.rating }
+
+                OrderType.RATING_DESC ->
+                    result.sortedByDescending { it.rating }
+            }
+
+            return result
+        }
+    }
+
+    private fun search(searchQuery: String): List<UserProfileModel> {
+        TODO("Not yet implemented")
     }
 
     override suspend fun sendFeedback(userUid: String?, text: String) {

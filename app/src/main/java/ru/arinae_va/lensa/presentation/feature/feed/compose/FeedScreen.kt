@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import ru.arinae_va.lensa.domain.model.FeedFilter
+import ru.arinae_va.lensa.domain.model.OrderType
 import ru.arinae_va.lensa.presentation.common.component.LensaActionBar
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
@@ -53,7 +53,13 @@ fun FeedScreen(
     }
     FeedContent(
         state = state,
-        onSearchTextChanged = {},
+        onSearchTextChanged = viewModel::onSearchTextChanged,
+        onCountryChanged = viewModel::onFilterCountryChanged,
+        onCityChanged = viewModel::onFilterCityChanged,
+        onSpecializationChanged = viewModel::onFilterSpecializationChanged,
+        onOrderChanged = viewModel::onFilterOrderChanged,
+        onPriceToChanged = viewModel::onFilterPriceToChanged,
+        onPriceFromChanged = viewModel::onFilterPriceFromChanged,
         onProfileClick = viewModel::onProfileClick,
         onCardClick = viewModel::onCardClick,
         onApplyFilterClick = viewModel::onApplyFilterClick,
@@ -69,7 +75,13 @@ enum class SideMenuState {
 @Composable
 private fun FeedContent(
     state: FeedState,
-    onApplyFilterClick: (filter: FeedFilter) -> Unit,
+    onSpecializationChanged: (String) -> Unit,
+    onCountryChanged: (String) -> Unit,
+    onCityChanged: (String) -> Unit,
+    onPriceFromChanged: (Int) -> Unit,
+    onPriceToChanged: (Int) -> Unit,
+    onOrderChanged: (OrderType) -> Unit,
+    onApplyFilterClick: () -> Unit,
     onClearFilterClick: () -> Unit,
     onSearchTextChanged: (String) -> Unit,
     onProfileClick: () -> Unit,
@@ -137,8 +149,14 @@ private fun FeedContent(
         ) {
             FilterContent(
                 state = state,
-                onApplyFilterClick = { filter ->
-                    onApplyFilterClick.invoke(filter)
+                onCountryChanged = onCountryChanged,
+                onPriceFromChanged = onPriceFromChanged,
+                onPriceToChanged = onPriceToChanged,
+                onOrderChanged = onOrderChanged,
+                onSpecializationChanged = onSpecializationChanged,
+                onCityChanged = onCityChanged,
+                onApplyFilterClick = {
+                    onApplyFilterClick.invoke()
                     sideMenuState = SideMenuState.HIDING
                 },
                 onCloseFilterClick = { sideMenuState = SideMenuState.HIDING },
@@ -295,9 +313,15 @@ fun FeedScreenPreview() {
     LensaTheme {
         FeedContent(
             state = FeedState.INITIAL,
+            onSearchTextChanged = {},
+            onCountryChanged = {},
+            onCityChanged = {},
+            onSpecializationChanged = {},
+            onOrderChanged = {},
+            onPriceToChanged = {},
+            onPriceFromChanged = {},
             onApplyFilterClick = {},
             onClearFilterClick = {},
-            onSearchTextChanged = {},
             onProfileClick = {},
             onCardClick = {}
         )

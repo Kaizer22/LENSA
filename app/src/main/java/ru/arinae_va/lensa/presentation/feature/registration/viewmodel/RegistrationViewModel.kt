@@ -2,6 +2,7 @@ package ru.arinae_va.lensa.presentation.feature.registration.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.webkit.URLUtil.isValidUrl
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
@@ -21,6 +22,7 @@ import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
 import ru.arinae_va.lensa.presentation.feature.feed.compose.SocialMediaType
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.utils.Constants
+import ru.arinae_va.lensa.utils.isValidEmail
 import ru.arinae_va.lensa.utils.isValidPhoneNumber
 import javax.inject.Inject
 
@@ -73,18 +75,9 @@ class RegistrationViewModel @Inject constructor(
     }
 
     fun onPhoneNumberChanged(phoneNumber: String) {
-        val errors = if (isValidPhoneNumber(phoneNumber)) {
-            emptyMap()
-        } else {
-            mapOf(
-                RegistrationScreenInputField.PHONE_NUMBER to
-                        context.getString(R.string.invalid_phone_number_error)
-            )
-        }
         _state.tryEmit(
             state.value.copy(
                 phoneNumber = phoneNumber,
-                validationErrors = errors,
             )
         )
     }
@@ -201,6 +194,8 @@ class RegistrationViewModel @Inject constructor(
                         )
                     },
                     prices = prices,
+                    minimalPrice = prices.minOf { it.price },
+                    maximalPrice = prices.maxOf { it.price },
                 )
                 userInfoRepository.upsertProfile(
                     model = model,
@@ -228,6 +223,16 @@ class RegistrationViewModel @Inject constructor(
             if (city.isBlank())
                 validationErrors[RegistrationScreenInputField.CITY] =
                     context.getString(R.string.registration_screen_city_validation_error)
+            if (email.isNotEmpty() && !isValidEmail(email))
+                validationErrors[RegistrationScreenInputField.EMAIL] =
+                    context.getString(R.string.invalid_email_error)
+            if (phoneNumber.isNotEmpty() && !isValidPhoneNumber(phoneNumber))
+                validationErrors[RegistrationScreenInputField.PHONE_NUMBER] =
+                    context.getString(R.string.invalid_phone_number_error)
+            if (personalSite.isNotEmpty() && !isValidUrl(personalSite))
+                validationErrors[RegistrationScreenInputField.PERSONAL_WEBSITE] =
+                    context.getString(R.string.invalid_personal_site_url_error)
+
             _state.tryEmit(
                 state.value.copy(
                     validationErrors = validationErrors,
@@ -264,6 +269,15 @@ class RegistrationViewModel @Inject constructor(
             if (portfolioUris.isEmpty())
                 validationErrors[RegistrationScreenInputField.PORTFOLIO] =
                     context.getString(R.string.registration_screen_portfolio_validation_error)
+            if (email.isNotEmpty() && !isValidEmail(email))
+                validationErrors[RegistrationScreenInputField.EMAIL] =
+                    context.getString(R.string.invalid_email_error)
+            if (phoneNumber.isNotEmpty() && !isValidPhoneNumber(phoneNumber))
+                validationErrors[RegistrationScreenInputField.PHONE_NUMBER] =
+                    context.getString(R.string.invalid_phone_number_error)
+            if (personalSite.isNotEmpty() && !isValidUrl(personalSite))
+                validationErrors[RegistrationScreenInputField.PERSONAL_WEBSITE] =
+                    context.getString(R.string.invalid_personal_site_url_error)
 
             _state.tryEmit(
                 state.value.copy(

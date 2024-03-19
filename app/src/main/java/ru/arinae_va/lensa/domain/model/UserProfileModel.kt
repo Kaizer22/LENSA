@@ -19,6 +19,8 @@ data class UserProfileModel(
     val about: String,
     val portfolioUrls: List<String>? = null,
     val prices: List<Price> = emptyList(),
+    val minimalPrice: Int? = null,
+    val maximalPrice: Int? = null,
     val reviews: List<Review>? = null,
 ) {
     companion object {

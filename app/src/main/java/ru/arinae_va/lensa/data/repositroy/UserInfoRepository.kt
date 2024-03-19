@@ -141,8 +141,9 @@ class UserInfoRepository @Inject constructor(
         }
     }
 
+    // TODO caching
     override suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel> {
-        return userInfoStorage.getFeed()
+        return userInfoStorage.getFeed(feedFilter)
     }
 
     override fun postReview() {

@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter
 
 class UserProfileResponse(
     val id: String? = null,
-    val profileType: String? = null,
+    val type: String? = null,
     val name: String? = null,
     val surname: String? = null,
     val specialization: String? = null,
@@ -30,7 +30,7 @@ class UserProfileResponse(
 ) {
     fun mapToSpecialistModel(): UserProfileModel = UserProfileModel(
         id = id.orEmpty(),
-        type = profileType?.let { UserProfileType.valueOf(it) } ?: UserProfileType.CUSTOMER,
+        type = type?.let { UserProfileType.valueOf(it) } ?: UserProfileType.CUSTOMER,
         name = name.orEmpty(),
         surname = surname.orEmpty(),
         specialization = specialization.orEmpty(),

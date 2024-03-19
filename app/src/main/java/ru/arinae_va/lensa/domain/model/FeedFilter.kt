@@ -7,8 +7,20 @@ data class FeedFilter(
     val city: String,
     val priceFrom: Int,
     val priceTo: Int,
-    val ratingOrder: OrderType,
-)
+    val order: OrderType,
+) {
+   companion object {
+       val EMPTY = FeedFilter(
+           specialization = "",
+           searchQuery = "",
+           country = "",
+           city = "",
+           priceFrom = 0,
+           priceTo = Int.MAX_VALUE,
+           order = OrderType.RATING_DESC,
+       )
+   }
+}
 
 const val ORDER_TYPE_RATING_ASC_TEXT = "По возрастанию"
 const val ORDER_TYPE_RATING_DESC_TEXT = "По убыванию"

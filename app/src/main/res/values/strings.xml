@@ -4,6 +4,8 @@
     <string name="auth_screen_button_request_code">ПОЛУЧИТЬ КОД</string>
     <string name="auth_screen_phone_number_input_label">Номер телефона</string>
     <string name="invalid_phone_number_error">Укажите корректный российский номер, начинающийся с +7</string>
+    <string name="invalid_personal_site_url_error">Укажите корректную ссылку на персональный веб-сайт</string>
+    <string name="invalid_email_error">Укажите корректный email</string>
     <string name="code_sending_error">НЕ УДАЛОСЬ ОТПРАВИТЬ КОД</string>
     <string name="otp_validation_error">Введите корректный 6-значный цифровой код подтверждения</string>
     <string name="onboarding_step_1_title">ПРИВЕТ, ДРУГ</string>

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.domain.model.FeedFilter
+import ru.arinae_va.lensa.domain.model.OrderType
 import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import javax.inject.Inject
@@ -49,16 +50,19 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    fun onApplyFilterClick(filter: FeedFilter) {
+    fun onApplyFilterClick() {
         loadFeed()
     }
 
     fun onClearFilterClick() {
-        _state.tryEmit(
-            state.value.copy(
-                filter = null,
+        viewModelScope.launch {
+            _state.emit(
+                state.value.copy(
+                    filter = FeedFilter.EMPTY,
+                )
             )
-        )
+            loadFeed()
+        }
     }
 
     fun onRefreshClick() {
@@ -74,6 +78,58 @@ class FeedViewModel @Inject constructor(
                         "$isSelf"
             )
         }
+    }
+
+    fun onSearchTextChanged(searchQuery: String) {
+
+    }
+
+    fun onFilterCountryChanged(country: String) {
+        _state.tryEmit(
+            state.value.copy(
+                filter = state.value.filter.copy(country = country)
+            )
+        )
+    }
+
+    fun onFilterCityChanged(city: String) {
+        _state.tryEmit(
+            state.value.copy(
+                filter = state.value.filter.copy(city = city)
+            )
+        )
+    }
+
+    fun onFilterSpecializationChanged(specialization: String) {
+        _state.tryEmit(
+            state.value.copy(
+                filter = state.value.filter.copy(specialization = specialization)
+            )
+        )
+    }
+
+    fun onFilterOrderChanged(orderType: OrderType) {
+        _state.tryEmit(
+            state.value.copy(
+                filter = state.value.filter.copy(order = orderType)
+            )
+        )
+    }
+
+    fun onFilterPriceToChanged(priceTo: Int) {
+        _state.tryEmit(
+            state.value.copy(
+                filter = state.value.filter.copy(priceTo = priceTo)
+            )
+        )
+    }
+
+    fun onFilterPriceFromChanged(priceFrom: Int) {
+        _state.tryEmit(
+            state.value.copy(
+                filter = state.value.filter.copy(priceFrom = priceFrom)
+            )
+        )
     }
 }
 

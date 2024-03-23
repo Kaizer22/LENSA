@@ -20,7 +20,7 @@ import ru.arinae_va.lensa.domain.model.UserProfileType
 import java.time.LocalDateTime
 import javax.inject.Inject
 
-interface IUserInfoStorage {
+interface IUserInfoDataSource {
 
     fun checkUid(uid: String, onCheckResult: (isNew: Boolean) -> Unit)
 
@@ -59,7 +59,7 @@ private const val REVIEWS_FIELD = "reviews"
 private const val AVATARS_STORAGE_ROOT_FOLDER = "avatars/"
 private const val PORTFOLIOS_STORAGE_ROOT_FOLDER = "portfolios/"
 
-class FirebaseUserInfoStorage @Inject constructor() : IUserInfoStorage {
+class FirebaseUserInfoDataSource @Inject constructor() : IUserInfoDataSource {
     private val database: FirebaseFirestore = Firebase.firestore
     private val firebaseStorage: StorageReference = Firebase.storage.reference
 

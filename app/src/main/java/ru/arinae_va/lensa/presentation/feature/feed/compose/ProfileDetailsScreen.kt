@@ -287,9 +287,6 @@ fun SpecialistDetailsScreenPreview() {
                         )
                     )
                 ),
-                currentUserAvatarUrl = "",
-                currentUserSurname = "",
-                currentUserName = "",
                 reviewText = "",
                 rating = 0f,
                 isSelf = false,

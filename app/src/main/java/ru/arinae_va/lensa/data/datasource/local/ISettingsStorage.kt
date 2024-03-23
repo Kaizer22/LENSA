@@ -24,5 +24,4 @@ class SettingsStorage @Inject constructor(
                 putBoolean(KEY_FLAG_ONBOARDING, value)
             }
         }
-
 }

@@ -7,7 +7,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.arinae_va.lensa.data.datasource.remote.IUserInfoStorage
 import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import javax.inject.Inject

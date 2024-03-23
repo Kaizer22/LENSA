@@ -15,6 +15,10 @@ import ru.arinae_va.lensa.presentation.feature.auth.compose.AuthScreen
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.AuthViewModel
 import ru.arinae_va.lensa.presentation.feature.auth.compose.OtpScreen
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpViewModel
+import ru.arinae_va.lensa.presentation.feature.favourite.compose.FavouritesFolderScreen
+import ru.arinae_va.lensa.presentation.feature.favourite.compose.FavouritesScreen
+import ru.arinae_va.lensa.presentation.feature.favourite.viewmodel.FavouritesFolderViewModel
+import ru.arinae_va.lensa.presentation.feature.favourite.viewmodel.FavouritesViewModel
 import ru.arinae_va.lensa.presentation.feature.feed.compose.FeedScreen
 import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.FeedViewModel
 import ru.arinae_va.lensa.presentation.feature.feed.compose.ProfileDetailsScreen
@@ -39,6 +43,7 @@ const val ERROR_TEXT_KEY = "errorText"
 const val IS_SPECIALIST_KEY = "isSpecialist"
 const val PROFILE_UID_KEY = "profileUid"
 const val IS_SELF_PROFILE_KEY = "isSelf"
+const val FOLDER_NAME_KEY = "folderName"
 
 fun <A> String?.fromJson(type: Class<A>): A {
     //return Gson().fromJson(this, type)
@@ -209,6 +214,21 @@ fun LensaNavGraph(
         composable(route = LensaScreens.ABOUT_APP_SCREEN.name) {
             AboutAppScreen(
                 navController = navController,
+            )
+        }
+
+        composable(route = LensaScreens.FAVOURITES_SCREEN.name) {
+            val viewModel = hiltViewModel<FavouritesViewModel>()
+            FavouritesScreen(
+                navController = navController,
+                viewModel = viewModel,
+            )
+        }
+
+        composable(route = LensaScreens.FAVOURITE_FOLDER_SCREEN.name) {
+            val viewModel = hiltViewModel<FavouritesFolderViewModel>()
+            FavouritesFolderScreen(
+                viewModel = viewModel,
             )
         }
     }

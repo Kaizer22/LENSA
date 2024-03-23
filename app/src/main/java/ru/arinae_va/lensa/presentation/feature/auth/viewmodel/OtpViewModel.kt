@@ -86,8 +86,12 @@ class OtpViewModel @Inject constructor(
                 onSignInCompleted = {
                     navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
                 },
-                onSignUpCompleted = {
-                    navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+                onSignUpCompleted = { currentUserId ->
+                    // TODO refactor
+                    viewModelScope.launch {
+                        userInfoRepository.logIn(currentUserId)
+                        navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+                    }
                 },
                 onVerificationFailed = {
                     navHostController.navigate(
@@ -120,8 +124,11 @@ class OtpViewModel @Inject constructor(
                     onSignUpSuccess = {
                         navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
                     },
-                    onSignInSuccess = { userId ->
-                        navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+                    onSignInSuccess = { currentUserId ->
+                        viewModelScope.launch {
+                            userInfoRepository.logIn(currentUserId)
+                            navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+                        }
                     }
                 )
             }

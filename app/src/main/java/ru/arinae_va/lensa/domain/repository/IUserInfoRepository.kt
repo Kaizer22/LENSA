@@ -3,11 +3,15 @@ package ru.arinae_va.lensa.domain.repository
 import android.net.Uri
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import ru.arinae_va.lensa.data.model.FavouriteFolder
 import ru.arinae_va.lensa.domain.model.FeedFilter
 import ru.arinae_va.lensa.domain.model.Review
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 
 interface IUserInfoRepository {
+
+    var currentUserProfile: UserProfileModel?
+
     fun verifyPhoneNumber(
         phoneNumber: String,
         onSignInCompleted: (userUid: String) -> Unit,
@@ -22,6 +26,8 @@ interface IUserInfoRepository {
         onSignInSuccess: (userUid: String) -> Unit,
         onSignInFailed: () -> Unit,
     )
+
+    suspend fun logIn(currentUserId: String)
 
     fun logOut()
 
@@ -40,10 +46,14 @@ interface IUserInfoRepository {
 
     suspend fun postReview(targetUserId: String, review: Review)
 
-    fun addFavourite()
+    suspend fun addFavourite(userId: String, folderName: String)
 
-    fun removeFavourite()
+    suspend fun removeFavourite(userId: String, folderName: String)
+
+    suspend fun getFavourites(): List<FavouriteFolder>
 
     suspend fun sendFeedback(userUid: String?, text: String)
     suspend fun getProfileById(userUid: String): UserProfileModel
+
+    suspend fun getProfilesByIds(userIds: List<String>): List<UserProfileModel>
 }

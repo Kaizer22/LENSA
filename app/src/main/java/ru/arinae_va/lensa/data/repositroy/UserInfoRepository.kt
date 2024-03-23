@@ -8,7 +8,9 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
 import com.google.firebase.auth.auth
-import ru.arinae_va.lensa.data.datasource.remote.IUserInfoStorage
+import ru.arinae_va.lensa.data.datasource.local.IFavouritesStorage
+import ru.arinae_va.lensa.data.datasource.remote.IUserInfoDataSource
+import ru.arinae_va.lensa.data.model.FavouriteFolder
 import ru.arinae_va.lensa.domain.model.FeedFilter
 import ru.arinae_va.lensa.domain.model.Review
 import ru.arinae_va.lensa.domain.model.UserProfileModel
@@ -18,8 +20,12 @@ import javax.inject.Inject
 
 // TODO разделить на репозитории по функционалу
 class UserInfoRepository @Inject constructor(
-    private val userInfoStorage: IUserInfoStorage,
+    private val userInfoStorage: IUserInfoDataSource,
+    private val favouritesStorage: IFavouritesStorage,
 ) : IUserInfoRepository {
+
+    override var currentUserProfile: UserProfileModel? = null
+
     override fun verifyPhoneNumber(
         phoneNumber: String,
         onSignInCompleted: (userUid: String) -> Unit,
@@ -114,7 +120,12 @@ class UserInfoRepository @Inject constructor(
     }
 
     override fun logOut() {
+        currentUserProfile = null
         Firebase.auth.signOut()
+    }
+
+    override suspend fun logIn(currentUserId: String) {
+        currentUserProfile = getProfileById(currentUserId)
     }
 
     override suspend fun deleteAccount(userUid: String) {
@@ -143,27 +154,29 @@ class UserInfoRepository @Inject constructor(
     }
 
     // TODO caching
-    override suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel> {
-        return userInfoStorage.getFeed(feedFilter)
-    }
+    override suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel> =
+        userInfoStorage.getFeed(feedFilter)
 
     override suspend fun postReview(targetUserId: String, review: Review) {
         userInfoStorage.postReview(targetUserId, review)
     }
 
-    override fun addFavourite() {
-        TODO("Not yet implemented")
-    }
+    override suspend fun addFavourite(userId: String, folderName: String) =
+        favouritesStorage.addFavourite(userId, folderName)
 
-    override fun removeFavourite() {
-        TODO("Not yet implemented")
-    }
+    override suspend fun removeFavourite(userId: String, folderName: String) =
+        favouritesStorage.removeFavourite(userId, folderName)
 
-    override suspend fun sendFeedback(userUid: String?, text: String) {
+    override suspend fun getFavourites(): List<FavouriteFolder> =
+        favouritesStorage.getFolders()
+
+    override suspend fun sendFeedback(userUid: String?, text: String) =
         userInfoStorage.sendFeedback(userUid, text)
-    }
 
-    override suspend fun getProfileById(userUid: String): UserProfileModel {
-        return userInfoStorage.getProfileById(userUid)
+    override suspend fun getProfileById(userUid: String): UserProfileModel =
+        userInfoStorage.getProfileById(userUid)
+
+    override suspend fun getProfilesByIds(userIds: List<String>): List<UserProfileModel> {
+        TODO("Not yet implemented")
     }
 }

@@ -48,7 +48,7 @@ fun FeedScreen(
 ) {
     setSystemUiColor()
     val state by viewModel.state.collectAsState()
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewModel) {
         viewModel.onAttach()
     }
     FeedContent(

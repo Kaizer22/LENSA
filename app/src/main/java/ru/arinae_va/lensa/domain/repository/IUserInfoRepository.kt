@@ -4,6 +4,7 @@ import android.net.Uri
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import ru.arinae_va.lensa.domain.model.FeedFilter
+import ru.arinae_va.lensa.domain.model.Review
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 
 interface IUserInfoRepository {
@@ -37,7 +38,7 @@ interface IUserInfoRepository {
         feedFilter: FeedFilter?
     ): List<UserProfileModel> // by filter
 
-    fun postReview()
+    suspend fun postReview(targetUserId: String, review: Review)
 
     fun addFavourite()
 

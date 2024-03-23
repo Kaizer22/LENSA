@@ -11,8 +11,10 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.tasks.await
 import ru.arinae_va.lensa.data.model.UserProfileResponse
+import ru.arinae_va.lensa.data.model.toReviewResponse
 import ru.arinae_va.lensa.domain.model.FeedFilter
 import ru.arinae_va.lensa.domain.model.OrderType
+import ru.arinae_va.lensa.domain.model.Review
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.model.UserProfileType
 import java.time.LocalDateTime
@@ -36,6 +38,8 @@ interface IUserInfoStorage {
     suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel>
     suspend fun sendFeedback(userUid: String?, text: String)
     suspend fun getProfileById(userUid: String?): UserProfileModel
+
+    suspend fun postReview(targetUserId: String, review: Review): Boolean
 }
 
 private const val PROFILES_COLLECTION = "profile"
@@ -50,6 +54,7 @@ private const val COUNTRY_FIELD = "country"
 private const val RATING_FIELD = "rating"
 private const val MIN_PRICE_FIELD = "minPrice"
 private const val MAX_PRICE_FIELD = "maxPrice"
+private const val REVIEWS_FIELD = "reviews"
 
 private const val AVATARS_STORAGE_ROOT_FOLDER = "avatars/"
 private const val PORTFOLIOS_STORAGE_ROOT_FOLDER = "portfolios/"
@@ -73,7 +78,7 @@ class FirebaseUserInfoStorage @Inject constructor() : IUserInfoStorage {
 
     override suspend fun createProfile(profile: UserProfileModel) {
         val ref = database.collection(PROFILES_COLLECTION).document(profile.id)
-        ref.set(profile)
+        ref.set(profile).await()
     }
 
     override suspend fun updateProfile(profile: UserProfileModel) {
@@ -173,7 +178,7 @@ class FirebaseUserInfoStorage @Inject constructor() : IUserInfoStorage {
                 text = text,
                 timestamp = LocalDateTime.now().toString()
             )
-        )
+        ).await()
     }
 
     override suspend fun uploadAvatarImage(userUid: String, imageUri: Uri): Boolean {
@@ -239,20 +244,28 @@ class FirebaseUserInfoStorage @Inject constructor() : IUserInfoStorage {
         }
     }
 
-    override suspend fun getProfileById(userUid: String?): UserProfileModel {
-        var result = UserProfileModel.EMPTY
+    override suspend fun getProfileById(userUid: String?) = database
+        .collection(PROFILES_COLLECTION)
+        .whereEqualTo(ID_FIELD, userUid)
+        .limit(1)
+        .get()
+        .await()
+        .documents[0].toObject(UserProfileResponse::class.java)
+        ?.mapToSpecialistModel()
+        ?: UserProfileModel.EMPTY
+
+    override suspend fun postReview(targetUserId: String, review: Review): Boolean {
+        var res = true
+        val mappedReview = review.toReviewResponse()
         database.collection(PROFILES_COLLECTION)
-            .whereEqualTo(ID_FIELD, userUid)
-            .limit(1)
-            .get()
-            .addOnSuccessListener {
-                result = it.documents[0].toObject(UserProfileResponse::class.java)
-                    ?.mapToSpecialistModel()
-                    ?: UserProfileModel.EMPTY
-            }
+            .document(targetUserId).update(
+                REVIEWS_FIELD, FieldValue.arrayUnion(mappedReview)
+            )
+            .addOnCanceledListener { res = false }
+            .addOnFailureListener { res = false }
             .await()
 
-        return result
+        return res
     }
 }
 

@@ -179,18 +179,23 @@ fun LensaNavGraph(
             val arguments = requireNotNull(backStackEntry.arguments)
             val viewModel = hiltViewModel<ProfileDetailsViewModel>()
 
-            arguments.getString(PROFILE_UID_KEY)?.let { uid ->
-                LaunchedEffect(Unit) {
+            val userId = arguments.getString(PROFILE_UID_KEY)
+            val isSelf = arguments.getBoolean(IS_SELF_PROFILE_KEY)
+
+            LaunchedEffect(arguments) {
+                userId?.let { uid ->
                     viewModel.loadUserProfile(
                         userUid = uid,
-                        isSelf = arguments.getBoolean(IS_SELF_PROFILE_KEY)
+                        isSelf = isSelf
                     )
                 }
-                ProfileDetailsScreen(
-                    navController = navController,
-                    viewModel = viewModel,
-                )
+
             }
+
+            ProfileDetailsScreen(
+                navController = navController,
+                viewModel = viewModel,
+            )
         }
 
         composable(route = LensaScreens.FEEDBACK_SCREEN.name) {

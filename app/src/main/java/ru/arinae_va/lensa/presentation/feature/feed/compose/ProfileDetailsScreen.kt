@@ -1,6 +1,5 @@
 package ru.arinae_va.lensa.presentation.feature.feed.compose
 
-import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -20,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,12 +32,8 @@ import ru.arinae_va.lensa.domain.model.SocialMedia
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.model.UserProfileType
 import ru.arinae_va.lensa.presentation.common.component.ExpandableButton
-import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.HSpace
 import ru.arinae_va.lensa.presentation.common.component.LabeledField
-import ru.arinae_va.lensa.presentation.common.component.LensaIconButton
-import ru.arinae_va.lensa.presentation.common.component.LensaRating
-import ru.arinae_va.lensa.presentation.common.component.LensaStateButton
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.ProfileDetailsState
@@ -47,8 +41,18 @@ import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.ProfileDetailsView
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 import java.time.LocalDateTime
-import java.util.Locale
 
+enum class SocialMediaType(
+    @DrawableRes val icon: Int
+) {
+    INSTAGRAM(icon = R.drawable.ic_instagram),
+    TELEGRAM(icon = R.drawable.ic_telegram),
+    VK(icon = R.drawable.ic_vk),
+    WHATSAPP(icon = R.drawable.ic_whatsapp),
+    PINTEREST(icon = R.drawable.ic_pinterest),
+    YOUTUBE(icon = R.drawable.ic_youtube),
+    BEHANCE(icon = R.drawable.ic_behance),
+}
 
 @Composable
 fun ProfileDetailsScreen(
@@ -69,19 +73,11 @@ fun ProfileDetailsScreen(
         onBackPressed = {
             navController.popBackStack()
         },
+        onRatingChanged = viewModel::onRatingChanged,
+        onReviewAvatarClick = viewModel::onReviewAvatarClicked,
+        onReviewChanged = viewModel::onReviewChanged,
+        onPostReview = viewModel::onPostReview,
     )
-}
-
-enum class SocialMediaType(
-    @DrawableRes val icon: Int
-) {
-    INSTAGRAM(icon = R.drawable.ic_instagram),
-    TELEGRAM(icon = R.drawable.ic_telegram),
-    VK(icon = R.drawable.ic_vk),
-    WHATSAPP(icon = R.drawable.ic_whatsapp),
-    PINTEREST(icon = R.drawable.ic_pinterest),
-    YOUTUBE(icon = R.drawable.ic_youtube),
-    BEHANCE(icon = R.drawable.ic_behance),
 }
 
 @Composable
@@ -91,6 +87,10 @@ private fun ProfileDetailsContent(
     onAddToFavouritesClick: () -> Unit,
     onFavouritesClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onReviewChanged: (String) -> Unit,
+    onRatingChanged: (Float) -> Unit,
+    onReviewAvatarClick: (String) -> Unit,
+    onPostReview: () -> Unit,
 ) {
     val isCustomer = remember(state) {
         state.userProfileModel.type == UserProfileType.CUSTOMER
@@ -136,118 +136,23 @@ private fun ProfileDetailsContent(
                 VSpace(h = 24.dp)
                 Divider(color = LensaTheme.colors.dividerColor)
                 VSpace(h = 24.dp)
-                if (!state.isSelf) {
-                    AddReviewSection()
+                if (!state.isSelf && state.userProfileModel.type == UserProfileType.SPECIALIST) {
+                    AddReviewSection(
+                        state = state,
+                        onRatingChanged = onRatingChanged,
+                        onReviewChanged = onReviewChanged,
+                        onPostReview = onPostReview,
+                    )
                     VSpace(h = 24.dp)
                     Divider(color = LensaTheme.colors.dividerColor)
                     VSpace(h = 24.dp)
                 }
-                ReviewsSection()
+                ReviewsSection(
+                    state = state,
+                    onUserAvatarClick = onReviewAvatarClick,
+                )
             }
         }
-    }
-}
-
-@Composable
-fun ReviewsSection() {
-
-}
-
-@Composable
-fun AddReviewSection() {
-
-}
-
-@Composable
-fun PortfolioSection(
-    portfolioUrls: List<String>,
-) {
-    Column {
-        if (portfolioUrls.isNotEmpty()) {
-            repeat(portfolioUrls.size / 2 + 1) {
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    if (it * 2 < portfolioUrls.size) {
-                        AsyncImage(
-                            modifier = Modifier
-                                .aspectRatio(1f)
-                                .weight(0.5f),
-                            model = portfolioUrls[it * 2],
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    if (it * 2 + 1 < portfolioUrls.size) {
-                        AsyncImage(
-                            modifier = Modifier
-                                .aspectRatio(1f)
-                                .weight(0.5f),
-                            model = portfolioUrls[it * 2 + 1],
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun HeaderSection(
-    state: ProfileDetailsState,
-    onBackPressed: () -> Unit,
-    onFavouritesClick: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onAddToFavouritesClick: () -> Unit,
-) {
-    val context = LocalContext.current
-    Row {
-        LensaIconButton(
-            onClick = onBackPressed,
-            icon = R.drawable.ic_arrow_back,
-            iconSize = 30.dp,
-        )
-        FSpace()
-        if (state.isSelf) {
-            LensaIconButton(
-                onClick = onFavouritesClick,
-                icon = R.drawable.ic_heart_outlined,
-                iconSize = 28.dp
-            )
-            HSpace(w = 16.dp)
-            LensaIconButton(
-                onClick = onSettingsClick,
-                icon = R.drawable.ic_settings,
-                iconSize = 28.dp
-            )
-        } else {
-            LensaStateButton(
-                onClick = {
-                    onAddToFavouritesClick()
-                    Toast.makeText(context, "TODO", Toast.LENGTH_LONG).show()
-                },
-                iconEnabledRes = R.drawable.ic_heart_filled,
-                iconDisabledRes = R.drawable.ic_heart_outlined
-            )
-            HSpace(w = 16.dp)
-        }
-    }
-    VSpace(h = 24.dp)
-    Text(
-        text = state.userProfileModel.surname.uppercase(Locale.ROOT) + "\n" +
-                state.userProfileModel.name.uppercase(Locale.ROOT),
-        style = LensaTheme.typography.header2,
-        color = LensaTheme.colors.textColor,
-    )
-    VSpace(h = 4.dp)
-    Row {
-        Text(
-            text = state.userProfileModel.specialization,
-            style = LensaTheme.typography.header3,
-            color = LensaTheme.colors.textColor,
-        )
-        FSpace()
-        LensaRating(rating = state.userProfileModel.rating ?: 0.0f)
     }
 }
 
@@ -372,19 +277,31 @@ fun SpecialistDetailsScreenPreview() {
                     ),
                     reviews = listOf(
                         Review(
+                            authorId = "",
                             name = "Test",
                             surname = "Test",
                             avatarUrl = "",
                             dateTime = LocalDateTime.now(),
+                            rating = 4f,
+                            text = "review",
                         )
                     )
                 ),
+                currentUserAvatarUrl = "",
+                currentUserSurname = "",
+                currentUserName = "",
+                reviewText = "",
+                rating = 0f,
                 isSelf = false,
             ),
             onSettingsClick = {},
             onFavouritesClick = {},
             onAddToFavouritesClick = {},
             onBackPressed = {},
+            onReviewChanged = {},
+            onReviewAvatarClick = {},
+            onRatingChanged = {},
+            onPostReview = {},
         )
     }
 }

@@ -15,7 +15,7 @@ fun LensaRating(
 ) {
     Row {
         Text(
-            text = rating.toString(),
+            text = "%.1f".format(rating),
             style = LensaTheme.typography.textButton,
             color = LensaTheme.colors.textColor,
         )

@@ -10,6 +10,7 @@ import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCall
 import com.google.firebase.auth.auth
 import ru.arinae_va.lensa.data.datasource.remote.IUserInfoStorage
 import ru.arinae_va.lensa.domain.model.FeedFilter
+import ru.arinae_va.lensa.domain.model.Review
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
 import java.util.concurrent.TimeUnit
@@ -146,8 +147,8 @@ class UserInfoRepository @Inject constructor(
         return userInfoStorage.getFeed(feedFilter)
     }
 
-    override fun postReview() {
-        TODO("Not yet implemented")
+    override suspend fun postReview(targetUserId: String, review: Review) {
+        userInfoStorage.postReview(targetUserId, review)
     }
 
     override fun addFavourite() {

@@ -26,6 +26,8 @@ class UserProfileResponse(
     val about: String? = null,
     val portfolioUrls: List<String>? = null,
     val prices: List<PriceResponse>? = null,
+    val minimalPrice: Int? = null,
+    val maximalPrice: Int? = null,
     val reviews: List<ReviewResponse>? = null,
 ) {
     fun mapToSpecialistModel(): UserProfileModel = UserProfileModel(
@@ -48,6 +50,8 @@ class UserProfileResponse(
         prices = prices.orEmpty().map {
             mapToPrice(it)
         },
+        minimalPrice = minimalPrice,
+        maximalPrice = maximalPrice,
         reviews = reviews.orEmpty().map {
             mapToReview(it)
         },
@@ -59,9 +63,12 @@ class UserProfileResponse(
             DateTimeFormatter.ISO_DATE_TIME
         )
         return Review(
+            authorId = reviewResponseModel.authorId.orEmpty(),
             name = reviewResponseModel.name.orEmpty(),
             surname = reviewResponseModel.surname.orEmpty(),
             avatarUrl = reviewResponseModel.avatarUrl.orEmpty(),
+            rating = reviewResponseModel.rating ?: 0f,
+            text = reviewResponseModel.text.orEmpty(),
             dateTime = parsedDt,
         )
     }

@@ -16,9 +16,9 @@ import androidx.compose.ui.text.input.KeyboardType
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LensaDropdownInput(
+    modifier: Modifier = Modifier,
     inputType: KeyboardType = KeyboardType.Text,
     value: String = "",
-    modifier: Modifier = Modifier,
     allowFreeInput: Boolean = false,
     showRequired: Boolean = false,
     items: List<String>,
@@ -27,7 +27,7 @@ fun LensaDropdownInput(
 ) {
     // TODO соответствие дизайну
     var expanded by remember { mutableStateOf(false) }
-    var input by remember { mutableStateOf(value) }
+    var input by remember(value) { mutableStateOf(value) }
     Box {
         ExposedDropdownMenuBox(
             expanded = expanded,

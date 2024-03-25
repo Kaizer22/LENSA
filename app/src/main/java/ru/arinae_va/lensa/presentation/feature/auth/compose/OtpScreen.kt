@@ -41,7 +41,7 @@ fun OtpScreen(
 ) {
     val state by viewModel.state.collectAsState()
     setSystemUiColor()
-    Screen(
+    OtpContent(
         state = state,
         onEnableResend = viewModel::enableResend,
         onResendOtp = viewModel::onResendOtp,
@@ -51,7 +51,7 @@ fun OtpScreen(
 }
 
 @Composable
-private fun Screen(
+private fun OtpContent(
     state: OtpScreenState,
     onResendOtp: () -> Unit,
     onOtpInputChanged: (String) -> Unit,
@@ -151,7 +151,7 @@ private fun Screen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun OtpScreenPreview() = LensaTheme {
-    Screen(
+    OtpContent(
         state = OtpScreenState(
             phoneNumber = "",
             otpInput = "",

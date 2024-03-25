@@ -95,11 +95,11 @@ fun LensaNavGraph(
                     type = NavType.StringType
                 }
             )) { backStackEntry ->
-            val viewModel = hiltViewModel<OtpViewModel>()
+            val viewModel = hiltViewModel<OtpViewModel>(backStackEntry)
             val phoneNumber = remember {
                 requireNotNull(backStackEntry.arguments).getString(PHONE_ID_KEY, "")
             }
-            LaunchedEffect(true) {
+            LaunchedEffect(viewModel) {
                 viewModel.onAttach(phoneNumber)
             }
             OtpScreen(

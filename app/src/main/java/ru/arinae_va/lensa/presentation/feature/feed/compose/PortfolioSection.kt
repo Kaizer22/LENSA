@@ -2,12 +2,11 @@ package ru.arinae_va.lensa.presentation.feature.feed.compose
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
+import ru.arinae_va.lensa.presentation.common.component.LensaAsyncImage
 
 @Composable
 fun PortfolioSection(
@@ -18,22 +17,17 @@ fun PortfolioSection(
             repeat(portfolioUrls.size / 2 + 1) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     if (it * 2 < portfolioUrls.size) {
-                        AsyncImage(
+                        LensaAsyncImage(
                             modifier = Modifier
-                                .aspectRatio(1f)
                                 .weight(0.5f),
-                            model = portfolioUrls[it * 2],
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop
+                            pictureUrl = portfolioUrls[it * 2],
                         )
                     }
                     if (it * 2 + 1 < portfolioUrls.size) {
-                        AsyncImage(
+                        LensaAsyncImage(
                             modifier = Modifier
-                                .aspectRatio(1f)
                                 .weight(0.5f),
-                            model = portfolioUrls[it * 2 + 1],
-                            contentDescription = null,
+                            pictureUrl = portfolioUrls[it * 2 + 1],
                             contentScale = ContentScale.Crop
                         )
                     }

@@ -11,12 +11,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import ru.arinae_va.lensa.domain.model.Review
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.HSpace
+import ru.arinae_va.lensa.presentation.common.component.LensaAsyncImage
 import ru.arinae_va.lensa.presentation.common.component.LensaMultilineInput
 import ru.arinae_va.lensa.presentation.common.component.LensaRating
 import ru.arinae_va.lensa.presentation.common.component.LensaRatingBar
@@ -77,10 +76,8 @@ fun ReviewItem(
                 .clip(shape = LensaTheme.shapes.roundShape)
                 .clickable { onAvatarClick.invoke(model.authorId) },
         ) {
-            AsyncImage(
-                model = model.avatarUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
+            LensaAsyncImage(
+                pictureUrl = model.avatarUrl,
             )
         }
         HSpace(w = 12.dp)

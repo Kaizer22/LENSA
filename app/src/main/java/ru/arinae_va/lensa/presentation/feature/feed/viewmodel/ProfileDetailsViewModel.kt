@@ -85,4 +85,12 @@ class ProfileDetailsViewModel @Inject constructor(
             }
         }
     }
+
+    fun onChatsClick() {
+        TODO("Not yet implemented")
+    }
+
+    fun onSendMessageClick(recipientUserId: String) {
+        TODO("Not yet implemented")
+    }
 }

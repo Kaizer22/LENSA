@@ -4,7 +4,6 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,12 +17,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.Price
 import ru.arinae_va.lensa.domain.model.PriceCurrency
@@ -34,6 +31,9 @@ import ru.arinae_va.lensa.domain.model.UserProfileType
 import ru.arinae_va.lensa.presentation.common.component.ExpandableButton
 import ru.arinae_va.lensa.presentation.common.component.HSpace
 import ru.arinae_va.lensa.presentation.common.component.LabeledField
+import ru.arinae_va.lensa.presentation.common.component.LensaAsyncImage
+import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
+import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.ProfileDetailsState
@@ -66,6 +66,8 @@ fun ProfileDetailsScreen(
         onFavouritesClick = {
             navController.navigate(LensaScreens.FAVOURITES_SCREEN.name)
         },
+        onChatsClick = viewModel::onChatsClick,
+        onSendMessageClick = viewModel::onSendMessageClick,
         onAddToFavouritesClick = {},
         onSettingsClick = {
             navController.navigate(LensaScreens.SETTINGS_SCREEN.name)
@@ -87,6 +89,8 @@ private fun ProfileDetailsContent(
     onAddToFavouritesClick: () -> Unit,
     onFavouritesClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onChatsClick: () -> Unit,
+    onSendMessageClick: (String) -> Unit,
     onReviewChanged: (String) -> Unit,
     onRatingChanged: (Float) -> Unit,
     onReviewAvatarClick: (String) -> Unit,
@@ -108,19 +112,19 @@ private fun ProfileDetailsContent(
                 onAddToFavouritesClick = onAddToFavouritesClick,
                 onFavouritesClick = onFavouritesClick,
                 onSettingsClick = onSettingsClick,
+                onChatsClick = onChatsClick,
                 onBackPressed = onBackPressed,
             )
             VSpace(h = 16.dp)
-            AsyncImage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f),
-                model = state.userProfileModel.avatarUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
+            LensaAsyncImage(
+                modifier = Modifier.fillMaxWidth(),
+                pictureUrl = state.userProfileModel.avatarUrl.orEmpty(),
             )
             VSpace(h = 24.dp)
-            PersonalInfoSection(model = state.userProfileModel)
+            PersonalInfoSection(
+                state = state,
+                onSendMessageClick = onSendMessageClick,
+            )
             VSpace(h = 24.dp)
             Text(
                 text = state.userProfileModel.about,
@@ -158,21 +162,34 @@ private fun ProfileDetailsContent(
 
 @Composable
 fun PersonalInfoSection(
-    model: UserProfileModel,
+    state: ProfileDetailsState,
+    onSendMessageClick: (String) -> Unit,
 ) {
-    SpecialistDetailsField(label = "Страна", text = model.country)
-    SpecialistDetailsField(label = "Город", text = model.city)
-    SpecialistDetailsField(label = "Сайт", text = model.personalSite)
-    SpecialistDetailsField(label = "Почта", text = model.email)
-    VSpace(h = 12.dp)
-    Row {
-        model.socialMedias.forEach {
-            Icon(
-                painter = painterResource(id = it.type.icon),
-                contentDescription = null,
-                tint = LensaTheme.colors.textColor,
+    with(state.userProfileModel) {
+        SpecialistDetailsField(label = "Страна", text = country)
+        SpecialistDetailsField(label = "Город", text = city)
+        SpecialistDetailsField(label = "Сайт", text = personalSite)
+        SpecialistDetailsField(label = "Почта", text = email)
+        VSpace(h = 12.dp)
+        Row {
+            socialMedias.forEach {
+                Icon(
+                    painter = painterResource(id = it.type.icon),
+                    contentDescription = null,
+                    tint = LensaTheme.colors.textColor,
+                )
+                HSpace(w = 20.dp)
+            }
+        }
+        if (!state.isSelf) {
+            VSpace(h = 12.dp)
+            LensaTextButton(
+                text = "Написать сообщение",
+                onClick = {
+                    onSendMessageClick.invoke(id)
+                },
+                type = LensaTextButtonType.ACCENT,
             )
-            HSpace(w = 20.dp)
         }
     }
 }
@@ -293,12 +310,14 @@ fun SpecialistDetailsScreenPreview() {
             ),
             onSettingsClick = {},
             onFavouritesClick = {},
+            onChatsClick = {},
             onAddToFavouritesClick = {},
             onBackPressed = {},
             onReviewChanged = {},
             onReviewAvatarClick = {},
             onRatingChanged = {},
             onPostReview = {},
+            onSendMessageClick = {},
         )
     }
 }

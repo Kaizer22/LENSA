@@ -76,7 +76,11 @@ dependencies {
     implementation("com.github.SmartToolFactory:Compose-RatingBar:2.1.1")
 
     // Data
+    val room_version = "2.5.1"
     implementation("androidx.datastore:datastore-preferences:1.1.0-alpha04")
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
     implementation("com.google.code.gson:gson:2.10.1")
 
     // Firebase

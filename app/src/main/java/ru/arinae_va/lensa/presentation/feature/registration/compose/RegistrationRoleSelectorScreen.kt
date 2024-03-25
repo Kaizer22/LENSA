@@ -23,7 +23,7 @@ fun RegistrationRoleSelectorScreen(
     viewModel: RegistrationViewModel,
 ) {
     setSystemUiColor()
-    Screen(
+    RegistrationContent(
         onSpecialistClick = {
             viewModel.onSelectAccountTypeClick(isSpecialist = true)
         },
@@ -34,7 +34,7 @@ fun RegistrationRoleSelectorScreen(
 }
 
 @Composable
-private fun Screen(
+private fun RegistrationContent(
     onSpecialistClick: () -> Unit,
     onCustomerClick: () -> Unit,
 ) {
@@ -73,7 +73,7 @@ private fun Screen(
 @Composable
 fun RegistrationRoleSelectorScreenPreview() {
     LensaTheme {
-        Screen(
+        RegistrationContent(
             onCustomerClick = {},
             onSpecialistClick = {},
         )

@@ -32,7 +32,7 @@ fun AuthScreen(
 ) {
     setSystemUiColor()
     val state by viewModel.state.collectAsState()
-    Screen(
+    AuthContent(
         state = state,
         onPhoneNumberChanged = viewModel::onPhoneNumberChanged,
         onTermsClick = {},
@@ -42,7 +42,7 @@ fun AuthScreen(
 }
 
 @Composable
-private fun Screen(
+private fun AuthContent(
     state: AuthScreenState,
     onTermsClick: () -> Unit,
     onConditionsClick: () -> Unit,
@@ -101,7 +101,7 @@ private fun Screen(
 @Composable
 fun AuthScreenPreview() {
     LensaTheme {
-        Screen(
+        AuthContent(
             state = AuthScreenState(
                 isEnabledNextButton = false,
                 phoneNumber = "+7",

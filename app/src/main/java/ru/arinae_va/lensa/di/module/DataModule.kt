@@ -6,11 +6,14 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import ru.arinae_va.lensa.data.datasource.local.db.DATABASE_NAME
+import ru.arinae_va.lensa.data.datasource.local.db.LensaDatabase
 import javax.inject.Singleton
 
 @Module
@@ -40,4 +43,20 @@ class DataModule {
         USER_PREFERENCES,
         Context.MODE_PRIVATE
     )
+
+    @Singleton
+    @Provides
+    fun providesLensaDatabase(
+        @ApplicationContext context: Context,
+    ) = Room.databaseBuilder(
+        context,
+        LensaDatabase::class.java,
+        DATABASE_NAME,
+    ).build()
+
+    @Singleton
+    @Provides
+    fun providesFavouritesDao(
+        lensaDatabase: LensaDatabase,
+    ) = lensaDatabase.favouritesDao()
 }

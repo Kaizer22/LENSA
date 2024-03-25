@@ -51,7 +51,7 @@ fun RegistrationScreen(
 ) {
     setSystemUiColor()
     val state by viewModel.state.collectAsState()
-    Screen(
+    RegistrationContent(
         state = state,
         onNameChanged = viewModel::onNameChanged,
         onSurnameChanged = viewModel::onSurnameChanged,
@@ -72,7 +72,7 @@ fun RegistrationScreen(
 }
 
 @Composable
-private fun Screen(
+private fun RegistrationContent(
     state: RegistrationScreenState,
     onNameChanged: (String) -> Unit,
     onSurnameChanged: (String) -> Unit,
@@ -364,7 +364,7 @@ fun PortfolioCarousel(
 @Composable
 fun RegistrationScreenPreview() {
     LensaTheme {
-        Screen(
+        RegistrationContent(
             state = RegistrationScreenState.INITIAL,
             onNameChanged = {},
             onSurnameChanged = {},

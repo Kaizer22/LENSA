@@ -22,6 +22,7 @@ fun HeaderSection(
     state: ProfileDetailsState,
     onBackPressed: () -> Unit,
     onFavouritesClick: () -> Unit,
+    onChatsClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onAddToFavouritesClick: () -> Unit,
 ) {
@@ -37,6 +38,12 @@ fun HeaderSection(
             LensaIconButton(
                 onClick = onFavouritesClick,
                 icon = R.drawable.ic_heart_outlined,
+                iconSize = 28.dp
+            )
+            HSpace(w = 16.dp)
+            LensaIconButton(
+                onClick = onChatsClick,
+                icon = R.drawable.ic_chat,
                 iconSize = 28.dp
             )
             HSpace(w = 16.dp)

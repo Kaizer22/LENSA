@@ -3,8 +3,6 @@ package ru.arinae_va.lensa.presentation.common.component
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -28,9 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import ru.arinae_va.lensa.R
-import ru.arinae_va.lensa.presentation.theme.LensaShapes
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 @Composable
@@ -45,7 +41,9 @@ fun LensaImagePicker(
     val context = LocalContext.current
     var imageData by remember { mutableStateOf<Uri?>(null) }
 
-    var isEmpty by remember { mutableStateOf((defaultLink == null && imageData == null)) }
+    var isEmpty by remember(imageData) {
+        mutableStateOf((defaultLink == null && imageData == null))
+    }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
@@ -94,18 +92,6 @@ fun LensaImagePicker(
                 )
             }
         } else {
-            if (isCancelIconVisible) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.TopEnd
-                ) {
-                    LensaIconButton(
-                        onClick = onCancelButtonClick,
-                        icon = R.drawable.ic_cancel,
-                        iconSize = 24.dp,
-                    )
-                }
-            }
             if (imageData != null) {
                 val bitmap = remember { mutableStateOf<Bitmap?>(null) }
                 val uri = imageData
@@ -124,10 +110,25 @@ fun LensaImagePicker(
                     }
                 }
             } else {
-                AsyncImage(
-                    model = defaultLink,
-                    contentDescription = null,
+                LensaAsyncImage(
+                    pictureUrl = defaultLink.orEmpty(),
                 )
+            }
+
+            if (isCancelIconVisible) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    LensaIconButton(
+                        onClick = {
+                            onCancelButtonClick.invoke()
+                            imageData = null
+                        },
+                        icon = R.drawable.ic_cancel,
+                        iconSize = 16.dp,
+                    )
+                }
             }
         }
     }

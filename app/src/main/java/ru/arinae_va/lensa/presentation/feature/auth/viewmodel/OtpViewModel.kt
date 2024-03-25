@@ -42,12 +42,15 @@ class OtpViewModel @Inject constructor(
     internal val state: StateFlow<OtpScreenState> = _state
 
     fun onAttach(phoneNumber: String) {
-        verifyPhoneNumber(phoneNumber)
-        _state.tryEmit(
-            state.value.copy(
-                phoneNumber = phoneNumber,
+        if (!state.value.phoneNumberVerified) {
+            verifyPhoneNumber(phoneNumber)
+            _state.tryEmit(
+                state.value.copy(
+                    phoneNumber = phoneNumber,
+                    phoneNumberVerified = true
+                )
             )
-        )
+        }
     }
 
     fun onOtpInputChanged(otpInput: String) {

@@ -2,7 +2,6 @@ package ru.arinae_va.lensa.presentation.common.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
@@ -21,15 +19,9 @@ import androidx.compose.material.ButtonElevation
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
-import androidx.compose.material.LocalMinimumTouchTargetEnforcement
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -221,19 +213,17 @@ enum class LensaTextButtonType {
 
 @Composable
 fun LensaStateButton(
-    defaultEnabled: Boolean = false,
+    enabled: Boolean = false,
     onClick: (Boolean) -> Unit,
     iconSize: Dp = 24.dp,
     @DrawableRes iconEnabledRes: Int,
     @DrawableRes iconDisabledRes: Int,
 ) {
-    var isEnabled by remember { mutableStateOf(defaultEnabled) }
     LensaIconButton(
         onClick = {
-            isEnabled = !isEnabled
-            onClick(isEnabled)
+            onClick(!enabled)
         },
-        icon = if (isEnabled) iconEnabledRes else iconDisabledRes,
+        icon = if (enabled) iconEnabledRes else iconDisabledRes,
         iconSize = iconSize,
     )
 }

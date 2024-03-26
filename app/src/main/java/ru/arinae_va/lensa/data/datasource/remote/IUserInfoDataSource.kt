@@ -38,6 +38,7 @@ interface IUserInfoDataSource {
     suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel>
     suspend fun sendFeedback(userUid: String?, text: String)
     suspend fun getProfileById(userUid: String?): UserProfileModel
+    suspend fun getProfilesByIds(userIds: List<String>): List<UserProfileModel>
 
     suspend fun postReview(targetUserId: String, review: Review): Boolean
 }
@@ -253,6 +254,14 @@ class FirebaseUserInfoDataSource @Inject constructor() : IUserInfoDataSource {
         .documents[0].toObject(UserProfileResponse::class.java)
         ?.mapToSpecialistModel()
         ?: UserProfileModel.EMPTY
+
+    override suspend fun getProfilesByIds(userIds: List<String>): List<UserProfileModel> = database
+        .collection(PROFILES_COLLECTION)
+        .whereIn(ID_FIELD, userIds)
+        .get()
+        .await()
+        .documents.map { it.toObject(UserProfileResponse::class.java) }
+        .mapNotNull { it?.mapToSpecialistModel() }
 
     override suspend fun postReview(targetUserId: String, review: Review): Boolean {
         var res = true

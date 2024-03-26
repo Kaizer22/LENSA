@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -20,8 +21,11 @@ class FavouritesFolderViewModel @Inject constructor(
     private val _state = MutableStateFlow(FavouritesFolderState.INITIAL)
     val state: StateFlow<FavouritesFolderState> = _state
 
-    fun loadProfiles(idsInFolder: List<String>) {
-        viewModelScope.launch {
+    fun loadProfiles(folderName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            // TODO remove db usage
+            val idsInFolder = userInfoRepository.getFavourites()
+                .first { it.name == folderName }.savedUserIds
             val profiles = userInfoRepository.getProfilesByIds(idsInFolder)
             _state.tryEmit(
                 state.value.copy(

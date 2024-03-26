@@ -68,7 +68,7 @@ fun ProfileDetailsScreen(
         },
         onChatsClick = viewModel::onChatsClick,
         onSendMessageClick = viewModel::onSendMessageClick,
-        onAddToFavouritesClick = {},
+        onAddToFavouritesClick = viewModel::onAddToFavouritesClick,
         onSettingsClick = {
             navController.navigate(LensaScreens.SETTINGS_SCREEN.name)
         },
@@ -86,7 +86,7 @@ fun ProfileDetailsScreen(
 private fun ProfileDetailsContent(
     state: ProfileDetailsState,
     onBackPressed: () -> Unit,
-    onAddToFavouritesClick: () -> Unit,
+    onAddToFavouritesClick: (Boolean) -> Unit,
     onFavouritesClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onChatsClick: () -> Unit,
@@ -307,6 +307,7 @@ fun SpecialistDetailsScreenPreview() {
                 reviewText = "",
                 rating = 0f,
                 isSelf = false,
+                isAddedToFavourites = false,
             ),
             onSettingsClick = {},
             onFavouritesClick = {},

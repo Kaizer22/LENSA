@@ -22,6 +22,7 @@ fun SpecialistCard(
     photoUrl: String?,
     rating: Float,
     text: String,
+    showFavouritesButton: Boolean = false,
 ) {
     Column(
         modifier = modifier.clickable(onClick = onClick),

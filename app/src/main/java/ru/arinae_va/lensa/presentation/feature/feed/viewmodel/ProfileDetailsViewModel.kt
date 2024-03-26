@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class ProfileDetailsViewModel @Inject constructor(
     private val navHostController: NavHostController,
     private val userInfoRepository: IUserInfoRepository
-): ViewModel() {
+) : ViewModel() {
+
     private val _state = MutableStateFlow(ProfileDetailsState.INITIAL)
     val state: StateFlow<ProfileDetailsState> = _state
 
@@ -27,16 +29,22 @@ class ProfileDetailsViewModel @Inject constructor(
         userUid: String,
         isSelf: Boolean,
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = userInfoRepository.getProfileById(userUid)
             _state.tryEmit(
                 state.value.copy(
                     userProfileModel = result,
                     isSelf = isSelf,
+                    isAddedToFavourites = !isSelf && isProfileAddedToFavourites(userUid),
                 )
             )
         }
     }
+
+    private suspend fun isProfileAddedToFavourites(userUid: String) =
+        userInfoRepository.getFavourites().any { folder ->
+            folder.savedUserIds.contains(userUid)
+        }
 
     fun onRatingChanged(rating: Float) {
         _state.tryEmit(
@@ -92,5 +100,26 @@ class ProfileDetailsViewModel @Inject constructor(
 
     fun onSendMessageClick(recipientUserId: String) {
         TODO("Not yet implemented")
+    }
+
+    fun onAddToFavouritesClick(isNeedToAdd: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (isNeedToAdd) {
+                userInfoRepository.addFavourite(
+                    userId = state.value.userProfileModel.id,
+                    folderName = state.value.userProfileModel.specialization,
+                )
+            } else {
+                userInfoRepository.removeFavourite(
+                    userId = state.value.userProfileModel.id,
+                    folderName = state.value.userProfileModel.specialization,
+                )
+            }
+            _state.tryEmit(
+                state.value.copy(
+                    isAddedToFavourites = isNeedToAdd,
+                )
+            )
+        }
     }
 }

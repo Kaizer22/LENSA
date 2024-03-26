@@ -176,7 +176,6 @@ class UserInfoRepository @Inject constructor(
     override suspend fun getProfileById(userUid: String): UserProfileModel =
         userInfoStorage.getProfileById(userUid)
 
-    override suspend fun getProfilesByIds(userIds: List<String>): List<UserProfileModel> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getProfilesByIds(userIds: List<String>): List<UserProfileModel> =
+        userInfoStorage.getProfilesByIds(userIds)
 }

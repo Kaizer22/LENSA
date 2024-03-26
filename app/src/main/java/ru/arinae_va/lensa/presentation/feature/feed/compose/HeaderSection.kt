@@ -1,6 +1,5 @@
 package ru.arinae_va.lensa.presentation.feature.feed.compose
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +23,7 @@ fun HeaderSection(
     onFavouritesClick: () -> Unit,
     onChatsClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    onAddToFavouritesClick: () -> Unit,
+    onAddToFavouritesClick: (Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     Row {
@@ -54,10 +53,8 @@ fun HeaderSection(
             )
         } else {
             LensaStateButton(
-                onClick = {
-                    onAddToFavouritesClick()
-                    Toast.makeText(context, "TODO", Toast.LENGTH_LONG).show()
-                },
+                enabled = state.isAddedToFavourites,
+                onClick = onAddToFavouritesClick,
                 iconEnabledRes = R.drawable.ic_heart_filled,
                 iconDisabledRes = R.drawable.ic_heart_outlined
             )

@@ -7,6 +7,7 @@ data class ProfileDetailsState(
     val reviewText: String,
     val rating: Float,
     val isSelf: Boolean,
+    val isAddedToFavourites: Boolean,
 ) {
     companion object {
         val INITIAL = ProfileDetailsState(
@@ -14,6 +15,7 @@ data class ProfileDetailsState(
             reviewText = "",
             rating = 0f,
             isSelf = false,
+            isAddedToFavourites = false,
         )
     }
 }

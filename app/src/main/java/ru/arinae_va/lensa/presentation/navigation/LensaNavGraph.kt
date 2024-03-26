@@ -44,6 +44,7 @@ const val IS_SPECIALIST_KEY = "isSpecialist"
 const val PROFILE_UID_KEY = "profileUid"
 const val IS_SELF_PROFILE_KEY = "isSelf"
 const val FOLDER_NAME_KEY = "folderName"
+const val FOLDER_PROFILE_IDS_KEY = "folderProfileIds"
 
 fun <A> String?.fromJson(type: Class<A>): A {
     //return Gson().fromJson(this, type)
@@ -219,14 +220,35 @@ fun LensaNavGraph(
 
         composable(route = LensaScreens.FAVOURITES_SCREEN.name) {
             val viewModel = hiltViewModel<FavouritesViewModel>()
+            LaunchedEffect(viewModel) {
+                viewModel.loadFolders()
+            }
             FavouritesScreen(
                 navController = navController,
                 viewModel = viewModel,
             )
         }
 
-        composable(route = LensaScreens.FAVOURITE_FOLDER_SCREEN.name) {
+        composable(
+            route = "${LensaScreens.FAVOURITE_FOLDER_SCREEN.name}/" +
+                    "{$FOLDER_NAME_KEY}",
+            arguments = listOf(
+                navArgument(FOLDER_NAME_KEY) {
+                    type = NavType.StringType
+                },
+            )
+        ) { backStackEntry ->
             val viewModel = hiltViewModel<FavouritesFolderViewModel>()
+            val arguments = requireNotNull(backStackEntry.arguments)
+
+            val folderName = arguments.getString(FOLDER_NAME_KEY)
+            LaunchedEffect(viewModel) {
+                folderName?.let { name ->
+                    viewModel.loadProfiles(
+                        folderName = name,
+                    )
+                }
+            }
             FavouritesFolderScreen(
                 viewModel = viewModel,
             )

@@ -32,4 +32,5 @@
     <string name="registration_screen_avatar_validation_error">Установите аватар</string>
     <string name="registration_screen_specialization_validation_error">Укажите вашу специализацию</string>
     <string name="registration_screen_portfolio_validation_error">Добавьте хотя бы одну фотографию в портфолио</string>
+    <string name="feed_filter_price_error">Укажите корректный диапазон для стоимости</string>
 </resources>

@@ -1,5 +1,6 @@
 package ru.arinae_va.lensa.presentation.common.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,12 +14,21 @@ import ru.arinae_va.lensa.R
 @Composable
 fun LensaAsyncImage(
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
     aspectRatio: Float = 1f,
     pictureUrl: String = "",
     contentScale: ContentScale = ContentScale.Crop,
 ) {
+    val imageModifier = modifier.aspectRatio(aspectRatio)
+    // To avoid onClick interception where it doesn't require
+    // TODO on long click
+    onClick?.let {
+        imageModifier.clickable(
+            onClick = onClick,
+        )
+    }
     AsyncImage(
-        modifier = modifier.aspectRatio(aspectRatio),
+        modifier = imageModifier,
         model = ImageRequest.Builder(LocalContext.current)
             .data(pictureUrl)
             .crossfade(true)

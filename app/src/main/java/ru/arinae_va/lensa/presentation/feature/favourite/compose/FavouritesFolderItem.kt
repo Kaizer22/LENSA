@@ -21,7 +21,8 @@ import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 internal const val FOLDER_PREVIEW_ROWS_COUNT = 2
 internal const val FOLDER_PREVIEW_COLUMNS_COUNT = 2
-
+internal const val FAVOURITES_FOLDER_PREVIEW_PICTURES_COUNT =
+    FOLDER_PREVIEW_COLUMNS_COUNT * FOLDER_PREVIEW_ROWS_COUNT
 @Composable
 fun FavouritesFolderItem(
     name: String,

@@ -56,7 +56,7 @@ fun FilterScreen(
 }
 
 @Composable
-fun FilterContent(
+internal fun FilterContent(
     state: FeedState,
     onSpecializationChanged: (String) -> Unit,
     onCountryChanged: (String) -> Unit,
@@ -178,7 +178,16 @@ fun FilterContent(
                 },
             )
             FSpace()
+            if (state.filterValidationErrors.isNotEmpty()) {
+                Text(
+                    text = state.filterValidationErrors.values.first(),
+                    style = LensaTheme.typography.signature,
+                    color = LensaTheme.colors.textColorSecondary,
+                )
+            }
+            VSpace(h = 16.dp)
             LensaButton(
+                enabled = state.isApplyFilterButtonEnabled,
                 isFillMaxWidth = true,
                 text = "ПОКАЗАТЬ",
                 onClick = onApplyFilterClick,

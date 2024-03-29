@@ -7,6 +7,7 @@ import javax.inject.Inject
 
 interface ISettingsStorage {
     var isNeedToShowOnboarding: Boolean
+    var lastLoggedInUser: String?
 }
 
 class SettingsStorage @Inject constructor(
@@ -15,6 +16,7 @@ class SettingsStorage @Inject constructor(
 
     companion object {
         val KEY_FLAG_ONBOARDING = "onboarding_flag"
+        val KEY_LAST_LOGGED_IN_USER = "last_logged_in_user"
     }
 
     override var isNeedToShowOnboarding: Boolean
@@ -22,6 +24,13 @@ class SettingsStorage @Inject constructor(
         set(value) {
             prefs.edit {
                 putBoolean(KEY_FLAG_ONBOARDING, value)
+            }
+        }
+    override var lastLoggedInUser: String?
+        get() = prefs.getString(KEY_LAST_LOGGED_IN_USER, "")
+        set(value) {
+            prefs.edit {
+                putString(KEY_LAST_LOGGED_IN_USER, value)
             }
         }
 }

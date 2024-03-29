@@ -52,7 +52,10 @@ class DataModule {
         context,
         LensaDatabase::class.java,
         DATABASE_NAME,
-    ).build()
+    )
+        // TODO avoid destructive migrations in case of production
+        .fallbackToDestructiveMigration()
+        .build()
 
     @Singleton
     @Provides

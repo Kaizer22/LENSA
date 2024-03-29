@@ -6,8 +6,6 @@ import android.webkit.URLUtil.isValidUrl
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +24,8 @@ import ru.arinae_va.lensa.utils.isValidEmail
 import ru.arinae_va.lensa.utils.isValidPhoneNumber
 import javax.inject.Inject
 
+internal const val EMPTY_USER_ID = "empty"
+
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -37,6 +37,36 @@ class RegistrationViewModel @Inject constructor(
         RegistrationScreenState.INITIAL
     )
     internal val state: StateFlow<RegistrationScreenState> = _state
+
+    fun setUser(editUserId: String) {
+        if (editUserId == userInfoRepository.currentUserId()) {
+            viewModelScope.launch {
+                val editableUser = userInfoRepository.getProfileById(editUserId)
+
+                with(editableUser) {
+                    val socialMediasMap = mutableMapOf<SocialMediaType, String>()
+                    socialMedias.forEach { socialMediasMap[it.type] = it.link }
+                    _state.tryEmit(
+                        state.value.copy(
+                            isEdit = true,
+                            name = name,
+                            surname = surname,
+                            specialization = specialization,
+                            avatarUri = avatarUrl?.let { Uri.parse(avatarUrl) },
+                            country = country,
+                            city = city,
+                            personalSite = personalSite,
+                            email = email,
+                            about = about,
+                            socialMedias = socialMediasMap,
+                            prices = prices,
+                            portfolioUris = portfolioUrls?.map { Uri.parse(it) } ?: emptyList(),
+                        )
+                    )
+                }
+            }
+        }
+    }
 
     fun setType(isSpecialistScreenSelected: Boolean) {
         _state.tryEmit(
@@ -134,18 +164,18 @@ class RegistrationViewModel @Inject constructor(
     fun onSaveClick() {
         viewModelScope.launch {
             if (state.value.isSpecialistRegistrationScreen) {
-                registerSpecialist()
+                upsertSpecialist()
             } else {
-                registerCustomer()
+                upsertCustomer()
             }
         }
     }
 
-    private suspend fun registerCustomer() {
+    private suspend fun upsertCustomer() {
         if (validateCustomerFields()) {
             with(state.value) {
                 val model = UserProfileModel(
-                    id = Firebase.auth.currentUser?.uid ?: "",
+                    id = userInfoRepository.currentUserId().orEmpty(),
                     type = UserProfileType.CUSTOMER,
                     name = name,
                     surname = surname,
@@ -173,11 +203,11 @@ class RegistrationViewModel @Inject constructor(
         }
     }
 
-    private suspend fun registerSpecialist() {
+    private suspend fun upsertSpecialist() {
         if (validateSpecialistFields()) {
             with(state.value) {
                 val model = UserProfileModel(
-                    id = Firebase.auth.currentUser?.uid ?: "",
+                    id = userInfoRepository.currentUserId().orEmpty(),
                     type = UserProfileType.SPECIALIST,
                     name = name,
                     surname = surname,
@@ -289,6 +319,10 @@ class RegistrationViewModel @Inject constructor(
     }
 
     fun onSelectAccountTypeClick(isSpecialist: Boolean) {
-        navHostController.navigate("${LensaScreens.REGISTRATION_SCREEN.name}/$isSpecialist")
+        navHostController.navigate(
+            LensaScreens.REGISTRATION_SCREEN.name +
+                    "/$isSpecialist" +
+                    "/$EMPTY_USER_ID"
+        )
     }
 }

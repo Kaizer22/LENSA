@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
+import ru.arinae_va.lensa.domain.repository.ISettingsRepository
 import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import javax.inject.Inject
@@ -25,6 +26,7 @@ class OtpViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val navHostController: NavHostController,
     private val userInfoRepository: IUserInfoRepository,
+    private val settingsRepository: ISettingsRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -93,6 +95,7 @@ class OtpViewModel @Inject constructor(
                     // TODO refactor
                     viewModelScope.launch {
                         userInfoRepository.logIn(currentUserId)
+                        settingsRepository.updateLastLoggedInUser(currentUserId)
                         navHostController.navigate(LensaScreens.FEED_SCREEN.name)
                     }
                 },
@@ -130,6 +133,7 @@ class OtpViewModel @Inject constructor(
                     onSignInSuccess = { currentUserId ->
                         viewModelScope.launch {
                             userInfoRepository.logIn(currentUserId)
+                            settingsRepository.updateLastLoggedInUser(currentUserId)
                             navHostController.navigate(LensaScreens.FEED_SCREEN.name)
                         }
                     }

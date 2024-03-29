@@ -18,6 +18,7 @@ internal enum class RegistrationScreenInputField {
 
 internal data class RegistrationScreenState(
     val isSpecialistRegistrationScreen: Boolean,
+    val isEdit: Boolean,
     val name: String,
     val surname: String,
     val specialization: String,
@@ -37,6 +38,7 @@ internal data class RegistrationScreenState(
     companion object {
         val INITIAL = RegistrationScreenState(
             isSpecialistRegistrationScreen = true,
+            isEdit = false,
             name = "",
             surname = "",
             specialization = "",

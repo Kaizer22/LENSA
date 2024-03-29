@@ -5,7 +5,10 @@ import androidx.room.RoomDatabase
 
 
 internal const val DATABASE_NAME = "lensa-database"
-@Database(entities = [FavouriteProfileEntity::class], version = 1)
+@Database(
+    entities = [FavouriteProfileEntity::class],
+    version = 2
+)
 abstract class LensaDatabase : RoomDatabase() {
     abstract fun favouritesDao(): FavouritesDao
 }

@@ -16,7 +16,7 @@ import javax.inject.Inject
 class FavouritesFolderViewModel @Inject constructor(
     private val userInfoRepository: IUserInfoRepository,
     private val navHostController: NavHostController,
-): ViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(FavouritesFolderState.INITIAL)
     val state: StateFlow<FavouritesFolderState> = _state
@@ -24,14 +24,18 @@ class FavouritesFolderViewModel @Inject constructor(
     fun loadProfiles(folderName: String) {
         viewModelScope.launch(Dispatchers.IO) {
             // TODO remove db usage
-            val idsInFolder = userInfoRepository.getFavourites()
-                .first { it.name == folderName }.savedUserIds
-            val profiles = userInfoRepository.getProfilesByIds(idsInFolder)
-            _state.tryEmit(
-                state.value.copy(
-                    folderItems = profiles
-                )
-            )
+            userInfoRepository.getFavourites()
+                .find { it.name == folderName }
+                ?.savedUserIds
+                ?.let { idsInFolder ->
+                    val profiles = userInfoRepository.getProfilesByIds(idsInFolder)
+                    _state.tryEmit(
+                        state.value.copy(
+                            folderName = folderName,
+                            folderItems = profiles,
+                        )
+                    )
+                }
         }
     }
 

@@ -1,14 +1,15 @@
 package ru.arinae_va.lensa.presentation.feature.feed.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.FeedFilter
 import ru.arinae_va.lensa.domain.model.OrderType
 import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
@@ -17,12 +18,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val navHostController: NavHostController,
     private val userInfoRepository: IUserInfoRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FeedState.INITIAL)
-    val state: StateFlow<FeedState> = _state
+    internal val state: StateFlow<FeedState> = _state
 
     fun onAttach() {
         loadFeed()
@@ -41,7 +43,7 @@ class FeedViewModel @Inject constructor(
 
     fun onProfileClick() {
         val isSelf = true
-        Firebase.auth.currentUser?.uid?.let {
+        userInfoRepository.currentUserId().let {
             navHostController.navigate(
                 "${LensaScreens.SPECIALIST_DETAILS_SCREEN.name}/" +
                         "$it/" +
@@ -117,19 +119,38 @@ class FeedViewModel @Inject constructor(
     }
 
     fun onFilterPriceToChanged(priceTo: Int) {
+        val validationErrors = validatePriceRange(state.value.filter.priceFrom, priceTo)
         _state.tryEmit(
             state.value.copy(
-                filter = state.value.filter.copy(priceTo = priceTo)
+                filter = state.value.filter.copy(
+                    priceTo = priceTo
+                ),
+                filterValidationErrors = validationErrors,
+                isApplyFilterButtonEnabled = validationErrors.isEmpty(),
             )
         )
     }
 
     fun onFilterPriceFromChanged(priceFrom: Int) {
+        val validationErrors = validatePriceRange(priceFrom, state.value.filter.priceTo)
         _state.tryEmit(
             state.value.copy(
-                filter = state.value.filter.copy(priceFrom = priceFrom)
+                filter = state.value.filter.copy(
+                    priceFrom = priceFrom,
+                ),
+                filterValidationErrors = validationErrors,
+                isApplyFilterButtonEnabled = validationErrors.isEmpty(),
             )
         )
+    }
+
+    private fun validatePriceRange(priceFrom: Int, priceTo: Int):
+            Map<FeedFilterInputFields, String> {
+        val errors = mutableMapOf<FeedFilterInputFields, String>()
+        if (priceTo < priceFrom)
+            errors[FeedFilterInputFields.PRICE_TO] =
+                context.getString(R.string.feed_filter_price_error)
+        return errors
     }
 }
 

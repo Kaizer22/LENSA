@@ -2,22 +2,22 @@ package ru.arinae_va.lensa.presentation.feature.feed.compose
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -28,12 +28,8 @@ import ru.arinae_va.lensa.domain.model.Review
 import ru.arinae_va.lensa.domain.model.SocialMedia
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.model.UserProfileType
-import ru.arinae_va.lensa.presentation.common.component.ExpandableButton
-import ru.arinae_va.lensa.presentation.common.component.HSpace
-import ru.arinae_va.lensa.presentation.common.component.LabeledField
 import ru.arinae_va.lensa.presentation.common.component.LensaAsyncImage
-import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
-import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
+import ru.arinae_va.lensa.presentation.common.component.LensaZoomableImage
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.ProfileDetailsState
@@ -99,139 +95,80 @@ private fun ProfileDetailsContent(
     val isCustomer = remember(state) {
         state.userProfileModel.type == UserProfileType.CUSTOMER
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .background(color = LensaTheme.colors.backgroundColor),
+
+    var isShowImagePreview by remember{ mutableStateOf(false) }
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            VSpace(h = 30.dp)
-            HeaderSection(
-                state = state,
-                onAddToFavouritesClick = onAddToFavouritesClick,
-                onFavouritesClick = onFavouritesClick,
-                onSettingsClick = onSettingsClick,
-                onChatsClick = onChatsClick,
-                onBackPressed = onBackPressed,
-            )
-            VSpace(h = 16.dp)
-            LensaAsyncImage(
-                modifier = Modifier.fillMaxWidth(),
-                pictureUrl = state.userProfileModel.avatarUrl.orEmpty(),
-            )
-            VSpace(h = 24.dp)
-            PersonalInfoSection(
-                state = state,
-                onSendMessageClick = onSendMessageClick,
-            )
-            VSpace(h = 24.dp)
-            Text(
-                text = state.userProfileModel.about,
-                style = LensaTheme.typography.text,
-                // TODO добавить цвета текста в style
-                color = LensaTheme.colors.textColor,
-            )
-            VSpace(h = 24.dp)
-            if (!isCustomer) {
-                PriceSection(prices = state.userProfileModel.prices)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .background(color = LensaTheme.colors.backgroundColor),
+        ) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                VSpace(h = 30.dp)
+                HeaderSection(
+                    state = state,
+                    onAddToFavouritesClick = onAddToFavouritesClick,
+                    onFavouritesClick = onFavouritesClick,
+                    onSettingsClick = onSettingsClick,
+                    onChatsClick = onChatsClick,
+                    onBackPressed = onBackPressed,
+                )
+                VSpace(h = 16.dp)
+                LensaAsyncImage(
+                    onClick = {
+                        isShowImagePreview = true
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    pictureUrl = state.userProfileModel.avatarUrl.orEmpty(),
+                )
                 VSpace(h = 24.dp)
-                PortfolioSection(portfolioUrls = state.userProfileModel.portfolioUrls ?: listOf())
+                PersonalInfoSection(
+                    state = state,
+                    onSendMessageClick = onSendMessageClick,
+                )
                 VSpace(h = 24.dp)
-                Divider(color = LensaTheme.colors.dividerColor)
+                Text(
+                    text = state.userProfileModel.about,
+                    style = LensaTheme.typography.text,
+                    // TODO добавить цвета текста в style
+                    color = LensaTheme.colors.textColor,
+                )
                 VSpace(h = 24.dp)
-                if (!state.isSelf && state.userProfileModel.type == UserProfileType.SPECIALIST) {
-                    AddReviewSection(
-                        state = state,
-                        onRatingChanged = onRatingChanged,
-                        onReviewChanged = onReviewChanged,
-                        onPostReview = onPostReview,
+                if (!isCustomer) {
+                    PriceSection(prices = state.userProfileModel.prices)
+                    VSpace(h = 24.dp)
+                    PortfolioSection(
+                        portfolioUrls = state.userProfileModel.portfolioUrls ?: listOf()
                     )
                     VSpace(h = 24.dp)
                     Divider(color = LensaTheme.colors.dividerColor)
                     VSpace(h = 24.dp)
+                    if (!state.isSelf && state.userProfileModel.type == UserProfileType.SPECIALIST) {
+                        AddReviewSection(
+                            state = state,
+                            onRatingChanged = onRatingChanged,
+                            onReviewChanged = onReviewChanged,
+                            onPostReview = onPostReview,
+                        )
+                        VSpace(h = 24.dp)
+                        Divider(color = LensaTheme.colors.dividerColor)
+                        VSpace(h = 24.dp)
+                    }
+                    ReviewsSection(
+                        state = state,
+                        onUserAvatarClick = onReviewAvatarClick,
+                    )
                 }
-                ReviewsSection(
-                    state = state,
-                    onUserAvatarClick = onReviewAvatarClick,
-                )
             }
         }
-    }
-}
-
-@Composable
-fun PersonalInfoSection(
-    state: ProfileDetailsState,
-    onSendMessageClick: (String) -> Unit,
-) {
-    with(state.userProfileModel) {
-        SpecialistDetailsField(label = "Страна", text = country)
-        SpecialistDetailsField(label = "Город", text = city)
-        SpecialistDetailsField(label = "Сайт", text = personalSite)
-        SpecialistDetailsField(label = "Почта", text = email)
-        VSpace(h = 12.dp)
-        Row {
-            socialMedias.forEach {
-                Icon(
-                    painter = painterResource(id = it.type.icon),
-                    contentDescription = null,
-                    tint = LensaTheme.colors.textColor,
-                )
-                HSpace(w = 20.dp)
-            }
-        }
-        if (!state.isSelf) {
-            VSpace(h = 12.dp)
-            LensaTextButton(
-                text = "Написать сообщение",
-                onClick = {
-                    onSendMessageClick.invoke(id)
-                },
-                type = LensaTextButtonType.ACCENT,
-            )
+        // TODO комопонент-обертка
+        if (isShowImagePreview) {
+            LensaZoomableImage()
         }
     }
-}
-
-@Composable
-fun PriceSection(
-    prices: List<Price>,
-) {
-    Text(
-        text = "ПРАЙС",
-        style = LensaTheme.typography.header2,
-        color = LensaTheme.colors.textColor,
-    )
-    VSpace(h = 12.dp)
-    prices.forEach {
-        ExpandableButton(
-            text = it.name,
-            isFillMaxWidth = true,
-        ) {
-            // TODO форматирование стоимости
-            Text(
-                text = "\n${it.text}\nСтоимость: ${it.price}${it.currency.symbol}\n",
-                style = LensaTheme.typography.text,
-                color = LensaTheme.colors.textColor,
-            )
-        }
-    }
-}
-
-@Composable
-fun SpecialistDetailsField(
-    label: String,
-    text: String,
-) {
-    LabeledField(
-        labelText = label,
-        labelStyle = LensaTheme.typography.text,
-        text = text,
-        textStyle = LensaTheme.typography.text,
-        separator = ": ",
-        separatorStyle = LensaTheme.typography.text,
-    )
 }
 
 @Preview(showBackground = true, showSystemUi = true)

@@ -22,9 +22,10 @@ import javax.inject.Inject
 class UserInfoRepository @Inject constructor(
     private val userInfoStorage: IUserInfoDataSource,
     private val favouritesStorage: IFavouritesStorage,
-) : IUserInfoRepository {
-
-    override var currentUserProfile: UserProfileModel? = null
+    //private val settingsStorage: ISettingsStorage,
+) : IUserInfoRepository() {
+    override fun currentUserId(): String? = currentUserProfile?.id
+        ?: Firebase.auth.currentUser?.uid
 
     override fun verifyPhoneNumber(
         phoneNumber: String,
@@ -120,16 +121,22 @@ class UserInfoRepository @Inject constructor(
     }
 
     override fun logOut() {
+        //settingsStorage.lastLoggedInUser = ""
         currentUserProfile = null
+        // TODO clear cache and database
         Firebase.auth.signOut()
     }
 
     override suspend fun logIn(currentUserId: String) {
         currentUserProfile = getProfileById(currentUserId)
+        //settingsStorage.lastLoggedInUser = currentUserId
     }
 
-    override suspend fun deleteAccount(userUid: String) {
-        userInfoStorage.deleteAccount(userUid)
+    override suspend fun deleteAccount() {
+        currentUserProfile?.let {
+            userInfoStorage.deleteAccount(it.id)
+            //settingsStorage.lastLoggedInUser = null
+        }
     }
 
     override suspend fun upsertProfile(
@@ -154,21 +161,43 @@ class UserInfoRepository @Inject constructor(
     }
 
     // TODO caching
-    override suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel> =
-        userInfoStorage.getFeed(feedFilter)
+    override suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel> {
+        currentUserProfile?.let {
+            return userInfoStorage.getFeed(it.id, feedFilter)
+        }
+        return emptyList()
+    }
+
 
     override suspend fun postReview(targetUserId: String, review: Review) {
         userInfoStorage.postReview(targetUserId, review)
     }
 
-    override suspend fun addFavourite(userId: String, folderName: String) =
-        favouritesStorage.addFavourite(userId, folderName)
+    override suspend fun addFavourite(userId: String, folderName: String) {
+        currentUserProfile?.let {
+            favouritesStorage.addFavourite(
+                hostUserId = it.id,
+                userId = userId,
+                folderName = folderName,
+            )
+        }
+    }
 
-    override suspend fun removeFavourite(userId: String, folderName: String) =
-        favouritesStorage.removeFavourite(userId, folderName)
+    override suspend fun removeFavourite(userId: String, folderName: String) {
+        currentUserProfile?.let {
+            favouritesStorage.removeFavourite(
+                hostUserId = it.id,
+                userId = userId,
+                folderName = folderName,
+            )
+        }
+    }
 
-    override suspend fun getFavourites(): List<FavouriteFolder> =
-        favouritesStorage.getFolders()
+
+    override suspend fun getFavourites(): List<FavouriteFolder> = currentUserProfile?.let {
+        favouritesStorage.getFoldersByHostId(it.id)
+    } ?: emptyList()
+
 
     override suspend fun sendFeedback(userUid: String?, text: String) =
         userInfoStorage.sendFeedback(userUid, text)

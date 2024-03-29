@@ -2,7 +2,6 @@ package ru.arinae_va.lensa.data.datasource.remote
 
 import android.net.Uri
 import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
@@ -35,7 +34,10 @@ interface IUserInfoDataSource {
     suspend fun addPortfolioPicture(userUid: String, downloadUrl: String): Boolean
     suspend fun deleteAccount(userUid: String): Boolean
 
-    suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel>
+    suspend fun getFeed(
+        currentUserId: String,
+        feedFilter: FeedFilter?
+    ): List<UserProfileModel>
     suspend fun sendFeedback(userUid: String?, text: String)
     suspend fun getProfileById(userUid: String?): UserProfileModel
     suspend fun getProfilesByIds(userIds: List<String>): List<UserProfileModel>
@@ -112,11 +114,14 @@ class FirebaseUserInfoDataSource @Inject constructor() : IUserInfoDataSource {
         return res
     }
 
-    override suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel> {
+    override suspend fun getFeed(
+        currentUserId: String,
+        feedFilter: FeedFilter?
+    ): List<UserProfileModel> {
         var result = listOf<UserProfileModel>()
         var baseQuery = database.collection(PROFILES_COLLECTION)
             .whereEqualTo(PROFILE_TYPE_FIELD, UserProfileType.SPECIALIST.name)
-            .whereNotEqualTo(ID_FIELD, Firebase.auth.currentUser?.uid)
+            .whereNotEqualTo(ID_FIELD, currentUserId)
         // TODO caching
         baseQuery.get()
             .addOnSuccessListener {

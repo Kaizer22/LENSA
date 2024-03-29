@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaAlertDialog
@@ -26,34 +25,22 @@ import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
-import ru.arinae_va.lensa.presentation.common.utils.todo
-import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 @Composable
 fun SettingsScreen(
-    navController: NavController,
     viewModel: SettingsViewModel,
 ) {
     setSystemUiColor()
     val context = LocalContext.current
     Screen(
-        onAboutClick = {
-            navController.navigate(LensaScreens.ABOUT_APP_SCREEN.name)
-        },
-        onDeleteClick = viewModel::onDeleteClick,
-        onBackPressed = {
-            navController.popBackStack()
-        },
-        onEditProfileClick = {
-            todo(context)
-            //navController.navigate(LensaScreens.PROFILE_SCREEN.name)
-        },
-        onThemeSwitched = {},
-        onFeedbackClick = {
-            navController.navigate(LensaScreens.FEEDBACK_SCREEN.name)
-        },
-        onExitClick = viewModel::onExitClick
+        onAboutClick = viewModel::onAboutClick,
+        onDeleteClick = viewModel::onDeleteAccountClick,
+        onBackPressed = viewModel::onBackPressed,
+        onEditProfileClick = viewModel::onEditProfileClick,
+        onThemeSwitched = viewModel::onThemeSwitched,
+        onFeedbackClick = viewModel::onFeedbackClick,
+        onExitClick = viewModel::onExitClick,
     )
 }
 

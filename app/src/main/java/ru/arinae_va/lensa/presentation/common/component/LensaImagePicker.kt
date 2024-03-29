@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,11 +40,19 @@ fun LensaImagePicker(
     emptyStateButtonSize: Dp = 40.dp,
 ) {
     val context = LocalContext.current
-    var imageData by remember { mutableStateOf<Uri?>(null) }
+    var imageData by remember{ mutableStateOf<Uri?>(null)}
+    var isEmpty by remember { mutableStateOf(true) }
+    var isPreloadedImage by remember { mutableStateOf(false) }
 
-    var isEmpty by remember(imageData) {
-        mutableStateOf((defaultLink == null && imageData == null))
+    LaunchedEffect(defaultLink) {
+        imageData = defaultLink?.let { Uri.parse(defaultLink) }
+        isPreloadedImage = true
     }
+
+    LaunchedEffect(imageData) {
+        isEmpty = imageData == null
+    }
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = {
@@ -92,7 +101,7 @@ fun LensaImagePicker(
                 )
             }
         } else {
-            if (imageData != null) {
+            if (imageData != null && !isPreloadedImage) {
                 val bitmap = remember { mutableStateOf<Bitmap?>(null) }
                 val uri = imageData
                 if (uri != null) {
@@ -108,6 +117,7 @@ fun LensaImagePicker(
                             contentScale = ContentScale.Crop,
                         )
                     }
+                    isPreloadedImage = false
                 }
             } else {
                 LensaAsyncImage(

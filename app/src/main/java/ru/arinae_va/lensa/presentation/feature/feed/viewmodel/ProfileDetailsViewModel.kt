@@ -3,8 +3,6 @@ package ru.arinae_va.lensa.presentation.feature.feed.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,7 +53,7 @@ class ProfileDetailsViewModel @Inject constructor(
     }
 
     fun onReviewAvatarClicked(userId: String) {
-        val isSelf = Firebase.auth.currentUser?.uid == userId
+        val isSelf = userInfoRepository.currentUserId() == userId
         navHostController.navigate(
             "${LensaScreens.SPECIALIST_DETAILS_SCREEN.name}/" +
                     "${userId}/" +
@@ -73,14 +71,14 @@ class ProfileDetailsViewModel @Inject constructor(
 
     fun onPostReview() {
         viewModelScope.launch {
-            userInfoRepository.currentUserProfile?.let { currentUserProfile ->
+            userInfoRepository.currentUserId()?.let { id ->
                 userInfoRepository.postReview(
                     targetUserId = state.value.userProfileModel.id,
                     review = Review(
-                        authorId = Firebase.auth.currentUser?.uid.orEmpty(),
-                        name = currentUserProfile.name,
-                        surname = currentUserProfile.surname,
-                        avatarUrl = currentUserProfile.avatarUrl.orEmpty(),
+                        authorId = id,
+                        name = userInfoRepository.currentUserName.orEmpty(),
+                        surname = userInfoRepository.currentUserSurname.orEmpty(),
+                        avatarUrl = userInfoRepository.currentUserAvatarUrl.orEmpty(),
                         text = state.value.reviewText,
                         rating = state.value.rating,
                         dateTime = LocalDateTime.now(),

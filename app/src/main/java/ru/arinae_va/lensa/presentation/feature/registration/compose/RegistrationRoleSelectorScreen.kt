@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaButtonWithIcon
@@ -19,7 +18,6 @@ import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 @Composable
 fun RegistrationRoleSelectorScreen(
-    navController: NavController,
     viewModel: RegistrationViewModel,
 ) {
     setSystemUiColor()

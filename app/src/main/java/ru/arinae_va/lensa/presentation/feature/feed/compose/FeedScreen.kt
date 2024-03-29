@@ -170,7 +170,7 @@ private fun FeedContent(
 }
 
 @Composable
-fun FeedAndSearchBar(
+internal fun FeedAndSearchBar(
     state: FeedState,
     onMenuClick: () -> Unit,
     onSearchTextChanged: (String) -> Unit,

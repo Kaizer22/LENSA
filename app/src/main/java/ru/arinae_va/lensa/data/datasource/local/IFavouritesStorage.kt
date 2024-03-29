@@ -7,18 +7,26 @@ import javax.inject.Inject
 
 interface IFavouritesStorage {
 
-    suspend fun getFolders(): List<FavouriteFolder>
+    suspend fun getFoldersByHostId(hostUserId: String): List<FavouriteFolder>
 
     //suspend fun getProfilesByFolder(folderName: String):
-    suspend fun addFavourite(userId: String, folderName: String)
-    suspend fun removeFavourite(userId: String, folderName: String)
+    suspend fun addFavourite(
+        hostUserId: String,
+        userId: String,
+        folderName: String
+    )
+    suspend fun removeFavourite(
+        hostUserId: String,
+        userId: String,
+        folderName: String
+    )
 }
 
 class FavouritesStorage @Inject constructor(
     private val favouritesDao: FavouritesDao,
 ) : IFavouritesStorage {
-    override suspend fun getFolders(): List<FavouriteFolder> {
-        val entities = favouritesDao.getAll()
+    override suspend fun getFoldersByHostId(hostUserId: String): List<FavouriteFolder> {
+        val entities = favouritesDao.getAllByUserId(hostUserId)
         val folders = entities.map { it.folderName }
         return folders.map { folder ->
             FavouriteFolder(
@@ -33,18 +41,28 @@ class FavouritesStorage @Inject constructor(
 //        TODO("Not yet implemented")
 //    }
 
-    override suspend fun addFavourite(userId: String, folderName: String) {
+    override suspend fun addFavourite(
+        hostUserId: String,
+        userId: String,
+        folderName: String,
+    ) {
         favouritesDao.insert(
             FavouriteProfileEntity(
+                hostUserId = hostUserId,
                 folderName = folderName,
                 profileId = userId
             )
         )
     }
 
-    override suspend fun removeFavourite(userId: String, folderName: String) {
+    override suspend fun removeFavourite(
+        hostUserId: String,
+        userId: String,
+        folderName: String,
+    ) {
         favouritesDao.delete(
             FavouriteProfileEntity(
+                hostUserId = hostUserId,
                 folderName = folderName,
                 profileId = userId,
             )

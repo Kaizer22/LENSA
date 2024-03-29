@@ -2,7 +2,6 @@ package ru.arinae_va.lensa.presentation.feature.registration.compose
 
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -132,6 +131,7 @@ private fun RegistrationContent(
                 horizontalArrangement = Arrangement.Center,
             ) {
                 LensaImagePicker(
+                    defaultLink = state.avatarUri?.toString(),
                     modifier = Modifier.size(216.dp),
                     onImagePicked = onAvatarChanged,
                     emptyStateButtonSize = 48.dp,
@@ -178,7 +178,7 @@ private fun RegistrationContent(
             if (state.isSpecialistRegistrationScreen) {
                 VSpace(h = 12.dp)
                 SpecializationSection(
-                    specializationValue = state.specialization,
+                    state = state,
                     onValueChanged = onSpecializationChanged,
                     onGetInTouchClick = onGetInTouchClick,
                 )
@@ -196,6 +196,7 @@ private fun RegistrationContent(
             )
             VSpace(h = 12.dp)
             LensaDropdownInput(
+                value = state.city,
                 allowFreeInput = true,
                 showRequired = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -229,6 +230,7 @@ private fun RegistrationContent(
         if (state.isSpecialistRegistrationScreen) {
             VSpace(h = 28.dp)
             PortfolioCarousel(
+                defaultList = state.portfolioUris,
                 onListChanged = onPortfolioChanged,
             )
             VSpace(h = 16.dp)
@@ -294,68 +296,6 @@ private fun RegistrationContent(
                 onClick = {}
             )
             VSpace(h = 20.dp)
-        }
-    }
-}
-
-@Composable
-fun SpecializationSection(
-    specializationValue: String,
-    onValueChanged: (String) -> Unit,
-    onGetInTouchClick: () -> Unit,
-) {
-    LensaDropdownInput(
-        allowFreeInput = false,
-        showRequired = true,
-        modifier = Modifier.fillMaxWidth(),
-        onValueChanged = onValueChanged,
-        items = Constants.SPECIALIZATIONS_LIST,
-        placeholder = "Специализация",
-    )
-    VSpace(h = 12.dp)
-    Text(
-        text = "Не нашел свою специализацию?",
-        style = LensaTheme.typography.signature,
-        color = LensaTheme.colors.textColorSecondary,
-    )
-    LensaTextButton(
-        text = "Свяжись с нами",
-        type = LensaTextButtonType.ACCENT,
-        onClick = onGetInTouchClick
-    )
-}
-
-const val MAX_PORTFOLIO_SIZE = 10
-@Composable
-fun PortfolioCarousel(
-    modifier: Modifier = Modifier,
-    onListChanged: (List<Uri>) -> Unit,
-) {
-    var portfolioImages by remember {
-        mutableStateOf<List<Uri?>>(List(MAX_PORTFOLIO_SIZE) { null })
-    }
-    Row(
-        modifier = modifier.horizontalScroll(rememberScrollState()),
-    ) {
-        for (i in 0 until MAX_PORTFOLIO_SIZE) {
-            HSpace(w = 4.dp)
-            LensaImagePicker(
-                modifier = Modifier.size(175.dp),
-                isCancelIconVisible = true,
-                onImagePicked = {
-                    val buf = portfolioImages.toMutableList()
-                    buf[i] = it
-                    portfolioImages = buf
-                    onListChanged(portfolioImages.filterNotNull())
-                },
-                onCancelButtonClick = {
-                    val buf = portfolioImages.toMutableList()
-                    buf[i] = null
-                    portfolioImages = buf
-                    onListChanged(portfolioImages.filterNotNull())
-                }
-            )
-            HSpace(w = 4.dp)
         }
     }
 }

@@ -1,9 +1,10 @@
 package ru.arinae_va.lensa.presentation.feature.favourite.compose
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -12,16 +13,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.feature.favourite.viewmodel.FavouritesState
 import ru.arinae_va.lensa.presentation.feature.favourite.viewmodel.FavouritesViewModel
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
+import ru.arinae_va.lensa.utils.ext.appendListToN
 
 @Composable
 fun FavouritesScreen(
-    navController: NavController,
     viewModel: FavouritesViewModel,
 ) {
     val state by viewModel.state.collectAsState()
@@ -39,7 +39,7 @@ private fun FavouritesContent(
     onFolderClick: (String) -> Unit,
     onBackPressed: () -> Unit,
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(color = LensaTheme.colors.backgroundColor)
@@ -47,43 +47,34 @@ private fun FavouritesContent(
                 horizontal = 16.dp,
             )
     ) {
-        VSpace(h = 24.dp)
-        Text(
-            text = "ИЗБРАННОЕ",
-            style = LensaTheme.typography.header2,
-            color = LensaTheme.colors.textColor,
-        )
-        VSpace(h = 12.dp)
-        Divider(color = LensaTheme.colors.dividerColor)
-        VSpace(h = 24.dp)
-        state.folders.forEach { folder ->
-            val urls = appendListToN(
-                folder.value.map { profile ->
-                    profile.portfolioUrls?.get(0).orEmpty()
-                }
+        item {
+            VSpace(h = 24.dp)
+            Text(
+                text = "ИЗБРАННОЕ",
+                style = LensaTheme.typography.header2,
+                color = LensaTheme.colors.textColor,
+            )
+            VSpace(h = 12.dp)
+            Divider(color = LensaTheme.colors.dividerColor)
+            VSpace(h = 24.dp)
+        }
+
+        items(state.folders.keys.toList()) { folder ->
+            val urls = state.folders[folder]?.map { profile ->
+                profile.portfolioUrls?.get(0).orEmpty()
+            }?.appendListToN(
+                n = FAVOURITES_FOLDER_PREVIEW_PICTURES_COUNT,
+                emptyValue = "",
             )
             FavouritesFolderItem(
-                name = folder.key,
-                picturesUrls = urls,
+                name = folder,
+                picturesUrls = urls ?: emptyList(),
                 onClick = {
-                    onFolderClick.invoke(folder.key)
+                    onFolderClick.invoke(folder)
                 },
             )
             VSpace(h = 36.dp)
         }
-    }
-}
-
-private fun appendListToN(
-    list: List<String>,
-    n: Int = 4,
-    emptyValue: String = "",
-): List<String> {
-    return if (list.size >= n) list.take(n)
-    else {
-        val mL = list.toMutableList()
-        repeat(n - list.size) { mL.add(emptyValue) }
-        mL
     }
 }
 
@@ -92,7 +83,9 @@ private fun appendListToN(
 fun FavouritesScreenPreview() {
     LensaTheme {
         FavouritesContent(
-            state = FavouritesState.INITIAL,
+            state = FavouritesState(
+                folders = emptyMap()
+            ),
             onFolderClick = {},
             onBackPressed = {},
         )

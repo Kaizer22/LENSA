@@ -30,6 +30,7 @@ import ru.arinae_va.lensa.presentation.feature.profile.compose.ProfileScreen
 import ru.arinae_va.lensa.presentation.feature.profile.compose.ProfileViewModel
 import ru.arinae_va.lensa.presentation.feature.registration.compose.RegistrationRoleSelectorScreen
 import ru.arinae_va.lensa.presentation.feature.registration.compose.RegistrationScreen
+import ru.arinae_va.lensa.presentation.feature.registration.viewmodel.EMPTY_USER_ID
 import ru.arinae_va.lensa.presentation.feature.registration.viewmodel.RegistrationViewModel
 import ru.arinae_va.lensa.presentation.feature.settings.compose.AboutAppScreen
 import ru.arinae_va.lensa.presentation.feature.settings.compose.FeedbackScreen
@@ -41,6 +42,7 @@ import java.net.URLEncoder
 const val PHONE_ID_KEY = "phone"
 const val ERROR_TEXT_KEY = "errorText"
 const val IS_SPECIALIST_KEY = "isSpecialist"
+const val USER_ID_KEY = "userId"
 const val PROFILE_UID_KEY = "profileUid"
 const val IS_SELF_PROFILE_KEY = "isSelf"
 const val FOLDER_NAME_KEY = "folderName"
@@ -77,20 +79,19 @@ fun LensaNavGraph(
         composable(route = LensaScreens.ONBOARDING_SCREEN.name) {
             val viewModel = hiltViewModel<OnboardingViewModel>()
             OnboardingScreen(
-                navController = navController,
                 viewModel = viewModel,
             )
         }
 
         composable(route = LensaScreens.AUTH_SCREEN.name) {
             val viewModel = hiltViewModel<AuthViewModel>()
-
             AuthScreen(
                 viewModel = viewModel,
             )
         }
 
-        composable(route = "${LensaScreens.OTP_SCREEN.name}/{$PHONE_ID_KEY}",
+        composable(route = LensaScreens.OTP_SCREEN.name +
+                "/{$PHONE_ID_KEY}",
             arguments = listOf(
                 navArgument(PHONE_ID_KEY) {
                     type = NavType.StringType
@@ -108,7 +109,8 @@ fun LensaNavGraph(
             )
         }
 
-        composable(route = "${LensaScreens.COMMON_ERROR_SCREEN.name}/{$ERROR_TEXT_KEY}",
+        composable(route = LensaScreens.COMMON_ERROR_SCREEN.name +
+                "/{$ERROR_TEXT_KEY}",
             arguments = listOf(
                 navArgument(ERROR_TEXT_KEY) {
                     type = NavType.StringType
@@ -124,23 +126,33 @@ fun LensaNavGraph(
         composable(route = LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name) {
             val viewModel = hiltViewModel<RegistrationViewModel>()
             RegistrationRoleSelectorScreen(
-                navController = navController,
                 viewModel = viewModel,
             )
         }
 
         composable(
-            route = "${LensaScreens.REGISTRATION_SCREEN.name}/{$IS_SPECIALIST_KEY}",
+            route = LensaScreens.REGISTRATION_SCREEN.name +
+                    "/{$IS_SPECIALIST_KEY}" +
+                    "/{$USER_ID_KEY}",
             arguments = listOf(
                 navArgument(IS_SPECIALIST_KEY) {
                     type = NavType.BoolType
+                },
+                navArgument(USER_ID_KEY) {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
                 }
             ),
         ) { backStackEntry ->
             val arguments = requireNotNull(backStackEntry.arguments)
             val viewModel = hiltViewModel<RegistrationViewModel>()
             LaunchedEffect(Unit) {
+                val userId = arguments.getString(USER_ID_KEY)
                 viewModel.setType(arguments.getBoolean(IS_SPECIALIST_KEY))
+                if (!userId.isNullOrEmpty() && userId != EMPTY_USER_ID) {
+                    viewModel.setUser(userId)
+                }
             }
             RegistrationScreen(
                 viewModel = viewModel,
@@ -157,7 +169,6 @@ fun LensaNavGraph(
         composable(route = LensaScreens.SETTINGS_SCREEN.name) {
             val viewModel = hiltViewModel<SettingsViewModel>()
             SettingsScreen(
-                navController = navController,
                 viewModel = viewModel,
             )
         }
@@ -224,14 +235,13 @@ fun LensaNavGraph(
                 viewModel.loadFolders()
             }
             FavouritesScreen(
-                navController = navController,
                 viewModel = viewModel,
             )
         }
 
         composable(
-            route = "${LensaScreens.FAVOURITE_FOLDER_SCREEN.name}/" +
-                    "{$FOLDER_NAME_KEY}",
+            route = LensaScreens.FAVOURITE_FOLDER_SCREEN.name +
+                    "/{$FOLDER_NAME_KEY}",
             arguments = listOf(
                 navArgument(FOLDER_NAME_KEY) {
                     type = NavType.StringType

@@ -5,6 +5,7 @@ internal enum class AuthScreenField {
 }
 internal data class AuthScreenState(
     val phoneNumber: String,
+    val isLoading: Boolean,
     val isEnabledNextButton: Boolean,
     val validationErrors: Map<AuthScreenField, String> = emptyMap(),
 )

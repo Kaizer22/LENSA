@@ -21,6 +21,7 @@ class UserProfileResponse(
     val country: String? = null,
     val city: String? = null,
     val personalSite: String? = null,
+    val phoneNumber: String? = null,
     val email: String? = null,
     val socialMedias: List<SocialMediaResponse>? = null,
     val about: String? = null,
@@ -52,6 +53,7 @@ class UserProfileResponse(
         },
         minimalPrice = minimalPrice,
         maximalPrice = maximalPrice,
+        phoneNumber = phoneNumber.orEmpty(),
         reviews = reviews.orEmpty().map {
             mapToReview(it)
         },
@@ -76,7 +78,7 @@ class UserProfileResponse(
     private fun mapToPrice(priceResponseModel: PriceResponse) = Price(
         id = priceResponseModel.id.orEmpty(),
         name = priceResponseModel.name.orEmpty(),
-        text = priceResponseModel.name.orEmpty(),
+        text = priceResponseModel.text.orEmpty(),
         price = priceResponseModel.price ?: 0,
         currency = priceResponseModel.currency ?: PriceCurrency.RUB,
     )

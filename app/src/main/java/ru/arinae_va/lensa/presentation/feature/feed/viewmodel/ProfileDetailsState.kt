@@ -6,6 +6,7 @@ data class ProfileDetailsState(
     val userProfileModel: UserProfileModel,
     val reviewText: String,
     val rating: Float,
+    val isLoading: Boolean,
     val isSelf: Boolean,
     val isAddedToFavourites: Boolean,
 ) {
@@ -15,6 +16,7 @@ data class ProfileDetailsState(
             reviewText = "",
             rating = 0f,
             isSelf = false,
+            isLoading = false,
             isAddedToFavourites = false,
         )
     }

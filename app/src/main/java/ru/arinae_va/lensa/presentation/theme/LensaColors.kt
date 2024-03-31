@@ -34,7 +34,7 @@ fun lensaLightColors() = LensaColors(
 @Composable
 fun lensaDarkColors() = LensaColors(
     logoColor = white,
-    fadeColor = gray.copy(alpha = 0.8f),
+    fadeColor = black.copy(alpha = 0.8f),
     dividerColor = white,
     backgroundColor = black,
     textColor = white,

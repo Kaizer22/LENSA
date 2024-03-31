@@ -24,6 +24,7 @@ import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.ProfileDetailsState
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
+import ru.arinae_va.lensa.utils.datetimeFormatter
 
 @Composable
 fun ReviewsSection(
@@ -103,7 +104,7 @@ fun ReviewItem(
                 horizontalArrangement = Arrangement.End,
             ) {
                 Text(
-                    text = model.dateTime.toString(),
+                    text = model.dateTime.format(datetimeFormatter),
                     style = LensaTheme.typography.signature,
                     color = LensaTheme.colors.textColorSecondary,
                 )

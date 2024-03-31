@@ -1,6 +1,7 @@
 package ru.arinae_va.lensa.data.repositroy
 
 import android.net.Uri
+import android.webkit.URLUtil.isHttpsUrl
 import com.google.firebase.Firebase
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
@@ -156,11 +157,15 @@ class UserInfoRepository @Inject constructor(
             userInfoStorage.updateProfile(profile = model)
         }
         avatarUri?.let {
-            userInfoStorage.uploadAvatarImage(model.id, it)
+            if (!isHttpsUrl(it.toString())) {
+                userInfoStorage.uploadAvatarImage(model.id, it)
+            }
         }
         portfolioUris?.let {
             it.forEach { imageUri ->
-                userInfoStorage.uploadPortfolioImage(model.id, imageUri)
+                if (!isHttpsUrl(imageUri.toString())) {
+                    userInfoStorage.uploadPortfolioImage(model.id, imageUri)
+                }
             }
         }
     }

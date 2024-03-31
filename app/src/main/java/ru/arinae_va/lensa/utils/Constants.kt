@@ -57,4 +57,6 @@ object Constants {
         ORDER_TYPE_RATING_ASC_TEXT,
         ORDER_TYPE_RATING_DESC_TEXT,
     )
+
+    internal val DATETIME_FORMAT = "dd.MM.yyyy HH:mm"
 }

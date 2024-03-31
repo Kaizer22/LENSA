@@ -29,7 +29,8 @@ import ru.arinae_va.lensa.domain.model.SocialMedia
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.model.UserProfileType
 import ru.arinae_va.lensa.presentation.common.component.LensaAsyncImage
-import ru.arinae_va.lensa.presentation.common.component.LensaZoomableImage
+import ru.arinae_va.lensa.presentation.common.component.LensaReplaceLoader
+import ru.arinae_va.lensa.presentation.common.component.LensaZoomablePreview
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.ProfileDetailsState
@@ -97,76 +98,95 @@ private fun ProfileDetailsContent(
     }
 
     var isShowImagePreview by remember{ mutableStateOf(false) }
-    Box(
-        modifier = Modifier.fillMaxSize()
+    var previewImages by remember { mutableStateOf(
+        listOf(state.userProfileModel.avatarUrl.orEmpty())
+    )}
+    var shownImageIndex by remember { mutableStateOf(0) }
+    LensaReplaceLoader(
+        isLoading = state.isLoading,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .background(color = LensaTheme.colors.backgroundColor),
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                VSpace(h = 30.dp)
-                HeaderSection(
-                    state = state,
-                    onAddToFavouritesClick = onAddToFavouritesClick,
-                    onFavouritesClick = onFavouritesClick,
-                    onSettingsClick = onSettingsClick,
-                    onChatsClick = onChatsClick,
-                    onBackPressed = onBackPressed,
-                )
-                VSpace(h = 16.dp)
-                LensaAsyncImage(
-                    onClick = {
-                        isShowImagePreview = true
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    pictureUrl = state.userProfileModel.avatarUrl.orEmpty(),
-                )
-                VSpace(h = 24.dp)
-                PersonalInfoSection(
-                    state = state,
-                    onSendMessageClick = onSendMessageClick,
-                )
-                VSpace(h = 24.dp)
-                Text(
-                    text = state.userProfileModel.about,
-                    style = LensaTheme.typography.text,
-                    // TODO добавить цвета текста в style
-                    color = LensaTheme.colors.textColor,
-                )
-                VSpace(h = 24.dp)
-                if (!isCustomer) {
-                    PriceSection(prices = state.userProfileModel.prices)
-                    VSpace(h = 24.dp)
-                    PortfolioSection(
-                        portfolioUrls = state.userProfileModel.portfolioUrls ?: listOf()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .background(color = LensaTheme.colors.backgroundColor),
+            ) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    VSpace(h = 30.dp)
+                    HeaderSection(
+                        state = state,
+                        onAddToFavouritesClick = onAddToFavouritesClick,
+                        onFavouritesClick = onFavouritesClick,
+                        onSettingsClick = onSettingsClick,
+                        onChatsClick = onChatsClick,
+                        onBackPressed = onBackPressed,
+                    )
+                    VSpace(h = 16.dp)
+                    LensaAsyncImage(
+                        onClick = {
+                            previewImages = listOf(state.userProfileModel.avatarUrl.orEmpty())
+                            shownImageIndex = 0
+                            isShowImagePreview = true
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        pictureUrl = state.userProfileModel.avatarUrl.orEmpty(),
                     )
                     VSpace(h = 24.dp)
-                    Divider(color = LensaTheme.colors.dividerColor)
+                    PersonalInfoSection(
+                        state = state,
+                        onSendMessageClick = onSendMessageClick,
+                    )
                     VSpace(h = 24.dp)
-                    if (!state.isSelf && state.userProfileModel.type == UserProfileType.SPECIALIST) {
-                        AddReviewSection(
-                            state = state,
-                            onRatingChanged = onRatingChanged,
-                            onReviewChanged = onReviewChanged,
-                            onPostReview = onPostReview,
+                    Text(
+                        text = state.userProfileModel.about,
+                        style = LensaTheme.typography.text,
+                        // TODO добавить цвета текста в style
+                        color = LensaTheme.colors.textColor,
+                    )
+                    VSpace(h = 24.dp)
+                    if (!isCustomer) {
+                        PriceSection(prices = state.userProfileModel.prices)
+                        VSpace(h = 24.dp)
+                        PortfolioSection(
+                            portfolioUrls = state.userProfileModel.portfolioUrls ?: emptyList(),
+                            onImageClick = { portfolioImageIndex ->
+                                previewImages = state.userProfileModel.portfolioUrls ?: emptyList()
+                                shownImageIndex = portfolioImageIndex
+                                isShowImagePreview = true
+                            }
                         )
                         VSpace(h = 24.dp)
                         Divider(color = LensaTheme.colors.dividerColor)
                         VSpace(h = 24.dp)
+                        if (!state.isSelf && state.userProfileModel.type == UserProfileType.SPECIALIST) {
+                            AddReviewSection(
+                                state = state,
+                                onRatingChanged = onRatingChanged,
+                                onReviewChanged = onReviewChanged,
+                                onPostReview = onPostReview,
+                            )
+                            VSpace(h = 24.dp)
+                            Divider(color = LensaTheme.colors.dividerColor)
+                            VSpace(h = 24.dp)
+                        }
+                        ReviewsSection(
+                            state = state,
+                            onUserAvatarClick = onReviewAvatarClick,
+                        )
                     }
-                    ReviewsSection(
-                        state = state,
-                        onUserAvatarClick = onReviewAvatarClick,
-                    )
                 }
             }
-        }
-        // TODO комопонент-обертка
-        if (isShowImagePreview) {
-            LensaZoomableImage()
+            // TODO комопонент-обертка
+            if (isShowImagePreview && previewImages.isNotEmpty()) {
+                LensaZoomablePreview(
+                    imageUrls = previewImages,
+                    shownImageIndex = shownImageIndex,
+                    onCloseClick = { isShowImagePreview = false }
+                )
+            }
         }
     }
 }
@@ -239,11 +259,13 @@ fun SpecialistDetailsScreenPreview() {
                             rating = 4f,
                             text = "review",
                         )
-                    )
+                    ),
+                    phoneNumber = "",
                 ),
                 reviewText = "",
                 rating = 0f,
                 isSelf = false,
+                isLoading = false,
                 isAddedToFavourites = false,
             ),
             onSettingsClick = {},

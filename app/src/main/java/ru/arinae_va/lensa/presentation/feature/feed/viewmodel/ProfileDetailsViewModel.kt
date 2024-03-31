@@ -28,6 +28,7 @@ class ProfileDetailsViewModel @Inject constructor(
         isSelf: Boolean,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
+            setLoading(true)
             val result = userInfoRepository.getProfileById(userUid)
             _state.tryEmit(
                 state.value.copy(
@@ -36,7 +37,16 @@ class ProfileDetailsViewModel @Inject constructor(
                     isAddedToFavourites = !isSelf && isProfileAddedToFavourites(userUid),
                 )
             )
+            setLoading(false)
         }
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        _state.tryEmit(
+            state.value.copy(
+                isLoading = isLoading
+            )
+        )
     }
 
     private suspend fun isProfileAddedToFavourites(userUid: String) =

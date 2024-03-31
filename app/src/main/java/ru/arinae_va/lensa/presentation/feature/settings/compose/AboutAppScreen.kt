@@ -53,7 +53,7 @@ private fun Screen(
                 start = 32.dp,
                 top = 32.dp,
             ),
-            text = "0.0.1\nDEV",
+            text = "0.0.8\nDEV",
             style = LensaTheme.typography.header2,
             color = LensaTheme.colors.textColor,
         )

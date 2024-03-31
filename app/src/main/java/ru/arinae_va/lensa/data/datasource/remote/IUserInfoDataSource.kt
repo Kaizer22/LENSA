@@ -85,7 +85,8 @@ class FirebaseUserInfoDataSource @Inject constructor() : IUserInfoDataSource {
     }
 
     override suspend fun updateProfile(profile: UserProfileModel) {
-        TODO("Not yet implemented")
+        val ref = database.collection(PROFILES_COLLECTION).document(profile.id)
+        ref.set(profile).await()
     }
 
     override suspend fun setUserAvatar(userUid: String, downloadUrl: String): Boolean {

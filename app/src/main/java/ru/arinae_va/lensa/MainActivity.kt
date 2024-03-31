@@ -9,18 +9,18 @@ import ru.arinae_va.lensa.presentation.navigation.LensaNavGraph
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 import javax.inject.Inject
 
-// TODO редактирование профиля +-
-// TODO отображение только ненулевых оценок для специалиста +
-// TODO лоадеры
-// TODO переключение аккаунтов
-// TODO просмотр полноразмерных фото +-
-// TODO вычисление средней оценки специалиста
-// TODO verifyPhoneNumber на AuthScreen
+// DONE редактирование профиля
+// DONE отображение только ненулевых оценок для специалиста
+// DONE лоадеры
+// DONE просмотр полноразмерных фото
 
+// TODO переключение аккаунтов
+// TODO вычисление средней оценки специалиста
 // TODO возможность оставить только один отзыв + редактирование своего отзыва
+// TODO поисковая строка
+
 // TODO состояния ленты: ничего нет (вообще), ничего не нашлось, ошибка +-
 // TODO переключение темы - темная, светлая
-// TODO поисковая строка
 
 // TODO доработка Dropdown Input
 // TODO доработка Input (отображение обязательной иконки)
@@ -29,6 +29,8 @@ import javax.inject.Inject
 // TODO пагинация ленты + доработка фильтрации
 // TODO переход по ссылке на персональный сайт
 // TODO переход к соц. сетям
+
+// TODO чаты
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

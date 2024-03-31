@@ -14,6 +14,7 @@ data class UserProfileModel(
     val country: String,
     val city: String,
     val personalSite: String,
+    val phoneNumber: String,
     val email: String,
     val socialMedias: List<SocialMedia>,
     val about: String,
@@ -37,6 +38,7 @@ data class UserProfileModel(
             socialMedias = listOf(),
             about = "",
             prices = listOf(),
+            phoneNumber = ""
         )
     }
 }

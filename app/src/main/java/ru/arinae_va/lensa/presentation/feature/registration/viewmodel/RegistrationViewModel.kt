@@ -2,6 +2,7 @@ package ru.arinae_va.lensa.presentation.feature.registration.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.webkit.URLUtil.isHttpsUrl
 import android.webkit.URLUtil.isValidUrl
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,6 +42,7 @@ class RegistrationViewModel @Inject constructor(
     fun setUser(editUserId: String) {
         if (editUserId == userInfoRepository.currentUserId()) {
             viewModelScope.launch {
+                setLoading(true)
                 val editableUser = userInfoRepository.getProfileById(editUserId)
 
                 with(editableUser) {
@@ -48,6 +50,7 @@ class RegistrationViewModel @Inject constructor(
                     socialMedias.forEach { socialMediasMap[it.type] = it.link }
                     _state.tryEmit(
                         state.value.copy(
+                            isLoading = false,
                             isEdit = true,
                             name = name,
                             surname = surname,
@@ -61,11 +64,19 @@ class RegistrationViewModel @Inject constructor(
                             socialMedias = socialMediasMap,
                             prices = prices,
                             portfolioUris = portfolioUrls?.map { Uri.parse(it) } ?: emptyList(),
+                            rating = rating,
+                            phoneNumber = phoneNumber,
                         )
                     )
                 }
             }
         }
+    }
+
+    fun setLoading(isLoading: Boolean) {
+        _state.tryEmit(
+            state.value.copy(isLoading = isLoading)
+        )
     }
 
     fun setType(isSpecialistScreenSelected: Boolean) {
@@ -163,12 +174,21 @@ class RegistrationViewModel @Inject constructor(
     // TODO отображение загрузки
     fun onSaveClick() {
         viewModelScope.launch {
+            setLoading(true)
             if (state.value.isSpecialistRegistrationScreen) {
                 upsertSpecialist()
             } else {
                 upsertCustomer()
             }
+            setLoading(false)
         }
+    }
+
+    private suspend fun finishUpsert() {
+        if (!state.value.isEdit) {
+            userInfoRepository.logIn(userInfoRepository.currentUserId().orEmpty())
+        }
+        navHostController.navigate(LensaScreens.FEED_SCREEN.name)
     }
 
     private suspend fun upsertCustomer() {
@@ -191,15 +211,19 @@ class RegistrationViewModel @Inject constructor(
                     about = about,
                     personalSite = personalSite,
                     email = email,
+                    phoneNumber = phoneNumber,
+                    avatarUrl = if (state.value.isEdit) state.value.avatarUri.toString()
+                    else null,
+                    rating = if (state.value.isEdit) state.value.rating else null
                 )
 
                 userInfoRepository.upsertProfile(
                     model = model,
                     avatarUri = avatarUri,
-                    isNewUser = true,
+                    isNewUser = !state.value.isEdit,
                 )
-                navHostController.navigate(LensaScreens.FEED_SCREEN.name)
             }
+            finishUpsert()
         }
     }
 
@@ -226,15 +250,22 @@ class RegistrationViewModel @Inject constructor(
                     prices = prices,
                     minimalPrice = prices.minOf { it.price },
                     maximalPrice = prices.maxOf { it.price },
+                    phoneNumber = phoneNumber,
+                    avatarUrl = if (isEdit) avatarUri.toString()
+                    else null,
+                    portfolioUrls = if (isEdit)
+                        portfolioUris.map { it.toString() }.filter { isHttpsUrl(it) }
+                    else null,
+                    rating = if (isEdit) state.value.rating else null
                 )
                 userInfoRepository.upsertProfile(
                     model = model,
                     avatarUri = avatarUri,
                     portfolioUris = portfolioUris,
-                    isNewUser = true,
+                    isNewUser = !state.value.isEdit,
                 )
-                navHostController.navigate(LensaScreens.FEED_SCREEN.name)
             }
+            finishUpsert()
         }
     }
 

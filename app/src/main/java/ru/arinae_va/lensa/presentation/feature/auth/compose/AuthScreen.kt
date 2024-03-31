@@ -19,6 +19,7 @@ import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaButton
 import ru.arinae_va.lensa.presentation.common.component.LensaHeader
 import ru.arinae_va.lensa.presentation.common.component.LensaInput
+import ru.arinae_va.lensa.presentation.common.component.LensaReplaceLoader
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.AuthScreenField
@@ -49,50 +50,54 @@ private fun AuthContent(
     onPhoneNumberChanged: (String) -> Unit,
     onSendVerificationCodeClick: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                color = LensaTheme.colors.backgroundColor
-            ),
+    LensaReplaceLoader(
+        isLoading = state.isLoading
     ) {
-        LensaHeader()
-        VSpace(h = 128.dp)
-        Text(
-            color = LensaTheme.colors.textColor,
-            modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
-            text = stringResource(R.string.auth_screen_phone_number_input_label),
-            style = LensaTheme.typography.text,
-        )
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            LensaInput(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.phoneNumber,
-                inputType = KeyboardType.Phone,
-                onValueChanged = onPhoneNumberChanged,
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = LensaTheme.colors.backgroundColor
+                ),
+        ) {
+            LensaHeader()
+            VSpace(h = 128.dp)
+            Text(
+                color = LensaTheme.colors.textColor,
+                modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
+                text = stringResource(R.string.auth_screen_phone_number_input_label),
+                style = LensaTheme.typography.text,
             )
-            state.validationErrors[AuthScreenField.PHONE_NUMBER]?.let {
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                LensaInput(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.phoneNumber,
+                    inputType = KeyboardType.Phone,
+                    onValueChanged = onPhoneNumberChanged,
+                )
+                state.validationErrors[AuthScreenField.PHONE_NUMBER]?.let {
+                    Text(
+                        text = it,
+                        style = LensaTheme.typography.signature,
+                        color = LensaTheme.colors.textColorSecondary,
+                    )
+                }
+                VSpace(h = 52.dp)
+                LensaButton(
+                    text = stringResource(R.string.auth_screen_button_request_code),
+                    onClick = onSendVerificationCodeClick,
+                    enabled = state.isEnabledNextButton,
+                    isFillMaxWidth = true,
+                )
+                FSpace()
+                // TODO ссылки
                 Text(
-                    text = it,
-                    style = LensaTheme.typography.signature,
+                    modifier = Modifier.padding(40.dp),
+                    text = stringResource(R.string.auth_screen_terms_and_conditions_hint),
                     color = LensaTheme.colors.textColorSecondary,
+                    style = LensaTheme.typography.signature,
                 )
             }
-            VSpace(h = 52.dp)
-            LensaButton(
-                text = stringResource(R.string.auth_screen_button_request_code),
-                onClick = onSendVerificationCodeClick,
-                enabled = state.isEnabledNextButton,
-                isFillMaxWidth = true,
-            )
-            FSpace()
-            // TODO ссылки
-            Text(
-                modifier = Modifier.padding(40.dp),
-                text = stringResource(R.string.auth_screen_terms_and_conditions_hint),
-                color = LensaTheme.colors.textColorSecondary,
-                style = LensaTheme.typography.signature,
-            )
         }
     }
 }
@@ -105,6 +110,7 @@ fun AuthScreenPreview() {
             state = AuthScreenState(
                 isEnabledNextButton = false,
                 phoneNumber = "+7",
+                isLoading = false,
                 validationErrors = mapOf(
                     AuthScreenField.PHONE_NUMBER to "Ошибка!"
                 ),

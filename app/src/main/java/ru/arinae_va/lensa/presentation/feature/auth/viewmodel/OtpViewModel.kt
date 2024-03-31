@@ -33,6 +33,7 @@ class OtpViewModel @Inject constructor(
         OtpScreenState(
             phoneNumber = "",
             otpInput = "",
+            isLoading = false,
             isOtpCodeResent = false,
             isButtonNextEnabled = false,
             isResendEnabled = false,
@@ -74,12 +75,22 @@ class OtpViewModel @Inject constructor(
     private fun isValidOtp(otpInput: String) = otpInput.isDigitsOnly() &&
             otpInput.length == OTP_CODE_LENGTH
 
+    private fun setLoading(isLoading: Boolean) {
+        _state.tryEmit(
+            state.value.copy(
+                isLoading = isLoading,
+            )
+        )
+    }
+
     // TODO загрузка пока отправляется код
     private fun verifyPhoneNumber(phoneNumber: String) {
         viewModelScope.launch {
+            setLoading(true)
             userInfoRepository.verifyPhoneNumber(
                 phoneNumber = phoneNumber,
                 onCodeSent = { vId, t ->
+                    setLoading(false)
                     _state.tryEmit(
                         state.value.copy(
                             verificationId = vId,
@@ -89,6 +100,7 @@ class OtpViewModel @Inject constructor(
                     )
                 },
                 onSignInCompleted = {
+                    setLoading(false)
                     navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
                 },
                 onSignUpCompleted = { currentUserId ->
@@ -97,6 +109,7 @@ class OtpViewModel @Inject constructor(
                         userInfoRepository.logIn(currentUserId)
                         settingsRepository.updateLastLoggedInUser(currentUserId)
                         navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+                        setLoading(false)
                     }
                 },
                 onVerificationFailed = {
@@ -105,6 +118,7 @@ class OtpViewModel @Inject constructor(
                                 context.getString(R.string.code_sending_error)
                     )
                     Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                    setLoading(false)
                 },
             )
         }
@@ -113,11 +127,13 @@ class OtpViewModel @Inject constructor(
     fun verifyCode() {
         val code = state.value.otpInput
         viewModelScope.launch {
+            setLoading(true)
             state.value.verificationId?.let { vId ->
                 val credential = PhoneAuthProvider.getCredential(vId, code)
                 userInfoRepository.signInWithPhoneAuthCredential(
                     credential,
                     onSignInFailed = {
+                        setLoading(false)
                         _state.tryEmit(
                             state.value.copy(
                                 validationErrors = mapOf(
@@ -129,12 +145,14 @@ class OtpViewModel @Inject constructor(
                     },
                     onSignUpSuccess = {
                         navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
+                        setLoading(false)
                     },
                     onSignInSuccess = { currentUserId ->
                         viewModelScope.launch {
                             userInfoRepository.logIn(currentUserId)
                             settingsRepository.updateLastLoggedInUser(currentUserId)
                             navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+                            setLoading(false)
                         }
                     }
                 )

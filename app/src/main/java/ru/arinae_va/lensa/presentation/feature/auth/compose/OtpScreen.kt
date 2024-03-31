@@ -24,6 +24,7 @@ import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaButton
 import ru.arinae_va.lensa.presentation.common.component.LensaHeader
 import ru.arinae_va.lensa.presentation.common.component.LensaInput
+import ru.arinae_va.lensa.presentation.common.component.LensaReplaceLoader
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
@@ -58,7 +59,6 @@ private fun OtpContent(
     onEnableResend: () -> Unit,
     onNextClick: () -> Unit,
 ) {
-    // TODO add loaders
     var timeToResend by remember { mutableStateOf(RESEND_DELAY_SECONDS) }
     LaunchedEffect(Unit) {
         while (timeToResend != 0) {
@@ -67,83 +67,87 @@ private fun OtpContent(
         }
         onEnableResend.invoke()
     }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                color = LensaTheme.colors.backgroundColor
-            ),
+    LensaReplaceLoader(
+        isLoading = state.isLoading,
     ) {
-        LensaHeader()
-        VSpace(h = 128.dp)
-        Text(
-            color = LensaTheme.colors.textColor,
-            modifier = Modifier.padding(start = 16.dp, bottom = 4.dp),
-            text = stringResource(R.string.otp_screen_input_label),
-            style = LensaTheme.typography.text,
-        )
-        Text(
-            color = LensaTheme.colors.textColor,
-            modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
-            text = stringResource(R.string.otp_screen_sent_message, state.phoneNumber),
-            style = LensaTheme.typography.signature,
-        )
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            LensaInput(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.otpInput,
-                inputType = KeyboardType.Number,
-                placeholder = stringResource(R.string.otp_screen_otp_input_placeholder),
-                onValueChanged = onOtpInputChanged,
-            )
-            state.validationErrors[OtpScreenInputField.OTP_CODE]?.let {
-                Text(
-                    text = it,
-                    style = LensaTheme.typography.signature,
-                    color = LensaTheme.colors.textColorSecondary,
-                )
-            }
-            VSpace(h = 16.dp)
-            if (!state.isOtpCodeResent) {
-                LensaTextButton(
-                    isFillMaxWidth = true,
-                    text = if (state.isResendEnabled) {
-                        stringResource(R.string.otp_screen_send_new_code)
-                    } else {
-                        stringResource(
-                            R.string.otp_screen_resend_counter_hint,
-                            timeToResend / 60,
-                            timeToResend % 60
-                        )
-                    },
-                    onClick = { if (state.isResendEnabled) onResendOtp.invoke() },
-                    type = if (state.isResendEnabled) LensaTextButtonType.ACCENT
-                    else LensaTextButtonType.SECONDARY,
-                )
-            } else {
-                Text(
-                    text = stringResource(R.string.otp_screen_otp_resent_hint),
-                    style = LensaTheme.typography.signature,
-                    color = LensaTheme.colors.textColorSecondary,
-                )
-            }
-
-            VSpace(h = 16.dp)
-            LensaButton(
-                text = stringResource(R.string.otp_screen_continue_btn),
-                onClick = onNextClick,
-                isFillMaxWidth = true,
-                enabled = state.isButtonNextEnabled,
-            )
-            FSpace()
-            // TODO ссылки
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = LensaTheme.colors.backgroundColor
+                ),
+        ) {
+            LensaHeader()
+            VSpace(h = 128.dp)
             Text(
-                modifier = Modifier.padding(40.dp),
-                text = "Продолжая авторизацию, вы автоматически соглашаетесь с " +
-                        "политикой конфиденциальности и условиями сервиса",
-                color = LensaTheme.colors.textColorSecondary,
+                color = LensaTheme.colors.textColor,
+                modifier = Modifier.padding(start = 16.dp, bottom = 4.dp),
+                text = stringResource(R.string.otp_screen_input_label),
+                style = LensaTheme.typography.text,
+            )
+            Text(
+                color = LensaTheme.colors.textColor,
+                modifier = Modifier.padding(start = 16.dp, bottom = 16.dp),
+                text = stringResource(R.string.otp_screen_sent_message, state.phoneNumber),
                 style = LensaTheme.typography.signature,
             )
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                LensaInput(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = state.otpInput,
+                    inputType = KeyboardType.Number,
+                    placeholder = stringResource(R.string.otp_screen_otp_input_placeholder),
+                    onValueChanged = onOtpInputChanged,
+                )
+                state.validationErrors[OtpScreenInputField.OTP_CODE]?.let {
+                    Text(
+                        text = it,
+                        style = LensaTheme.typography.signature,
+                        color = LensaTheme.colors.textColorSecondary,
+                    )
+                }
+                VSpace(h = 16.dp)
+                if (!state.isOtpCodeResent) {
+                    LensaTextButton(
+                        isFillMaxWidth = true,
+                        text = if (state.isResendEnabled) {
+                            stringResource(R.string.otp_screen_send_new_code)
+                        } else {
+                            stringResource(
+                                R.string.otp_screen_resend_counter_hint,
+                                timeToResend / 60,
+                                timeToResend % 60
+                            )
+                        },
+                        onClick = { if (state.isResendEnabled) onResendOtp.invoke() },
+                        type = if (state.isResendEnabled) LensaTextButtonType.ACCENT
+                        else LensaTextButtonType.SECONDARY,
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.otp_screen_otp_resent_hint),
+                        style = LensaTheme.typography.signature,
+                        color = LensaTheme.colors.textColorSecondary,
+                    )
+                }
+
+                VSpace(h = 16.dp)
+                LensaButton(
+                    text = stringResource(R.string.otp_screen_continue_btn),
+                    onClick = onNextClick,
+                    isFillMaxWidth = true,
+                    enabled = state.isButtonNextEnabled,
+                )
+                FSpace()
+                // TODO ссылки
+                Text(
+                    modifier = Modifier.padding(40.dp),
+                    text = "Продолжая авторизацию, вы автоматически соглашаетесь с " +
+                            "политикой конфиденциальности и условиями сервиса",
+                    color = LensaTheme.colors.textColorSecondary,
+                    style = LensaTheme.typography.signature,
+                )
+            }
         }
     }
 }
@@ -155,6 +159,7 @@ fun OtpScreenPreview() = LensaTheme {
         state = OtpScreenState(
             phoneNumber = "",
             otpInput = "",
+            isLoading = false,
             isOtpCodeResent = true,
             isResendEnabled = false,
             isButtonNextEnabled = false,

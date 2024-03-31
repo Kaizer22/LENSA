@@ -21,6 +21,7 @@ class AuthViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(
         AuthScreenState(
+            isLoading = false,
             isEnabledNextButton = false,
             phoneNumber = Constants.RUSSIA_COUNTRY_CODE,
         )

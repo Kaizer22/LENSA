@@ -15,15 +15,18 @@ import ru.arinae_va.lensa.R
 fun LensaAsyncImage(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    aspectRatio: Float = 1f,
+    aspectRatio: Float? = 1f,
     pictureUrl: String = "",
     contentScale: ContentScale = ContentScale.Crop,
 ) {
-    val imageModifier = modifier.aspectRatio(aspectRatio)
+    var imageModifier = modifier
+    aspectRatio?.let {
+        imageModifier = imageModifier.aspectRatio(aspectRatio)
+    }
     // To avoid onClick interception where it doesn't require
     // TODO on long click
     onClick?.let {
-        imageModifier.clickable(
+        imageModifier = imageModifier.clickable(
             onClick = onClick,
         )
     }

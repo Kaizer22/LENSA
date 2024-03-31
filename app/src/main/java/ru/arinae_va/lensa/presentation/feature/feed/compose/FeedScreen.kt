@@ -27,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -117,6 +118,7 @@ private fun FeedContent(
             onSearchTextChanged = onSearchTextChanged,
             onProfileClick = onProfileClick,
             onCardClick = onCardClick,
+            onErrorClearFilter = onClearFilterClick,
         )
         if (sideMenuState != SideMenuState.HIDDEN) {
             Box(
@@ -172,6 +174,7 @@ private fun FeedContent(
 @Composable
 internal fun FeedAndSearchBar(
     state: FeedState,
+    onErrorClearFilter: () -> Unit,
     onMenuClick: () -> Unit,
     onSearchTextChanged: (String) -> Unit,
     onProfileClick: () -> Unit,
@@ -192,55 +195,62 @@ internal fun FeedAndSearchBar(
         }
     }
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .background(
                 color = LensaTheme.colors.backgroundColor
             )
             .fillMaxSize(),
-        state = listState,
     ) {
-        item {
-            LensaActionBar(
-                modifier = Modifier.fillMaxWidth(),
-                onMenuClick = onMenuClick,
-                onSearchClick = {},
-                onSearchTextChanged = onSearchTextChanged,
-                onProfileClick = onProfileClick,
-            )
-        }
-        item {
-            FeedHeader()
-        }
+        LensaActionBar(
+            modifier = Modifier.fillMaxWidth(),
+            onMenuClick = onMenuClick,
+            onSearchClick = {},
+            onSearchTextChanged = onSearchTextChanged,
+            onProfileClick = onProfileClick,
+        )
         if (cards.isNotEmpty()) {
-            items(items = cards) { cardModel ->
-                VSpace(h = 24.dp)
-                SpecialistCard(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    photoUrl = cardModel.photoUrl,
-                    rating = cardModel.rating,
-                    text = "${cardModel.surname} ${cardModel.name}",
-                    onClick = {
-                        onCardClick(cardModel.userId)
-                    },
-                )
-                VSpace(h = 24.dp)
-            }
-            item {
-                if (cards.size > 5) {
-                    FeedLastItem(
-                        onClick = {
-                            coroutineScope.launch {
-                                listState.animateScrollToItem(index = 0)
-                            }
-                        }
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = listState,
+            ) {
+
+                item {
+                    FeedHeader(
+                        header = state.filter.specialization
+                            .ifEmpty { "СПЕЦИАЛИСТЫ" }
                     )
+                }
+
+                items(items = cards) { cardModel ->
+                    VSpace(h = 24.dp)
+                    SpecialistCard(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        photoUrl = cardModel.photoUrl,
+                        rating = cardModel.rating,
+                        text = "${cardModel.surname} ${cardModel.name}",
+                        onClick = {
+                            onCardClick(cardModel.userId)
+                        },
+                    )
+                    VSpace(h = 24.dp)
+                }
+                item {
+                    if (cards.size > 5) {
+                        FeedLastItem(
+                            onClick = {
+                                coroutineScope.launch {
+                                    listState.animateScrollToItem(index = 0)
+                                }
+                            }
+                        )
+                    }
                 }
             }
         } else {
-            item {
-                FeedEmptyState()
-            }
+            FeedEmptyState(
+                onErrorClearFilter = onErrorClearFilter,
+            )
         }
     }
 }
@@ -248,16 +258,32 @@ internal fun FeedAndSearchBar(
 @Composable
 fun FeedEmptyState(
     modifier: Modifier = Modifier,
+    onErrorClearFilter: () -> Unit,
 ) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "НИЧЕГО НЕ НАЙДЕНО",
-            style = LensaTheme.typography.header2,
-            color = LensaTheme.colors.textColor,
-        )
+    Column(modifier = modifier.fillMaxSize(),) {
+        FeedHeader(header = "ИЗВИНИТЕ")
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    textAlign = TextAlign.Center,
+                    text = "ПО ЭТОМУ\nЗАПРОСУ\nНИЧЕГО НЕ\nНАЙДЕНО",
+                    style = LensaTheme.typography.header2,
+                    color = LensaTheme.colors.textColor,
+                )
+                VSpace(h = 48.dp)
+                LensaTextButton(
+                    text = "Сбросить фильтр",
+                    onClick = onErrorClearFilter,
+                    type = LensaTextButtonType.ACCENT,
+                )
+            }
+        }
     }
 }
 
@@ -288,7 +314,7 @@ fun FeedLastItem(
 
 @Composable
 fun FeedHeader(
-    text: String = "СПЕЦИАЛИСТЫ"
+    header: String,
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -296,7 +322,7 @@ fun FeedHeader(
     ) {
         VSpace(h = 12.dp)
         Text(
-            text = text,
+            text = header,
             style = LensaTheme.typography.header2,
             color = LensaTheme.colors.textColor,
         )

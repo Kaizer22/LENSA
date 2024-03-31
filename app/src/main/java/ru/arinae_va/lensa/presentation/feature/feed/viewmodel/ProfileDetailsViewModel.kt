@@ -76,9 +76,9 @@ class ProfileDetailsViewModel @Inject constructor(
                     targetUserId = state.value.userProfileModel.id,
                     review = Review(
                         authorId = id,
-                        name = userInfoRepository.currentUserName.orEmpty(),
-                        surname = userInfoRepository.currentUserSurname.orEmpty(),
-                        avatarUrl = userInfoRepository.currentUserAvatarUrl.orEmpty(),
+                        name = userInfoRepository.currentUserProfile()?.name.orEmpty(),
+                        surname = userInfoRepository.currentUserProfile()?.surname.orEmpty(),
+                        avatarUrl = userInfoRepository.currentUserProfile()?.avatarUrl.orEmpty(),
                         text = state.value.reviewText,
                         rating = state.value.rating,
                         dateTime = LocalDateTime.now(),

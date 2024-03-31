@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ru.arinae_va.lensa.data.repositroy.UserInfoRepository
 import ru.arinae_va.lensa.domain.repository.ISettingsRepository
+import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import javax.inject.Inject
 
@@ -14,7 +14,7 @@ import javax.inject.Inject
 class OnboardingViewModel @Inject constructor(
     private val navHostController: NavHostController,
     private val settingsRepository: ISettingsRepository,
-    private val userInfoRepository: UserInfoRepository
+    private val userInfoRepository: IUserInfoRepository,
 ) : ViewModel() {
 
     private var isSuccessMemorizedLogIn = false
@@ -24,7 +24,8 @@ class OnboardingViewModel @Inject constructor(
             if (!settingsRepository.lastLoggedInUser().isNullOrEmpty()) {
                 val rememberedUserId = settingsRepository.lastLoggedInUser()!!
                 userInfoRepository.logIn(rememberedUserId)
-                navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+                isSuccessMemorizedLogIn = true
+                //navHostController.navigate(LensaScreens.FEED_SCREEN.name)
             }
         }
     }
@@ -39,9 +40,9 @@ class OnboardingViewModel @Inject constructor(
             navHostController.navigate(LensaScreens.ONBOARDING_SCREEN.name)
         } else {
             if (isSuccessMemorizedLogIn) {
-                navHostController.navigate(LensaScreens.AUTH_SCREEN.name)
-            } else {
                 navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+            } else {
+                navHostController.navigate(LensaScreens.AUTH_SCREEN.name)
             }
         }
     }

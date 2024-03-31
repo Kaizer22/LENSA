@@ -42,4 +42,8 @@ class FavouritesViewModel @Inject constructor(
             "${LensaScreens.FAVOURITE_FOLDER_SCREEN.name}/" + folderName
         )
     }
+
+    fun onBackPressed() {
+        navHostController.popBackStack()
+    }
 }

@@ -58,4 +58,8 @@ class FavouritesFolderViewModel @Inject constructor(
             )
         )
     }
+
+    fun onBackPressed() {
+        navHostController.popBackStack()
+    }
 }

@@ -38,7 +38,7 @@ fun LensaSplashScreen(
                     LinearInterpolator().getInterpolation(it)
                 })
         )
-        delay(1000L)
+        delay(1500L)
         // TODO
         viewModel.onSplashShown()
     }

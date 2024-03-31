@@ -25,7 +25,7 @@ class SettingsViewModel @Inject constructor(
     fun onBackPressed() = navHostController.popBackStack()
 
     fun onEditProfileClick() {
-        val isSpecialist = userInfoRepository.currentUserSpecialization !=
+        val isSpecialist = userInfoRepository.currentUserProfile()?.specialization !=
                 Constants.CUSTOMER_SPECIALIZATION
         navHostController.navigate(
             LensaScreens.REGISTRATION_SCREEN.name +

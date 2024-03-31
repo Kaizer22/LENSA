@@ -8,28 +8,12 @@ import ru.arinae_va.lensa.domain.model.FeedFilter
 import ru.arinae_va.lensa.domain.model.Review
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 
-abstract class IUserInfoRepository {
+interface IUserInfoRepository {
+    fun currentUserId(): String?
 
-    protected var currentUserProfile: UserProfileModel? = null
+    fun currentUserProfile(): UserProfileModel?
 
-    var currentUserName: String? = null
-        get() = currentUserProfile?.name
-        private set
-
-    var currentUserSpecialization: String? = null
-        get() = currentUserProfile?.specialization
-        private set
-
-    var currentUserSurname: String? = null
-        get() = currentUserProfile?.surname
-        private set
-
-    var currentUserAvatarUrl: String? = null
-        get() = currentUserProfile?.avatarUrl
-        private set
-    abstract fun currentUserId(): String?
-
-    abstract fun verifyPhoneNumber(
+    fun verifyPhoneNumber(
         phoneNumber: String,
         onSignInCompleted: (userUid: String) -> Unit,
         onSignUpCompleted: (userUid: String) -> Unit,
@@ -37,40 +21,40 @@ abstract class IUserInfoRepository {
         onCodeSent: (String, PhoneAuthProvider.ForceResendingToken) -> Unit,
     )
 
-    abstract fun signInWithPhoneAuthCredential(
+    fun signInWithPhoneAuthCredential(
         credential: PhoneAuthCredential,
         onSignUpSuccess: (userUid: String) -> Unit,
         onSignInSuccess: (userUid: String) -> Unit,
         onSignInFailed: () -> Unit,
     )
 
-    abstract suspend fun logIn(currentUserId: String)
+    suspend fun logIn(currentUserId: String)
 
-    abstract fun logOut()
+    fun logOut()
 
-    abstract suspend fun deleteAccount()
+    suspend fun deleteAccount()
 
-    abstract suspend fun upsertProfile(
+    suspend fun upsertProfile(
         model: UserProfileModel,
         avatarUri: Uri? = null,
         portfolioUris: List<Uri>? = null,
         isNewUser: Boolean = false,
     )
 
-    abstract suspend fun getFeed(
+    suspend fun getFeed(
         feedFilter: FeedFilter?
     ): List<UserProfileModel> // by filter
 
-    abstract suspend fun postReview(targetUserId: String, review: Review)
+    suspend fun postReview(targetUserId: String, review: Review)
 
-    abstract suspend fun addFavourite(userId: String, folderName: String)
+    suspend fun addFavourite(userId: String, folderName: String)
 
-    abstract suspend fun removeFavourite(userId: String, folderName: String)
+    suspend fun removeFavourite(userId: String, folderName: String)
 
-    abstract suspend fun getFavourites(): List<FavouriteFolder>
+    suspend fun getFavourites(): List<FavouriteFolder>
 
-    abstract suspend fun sendFeedback(userUid: String?, text: String)
-    abstract suspend fun getProfileById(userUid: String): UserProfileModel
+    suspend fun sendFeedback(userUid: String?, text: String)
+    suspend fun getProfileById(userUid: String): UserProfileModel
 
-    abstract suspend fun getProfilesByIds(userIds: List<String>): List<UserProfileModel>
+    suspend fun getProfilesByIds(userIds: List<String>): List<UserProfileModel>
 }

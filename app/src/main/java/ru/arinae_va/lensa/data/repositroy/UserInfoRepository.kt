@@ -23,9 +23,14 @@ class UserInfoRepository @Inject constructor(
     private val userInfoStorage: IUserInfoDataSource,
     private val favouritesStorage: IFavouritesStorage,
     //private val settingsStorage: ISettingsStorage,
-) : IUserInfoRepository() {
+) : IUserInfoRepository {
+
+    private var currentUserProfile: UserProfileModel? = null
+
     override fun currentUserId(): String? = currentUserProfile?.id
         ?: Firebase.auth.currentUser?.uid
+
+    override fun currentUserProfile(): UserProfileModel? = currentUserProfile
 
     override fun verifyPhoneNumber(
         phoneNumber: String,

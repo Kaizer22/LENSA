@@ -76,6 +76,10 @@ fun HeaderSection(
             color = LensaTheme.colors.textColor,
         )
         FSpace()
-        LensaRating(rating = state.userProfileModel.rating ?: 0.0f)
+        state.userProfileModel.rating?.let { rating ->
+            if (rating != 0f) {
+                LensaRating(rating = rating)
+            }
+        }
     }
 }

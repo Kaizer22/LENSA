@@ -1,6 +1,7 @@
 package ru.arinae_va.lensa.utils
 
 import ru.arinae_va.lensa.domain.model.ORDER_TYPE_RATING_ASC_TEXT
+import ru.arinae_va.lensa.domain.model.ORDER_TYPE_RATING_DESC_TEXT
 
 object Constants {
     internal const val RUSSIA_COUNTRY_CODE = "+7"
@@ -54,6 +55,6 @@ object Constants {
 
     internal val SORT_OPTIONS = listOf(
         ORDER_TYPE_RATING_ASC_TEXT,
-        ORDER_TYPE_RATING_ASC_TEXT,
+        ORDER_TYPE_RATING_DESC_TEXT,
     )
 }

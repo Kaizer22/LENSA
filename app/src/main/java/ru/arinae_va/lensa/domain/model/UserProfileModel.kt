@@ -4,7 +4,8 @@ enum class UserProfileType {
     SPECIALIST, CUSTOMER,
 }
 data class UserProfileModel(
-    val id: String,
+    val userId: String,
+    val profileId: String,
     val type: UserProfileType,
     val name: String,
     val surname: String,
@@ -26,7 +27,8 @@ data class UserProfileModel(
 ) {
     companion object {
         val EMPTY = UserProfileModel(
-            id = "",
+            userId = "",
+            profileId = "",
             type = UserProfileType.CUSTOMER,
             name = "",
             surname = "",

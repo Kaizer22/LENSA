@@ -5,7 +5,7 @@ import ru.arinae_va.lensa.domain.repository.ISettingsRepository
 import javax.inject.Inject
 
 class SettingsRepository @Inject constructor(
-    val settingsStorage: ISettingsStorage,
+    private val settingsStorage: ISettingsStorage,
 ): ISettingsRepository {
     override fun isNeedToShowOnboarding(): Boolean = settingsStorage.isNeedToShowOnboarding
     override fun lastLoggedInUser(): String? = settingsStorage.lastLoggedInUser

@@ -26,8 +26,6 @@ import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.ProfileDetailsView
 import ru.arinae_va.lensa.presentation.feature.onboarding.compose.LensaSplashScreen
 import ru.arinae_va.lensa.presentation.feature.onboarding.compose.OnboardingScreen
 import ru.arinae_va.lensa.presentation.feature.onboarding.compose.OnboardingViewModel
-import ru.arinae_va.lensa.presentation.feature.profile.compose.ProfileScreen
-import ru.arinae_va.lensa.presentation.feature.profile.compose.ProfileViewModel
 import ru.arinae_va.lensa.presentation.feature.registration.compose.RegistrationRoleSelectorScreen
 import ru.arinae_va.lensa.presentation.feature.registration.compose.RegistrationScreen
 import ru.arinae_va.lensa.presentation.feature.registration.viewmodel.EMPTY_USER_ID
@@ -173,14 +171,6 @@ fun LensaNavGraph(
             )
         }
 
-        composable(route = LensaScreens.PROFILE_SCREEN.name) {
-            val viewModel = hiltViewModel<ProfileViewModel>()
-            ProfileScreen(
-                navController = navController,
-                viewModel = viewModel,
-            )
-        }
-
         composable(route = "${LensaScreens.SPECIALIST_DETAILS_SCREEN.name}/" +
                 "{$PROFILE_UID_KEY}/" +
                 "{$IS_SELF_PROFILE_KEY}",
@@ -202,7 +192,7 @@ fun LensaNavGraph(
             LaunchedEffect(arguments) {
                 userId?.let { uid ->
                     viewModel.loadUserProfile(
-                        userUid = uid,
+                        profileUid = uid,
                         isSelf = isSelf
                     )
                 }

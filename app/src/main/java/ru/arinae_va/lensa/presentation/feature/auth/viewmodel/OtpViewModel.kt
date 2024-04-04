@@ -13,8 +13,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
+import ru.arinae_va.lensa.domain.repository.IAuthRepository
 import ru.arinae_va.lensa.domain.repository.ISettingsRepository
-import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
+import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import javax.inject.Inject
 
@@ -25,7 +26,8 @@ internal const val OTP_CODE_LENGTH = 6
 class OtpViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val navHostController: NavHostController,
-    private val userInfoRepository: IUserInfoRepository,
+    private val authRepository: IAuthRepository,
+    private val userProfileRepository: IUserProfileRepository,
     private val settingsRepository: ISettingsRepository,
 ) : ViewModel() {
 
@@ -87,7 +89,7 @@ class OtpViewModel @Inject constructor(
     private fun verifyPhoneNumber(phoneNumber: String) {
         viewModelScope.launch {
             setLoading(true)
-            userInfoRepository.verifyPhoneNumber(
+            authRepository.verifyPhoneNumber(
                 phoneNumber = phoneNumber,
                 onCodeSent = { vId, t ->
                     setLoading(false)
@@ -106,7 +108,7 @@ class OtpViewModel @Inject constructor(
                 onSignUpCompleted = { currentUserId ->
                     // TODO refactor
                     viewModelScope.launch {
-                        userInfoRepository.logIn(currentUserId)
+                        authRepository.logIn(currentUserId)
                         settingsRepository.updateLastLoggedInUser(currentUserId)
                         navHostController.navigate(LensaScreens.FEED_SCREEN.name)
                         setLoading(false)
@@ -130,7 +132,7 @@ class OtpViewModel @Inject constructor(
             setLoading(true)
             state.value.verificationId?.let { vId ->
                 val credential = PhoneAuthProvider.getCredential(vId, code)
-                userInfoRepository.signInWithPhoneAuthCredential(
+                authRepository.signInWithPhoneAuthCredential(
                     credential,
                     onSignInFailed = {
                         setLoading(false)
@@ -149,7 +151,7 @@ class OtpViewModel @Inject constructor(
                     },
                     onSignInSuccess = { currentUserId ->
                         viewModelScope.launch {
-                            userInfoRepository.logIn(currentUserId)
+                            authRepository.logIn(currentUserId)
                             settingsRepository.updateLastLoggedInUser(currentUserId)
                             navHostController.navigate(LensaScreens.FEED_SCREEN.name)
                             setLoading(false)

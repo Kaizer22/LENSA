@@ -8,8 +8,12 @@ import ru.arinae_va.lensa.data.datasource.local.FavouritesStorage
 import ru.arinae_va.lensa.data.datasource.local.IFavouritesStorage
 import ru.arinae_va.lensa.data.datasource.local.ISettingsStorage
 import ru.arinae_va.lensa.data.datasource.local.SettingsStorage
-import ru.arinae_va.lensa.data.datasource.remote.FirebaseUserInfoDataSource
-import ru.arinae_va.lensa.data.datasource.remote.IUserInfoDataSource
+import ru.arinae_va.lensa.data.datasource.remote.FirebaseFeedbackDataSource
+import ru.arinae_va.lensa.data.datasource.remote.FirebaseReviewDataSource
+import ru.arinae_va.lensa.data.datasource.remote.FirebaseUserProfileDataSource
+import ru.arinae_va.lensa.data.datasource.remote.IFeedbackDataSource
+import ru.arinae_va.lensa.data.datasource.remote.IReviewDataSource
+import ru.arinae_va.lensa.data.datasource.remote.IUserProfileDataSource
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -26,7 +30,12 @@ abstract class DataSourceModule {
 
     // region remote
     @Binds
-    abstract fun userInfoDataSource(userInfoStorage: FirebaseUserInfoDataSource): IUserInfoDataSource
+    abstract fun userInfoDataSource(userInfoStorage: FirebaseUserProfileDataSource): IUserProfileDataSource
 
+    @Binds
+    abstract fun feedbackDataSource(feedbackDataSource: FirebaseFeedbackDataSource): IFeedbackDataSource
+
+    @Binds
+    abstract fun reviewDataSource(reviewDataSource: FirebaseReviewDataSource): IReviewDataSource
     // endregion
 }

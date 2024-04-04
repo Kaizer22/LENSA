@@ -11,7 +11,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class UserProfileResponse(
-    val id: String? = null,
+    val userId: String? = null,
+    val profileId: String? = null,
     val type: String? = null,
     val name: String? = null,
     val surname: String? = null,
@@ -32,7 +33,8 @@ class UserProfileResponse(
     val reviews: List<ReviewResponse>? = null,
 ) {
     fun mapToSpecialistModel(): UserProfileModel = UserProfileModel(
-        id = id.orEmpty(),
+        userId = userId.orEmpty(),
+        profileId = profileId.orEmpty(),
         type = type?.let { UserProfileType.valueOf(it) } ?: UserProfileType.CUSTOMER,
         name = name.orEmpty(),
         surname = surname.orEmpty(),

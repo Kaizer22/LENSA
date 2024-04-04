@@ -42,6 +42,7 @@ fun LensaInput(
     enabled: Boolean = true,
     onFocusChanged: (isFocused: Boolean) -> Unit = {},
     readOnly: Boolean = false,
+    maxLength: Int = Int.MAX_VALUE,
     maxLines: Int = 1,
     minLines: Int = 1,
     singleLine: Boolean = true,
@@ -84,7 +85,7 @@ fun LensaInput(
         enabled = enabled,
         readOnly = readOnly,
         onValueChange = { newInput: String ->
-            input = newInput
+            input = newInput.take(maxLength)
             needToDrawRequiredIcon = !acceptRequiredCheck(newInput)
             onValueChanged(input)
         },
@@ -194,19 +195,16 @@ fun LensaMultilineInput(
     maxLength: Int = MULTILINE_INPUT_MAX_LENGTH,
     linesCount: Int = MULTILINE_INPUT_LINES_COUNT
 ) {
-    var inputLength by remember { mutableStateOf(0) }
-    var input by remember { mutableStateOf(value) }
+    var inputLength by remember(value) { mutableStateOf(value.length) }
+    var input by remember(value) { mutableStateOf(value) }
     Column(
         horizontalAlignment = Alignment.End,
     ) {
         LensaInput(
             modifier = modifier,
             onValueChanged = {
-                if (it.length <= maxLength) {
-                    input = it
-                    inputLength = it.length
-                    onValueChanged(it)
-                }
+                inputLength = it.length
+                onValueChanged(it)
             },
             placeholder = placeholder,
             value = input,
@@ -217,6 +215,7 @@ fun LensaMultilineInput(
             singleLine = false,
             maxLines = linesCount,
             minLines = linesCount,
+            maxLength = maxLength,
         )
         VSpace(h = 8.dp)
         Row(

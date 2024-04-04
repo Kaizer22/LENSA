@@ -39,7 +39,7 @@ fun PersonalInfoSection(
             LensaTextButton(
                 text = "Написать сообщение",
                 onClick = {
-                    onSendMessageClick.invoke(id)
+                    onSendMessageClick.invoke(profileId)
                 },
                 type = LensaTextButtonType.ACCENT,
             )

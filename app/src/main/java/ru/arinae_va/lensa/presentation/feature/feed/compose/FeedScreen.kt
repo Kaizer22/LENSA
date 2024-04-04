@@ -190,7 +190,7 @@ internal fun FeedAndSearchBar(
                 rating = specialistModel.rating ?: 0.0f,
                 name = specialistModel.name,
                 surname = specialistModel.surname,
-                userId = specialistModel.id,
+                profileId = specialistModel.profileId,
             )
         }
     }
@@ -230,7 +230,7 @@ internal fun FeedAndSearchBar(
                         rating = cardModel.rating,
                         text = "${cardModel.surname} ${cardModel.name}",
                         onClick = {
-                            onCardClick(cardModel.userId)
+                            onCardClick(cardModel.profileId)
                         },
                     )
                     VSpace(h = 24.dp)

@@ -26,6 +26,7 @@ import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.AuthScreenField
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.AuthScreenState
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.AuthViewModel
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
+import ru.arinae_va.lensa.utils.Constants
 
 @Composable
 fun AuthScreen(
@@ -71,6 +72,7 @@ private fun AuthContent(
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 LensaInput(
                     modifier = Modifier.fillMaxWidth(),
+                    maxLength = Constants.RUSSIAN_PHONE_NUMBER_LENGTH,
                     value = state.phoneNumber,
                     inputType = KeyboardType.Phone,
                     onValueChanged = onPhoneNumberChanged,

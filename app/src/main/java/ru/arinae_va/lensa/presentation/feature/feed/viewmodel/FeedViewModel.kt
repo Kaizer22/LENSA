@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.FeedFilter
 import ru.arinae_va.lensa.domain.model.OrderType
-import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
+import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import javax.inject.Inject
 
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class FeedViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val navHostController: NavHostController,
-    private val userInfoRepository: IUserInfoRepository,
+    private val userProfileRepository: IUserProfileRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FeedState.INITIAL)
@@ -32,7 +32,7 @@ class FeedViewModel @Inject constructor(
 
     private fun loadFeed() {
         viewModelScope.launch {
-            val result = userInfoRepository.getFeed(state.value.filter)
+            val result = userProfileRepository.getFeed(state.value.filter)
             _state.tryEmit(
                 state.value.copy(
                     feed = result,
@@ -43,7 +43,7 @@ class FeedViewModel @Inject constructor(
 
     fun onProfileClick() {
         val isSelf = true
-        userInfoRepository.currentUserId().let {
+        userProfileRepository.currentProfileId().let {
             navHostController.navigate(
                 "${LensaScreens.SPECIALIST_DETAILS_SCREEN.name}/" +
                         "$it/" +
@@ -71,12 +71,12 @@ class FeedViewModel @Inject constructor(
         loadFeed()
     }
 
-    fun onCardClick(userUid: String) {
+    fun onCardClick(profileUid: String) {
         val isSelf = false
-        state.value.feed.find { it.id == userUid }?.let {
+        state.value.feed.find { it.profileId == profileUid }?.let {
             navHostController.navigate(
                 "${LensaScreens.SPECIALIST_DETAILS_SCREEN.name}/" +
-                        "${it.id}/" +
+                        "${it.profileId}/" +
                         "$isSelf"
             )
         }

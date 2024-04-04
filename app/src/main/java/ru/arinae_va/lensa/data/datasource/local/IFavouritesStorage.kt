@@ -12,12 +12,12 @@ interface IFavouritesStorage {
     //suspend fun getProfilesByFolder(folderName: String):
     suspend fun addFavourite(
         hostUserId: String,
-        userId: String,
+        profileId: String,
         folderName: String
     )
     suspend fun removeFavourite(
         hostUserId: String,
-        userId: String,
+        profileId: String,
         folderName: String
     )
 }
@@ -43,28 +43,28 @@ class FavouritesStorage @Inject constructor(
 
     override suspend fun addFavourite(
         hostUserId: String,
-        userId: String,
+        profileId: String,
         folderName: String,
     ) {
         favouritesDao.insert(
             FavouriteProfileEntity(
                 hostUserId = hostUserId,
                 folderName = folderName,
-                profileId = userId
+                profileId = profileId
             )
         )
     }
 
     override suspend fun removeFavourite(
         hostUserId: String,
-        userId: String,
+        profileId: String,
         folderName: String,
     ) {
         favouritesDao.delete(
             FavouriteProfileEntity(
                 hostUserId = hostUserId,
                 folderName = folderName,
-                profileId = userId,
+                profileId = profileId,
             )
         )
     }

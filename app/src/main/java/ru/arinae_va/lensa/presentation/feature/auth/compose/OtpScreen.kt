@@ -29,6 +29,7 @@ import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
+import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OTP_CODE_LENGTH
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpScreenInputField
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpScreenState
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpViewModel
@@ -94,6 +95,7 @@ private fun OtpContent(
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 LensaInput(
                     modifier = Modifier.fillMaxWidth(),
+                    maxLength = OTP_CODE_LENGTH,
                     value = state.otpInput,
                     inputType = KeyboardType.Number,
                     placeholder = stringResource(R.string.otp_screen_otp_input_placeholder),

@@ -198,7 +198,8 @@ fun SpecialistDetailsScreenPreview() {
         ProfileDetailsContent(
             state = ProfileDetailsState(
                 userProfileModel = UserProfileModel(
-                    id = "",
+                    userId = "",
+                    profileId = "",
                     type = UserProfileType.SPECIALIST,
                     name = "Арина",
                     surname = "Еремеева",

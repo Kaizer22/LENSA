@@ -17,7 +17,8 @@ import ru.arinae_va.lensa.domain.model.Price
 import ru.arinae_va.lensa.domain.model.SocialMedia
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.model.UserProfileType
-import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
+import ru.arinae_va.lensa.domain.repository.IAuthRepository
+import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.feature.feed.compose.SocialMediaType
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.utils.Constants
@@ -31,7 +32,8 @@ internal const val EMPTY_USER_ID = "empty"
 class RegistrationViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val navHostController: NavHostController,
-    private val userInfoRepository: IUserInfoRepository,
+    private val userProfileRepository: IUserProfileRepository,
+    private val authRepository: IAuthRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
@@ -40,10 +42,10 @@ class RegistrationViewModel @Inject constructor(
     internal val state: StateFlow<RegistrationScreenState> = _state
 
     fun setUser(editUserId: String) {
-        if (editUserId == userInfoRepository.currentUserId()) {
+        if (editUserId == userProfileRepository.currentProfileId()) {
             viewModelScope.launch {
                 setLoading(true)
-                val editableUser = userInfoRepository.getProfileById(editUserId)
+                val editableUser = userProfileRepository.getProfileById(editUserId)
 
                 with(editableUser) {
                     val socialMediasMap = mutableMapOf<SocialMediaType, String>()
@@ -186,7 +188,7 @@ class RegistrationViewModel @Inject constructor(
 
     private suspend fun finishUpsert() {
         if (!state.value.isEdit) {
-            userInfoRepository.logIn(userInfoRepository.currentUserId().orEmpty())
+            authRepository.logIn(userProfileRepository.currentProfileId().orEmpty())
         }
         navHostController.navigate(LensaScreens.FEED_SCREEN.name)
     }
@@ -195,7 +197,8 @@ class RegistrationViewModel @Inject constructor(
         if (validateCustomerFields()) {
             with(state.value) {
                 val model = UserProfileModel(
-                    id = userInfoRepository.currentUserId().orEmpty(),
+                    userId = authRepository.currentUserId().orEmpty(),
+                    profileId = userProfileRepository.currentProfileId().orEmpty(),
                     type = UserProfileType.CUSTOMER,
                     name = name,
                     surname = surname,
@@ -217,7 +220,7 @@ class RegistrationViewModel @Inject constructor(
                     rating = if (state.value.isEdit) state.value.rating else null
                 )
 
-                userInfoRepository.upsertProfile(
+                userProfileRepository.upsertProfile(
                     model = model,
                     avatarUri = avatarUri,
                     isNewUser = !state.value.isEdit,
@@ -231,7 +234,8 @@ class RegistrationViewModel @Inject constructor(
         if (validateSpecialistFields()) {
             with(state.value) {
                 val model = UserProfileModel(
-                    id = userInfoRepository.currentUserId().orEmpty(),
+                    userId = authRepository.currentUserId().orEmpty(),
+                    profileId = userProfileRepository.currentProfileId().orEmpty(),
                     type = UserProfileType.SPECIALIST,
                     name = name,
                     surname = surname,
@@ -258,7 +262,7 @@ class RegistrationViewModel @Inject constructor(
                     else null,
                     rating = if (isEdit) state.value.rating else null
                 )
-                userInfoRepository.upsertProfile(
+                userProfileRepository.upsertProfile(
                     model = model,
                     avatarUri = avatarUri,
                     portfolioUris = portfolioUris,

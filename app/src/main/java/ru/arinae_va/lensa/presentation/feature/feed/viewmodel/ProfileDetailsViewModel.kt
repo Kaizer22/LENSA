@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.domain.model.Review
-import ru.arinae_va.lensa.domain.repository.IUserInfoRepository
+import ru.arinae_va.lensa.domain.repository.IFavouritesRepository
+import ru.arinae_va.lensa.domain.repository.IReviewRepository
+import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -17,24 +19,26 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileDetailsViewModel @Inject constructor(
     private val navHostController: NavHostController,
-    private val userInfoRepository: IUserInfoRepository
+    private val userProfileRepository: IUserProfileRepository,
+    private val favouritesRepository: IFavouritesRepository,
+    private val reviewRepository: IReviewRepository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileDetailsState.INITIAL)
     val state: StateFlow<ProfileDetailsState> = _state
 
     fun loadUserProfile(
-        userUid: String,
+        profileUid: String,
         isSelf: Boolean,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             setLoading(true)
-            val result = userInfoRepository.getProfileById(userUid)
+            val result = userProfileRepository.getProfileById(profileUid)
             _state.tryEmit(
                 state.value.copy(
                     userProfileModel = result,
                     isSelf = isSelf,
-                    isAddedToFavourites = !isSelf && isProfileAddedToFavourites(userUid),
+                    isAddedToFavourites = !isSelf && isProfileAddedToFavourites(profileUid),
                 )
             )
             setLoading(false)
@@ -50,7 +54,7 @@ class ProfileDetailsViewModel @Inject constructor(
     }
 
     private suspend fun isProfileAddedToFavourites(userUid: String) =
-        userInfoRepository.getFavourites().any { folder ->
+        favouritesRepository.getFavourites().any { folder ->
             folder.savedUserIds.contains(userUid)
         }
 
@@ -63,7 +67,7 @@ class ProfileDetailsViewModel @Inject constructor(
     }
 
     fun onReviewAvatarClicked(userId: String) {
-        val isSelf = userInfoRepository.currentUserId() == userId
+        val isSelf = userProfileRepository.currentProfileId() == userId
         navHostController.navigate(
             "${LensaScreens.SPECIALIST_DETAILS_SCREEN.name}/" +
                     "${userId}/" +
@@ -81,21 +85,21 @@ class ProfileDetailsViewModel @Inject constructor(
 
     fun onPostReview() {
         viewModelScope.launch {
-            userInfoRepository.currentUserId()?.let { id ->
-                userInfoRepository.postReview(
-                    targetUserId = state.value.userProfileModel.id,
+            userProfileRepository.currentProfileId()?.let { id ->
+                reviewRepository.upsertReview(
+                    targetProfileId = state.value.userProfileModel.profileId,
                     review = Review(
                         authorId = id,
-                        name = userInfoRepository.currentUserProfile()?.name.orEmpty(),
-                        surname = userInfoRepository.currentUserProfile()?.surname.orEmpty(),
-                        avatarUrl = userInfoRepository.currentUserProfile()?.avatarUrl.orEmpty(),
+                        name = userProfileRepository.currentUserProfile()?.name.orEmpty(),
+                        surname = userProfileRepository.currentUserProfile()?.surname.orEmpty(),
+                        avatarUrl = userProfileRepository.currentUserProfile()?.avatarUrl.orEmpty(),
                         text = state.value.reviewText,
                         rating = state.value.rating,
                         dateTime = LocalDateTime.now(),
                     )
                 )
                 loadUserProfile(
-                    userUid = state.value.userProfileModel.id,
+                    profileUid = state.value.userProfileModel.profileId,
                     isSelf = state.value.isSelf
                 )
             }
@@ -113,13 +117,13 @@ class ProfileDetailsViewModel @Inject constructor(
     fun onAddToFavouritesClick(isNeedToAdd: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             if (isNeedToAdd) {
-                userInfoRepository.addFavourite(
-                    userId = state.value.userProfileModel.id,
+                favouritesRepository.addFavourite(
+                    profileId = state.value.userProfileModel.profileId,
                     folderName = state.value.userProfileModel.specialization,
                 )
             } else {
-                userInfoRepository.removeFavourite(
-                    userId = state.value.userProfileModel.id,
+                favouritesRepository.removeFavourite(
+                    profileId = state.value.userProfileModel.profileId,
                     folderName = state.value.userProfileModel.specialization,
                 )
             }

@@ -52,13 +52,13 @@ fun FavouritesFolderContent(
         }
         items(state.folderItems) { profile ->
             SpecialistCard(
-                onClick = { onSpecialistCardClick.invoke(profile.id) },
+                onClick = { onSpecialistCardClick.invoke(profile.profileId) },
                 photoUrl = profile.avatarUrl,
                 rating = profile.rating ?: 0f,
                 text = "${profile.surname} ${profile.name}",
                 showFavouritesButton = true,
                 onShowFavouriteButtonClick = { isSelected ->
-                    onChangeFavouriteStatus.invoke(profile.id, isSelected)
+                    onChangeFavouriteStatus.invoke(profile.profileId, isSelected)
                 }
             )
         }

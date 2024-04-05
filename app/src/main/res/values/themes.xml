@@ -2,4 +2,8 @@
 <resources>
 
     <style name="Theme.LENSA" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.RemoveSplashScreenTheme" parent="@style/Theme.LENSA">
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>

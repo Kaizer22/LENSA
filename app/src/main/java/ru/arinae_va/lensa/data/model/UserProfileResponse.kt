@@ -32,7 +32,7 @@ class UserProfileResponse(
     val maximalPrice: Int? = null,
     val reviews: List<ReviewResponse>? = null,
 ) {
-    fun mapToSpecialistModel(): UserProfileModel = UserProfileModel(
+    fun mapToUserProfileModel(): UserProfileModel = UserProfileModel(
         userId = userId.orEmpty(),
         profileId = profileId.orEmpty(),
         type = type?.let { UserProfileType.valueOf(it) } ?: UserProfileType.CUSTOMER,

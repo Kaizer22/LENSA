@@ -6,115 +6,148 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.tasks.await
 import ru.arinae_va.lensa.data.datasource.remote.IUserProfileDataSource
 import ru.arinae_va.lensa.domain.repository.IAuthRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
+
+sealed class AuthStatus {
+    data class SignInSuccess(val userUid: String) : AuthStatus()
+    data class SignUpSuccess(val userUid: String) : AuthStatus()
+    data class Fail(val error: String) : AuthStatus()
+}
+
+sealed class PhoneVerificationStatus {
+
+    data class SignInCompleted(val userId: String): PhoneVerificationStatus()
+    data class SignUpCompleted(val userId: String): PhoneVerificationStatus()
+    data class VerificationCompleted(val credentials: PhoneAuthCredential): PhoneVerificationStatus()
+
+    data class VerificationFailed(val error: String) : PhoneVerificationStatus()
+
+    data class CodeSent(
+        val verificationId: String,
+        val token: PhoneAuthProvider.ForceResendingToken,
+    ): PhoneVerificationStatus()
+}
 
 class AuthRepository @Inject constructor(
     private val userProfileRepository: IUserProfileRepository,
     private val userInfoDataSource: IUserProfileDataSource,
-): IAuthRepository {
+) : IAuthRepository {
     override fun currentUserId(): String? = Firebase.auth.currentUser?.uid
 
-    override fun verifyPhoneNumber(
+    override suspend fun signInWithPhone(credentials: PhoneAuthCredential):
+    PhoneVerificationStatus {
+        val authStatus = signInWithPhoneAuthCredential(
+            credential = credentials,
+        )
+        return when (authStatus) {
+            is AuthStatus.SignInSuccess -> PhoneVerificationStatus.SignInCompleted(authStatus.userUid)
+
+            is AuthStatus.SignUpSuccess -> PhoneVerificationStatus.SignUpCompleted(authStatus.userUid)
+
+            is AuthStatus.Fail -> PhoneVerificationStatus.VerificationFailed(authStatus.error)
+        }
+    }
+
+
+    override suspend fun verifyPhoneNumber(
         phoneNumber: String,
-        onSignInCompleted: (userUid: String) -> Unit,
-        onSignUpCompleted: (userUid: String) -> Unit,
-        onVerificationFailed: (String) -> Unit,
-        onCodeSent: (String, PhoneAuthProvider.ForceResendingToken) -> Unit,
-    ) {
+        //onSignInCompleted: (userUid: String) -> Unit,
+        //onSignUpCompleted: (userUid: String) -> Unit,
+        //onVerificationFailed: (String) -> Unit,
+        //onCodeSent: (String, PhoneAuthProvider.ForceResendingToken) -> Unit,
+    ): PhoneVerificationStatus = suspendCoroutine { cont ->
+        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                cont.resume(
+                    PhoneVerificationStatus.VerificationCompleted(credential)
+                )
+            }
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                cont.resume(PhoneVerificationStatus.VerificationFailed(e.message.orEmpty()))
+            }
+
+            override fun onCodeSent(
+                verificationId: String,
+                token: PhoneAuthProvider.ForceResendingToken,
+            ) {
+                cont.resume(
+                    PhoneVerificationStatus.CodeSent(
+                        verificationId = verificationId,
+                        token = token,
+                    )
+                )
+            }
+        }
+
         val options = PhoneAuthOptions
             .newBuilder().setPhoneNumber(phoneNumber)
             .setTimeout(60L, TimeUnit.SECONDS)
-            .setCallbacks(
-                object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                    override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                        signInWithPhoneAuthCredential(
-                            credential = credential,
-                            onSignUpSuccess = { uid ->
-                                onSignUpCompleted(uid)
-                            },
-                            onSignInSuccess = { uid ->
-                                onSignInCompleted(uid)
-                            },
-                            onSignInFailed = {
-                                onVerificationFailed("Sign in fail")
-                            },
-                        )
-                    }
-
-                    override fun onVerificationFailed(e: FirebaseException) {
-                        onVerificationFailed(e.message ?: "")
-                    }
-
-                    override fun onCodeSent(
-                        verificationId: String,
-                        token: PhoneAuthProvider.ForceResendingToken
-                    ) {
-                        onCodeSent(verificationId, token)
-                    }
-                }
-            ).build()
+            .setCallbacks(callbacks).build()
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
-    override fun signInWithPhoneAuthCredential(
+    override suspend fun signInWithPhoneAuthCredential(
         credential: PhoneAuthCredential,
-        onSignUpSuccess: (userUid: String) -> Unit,
-        onSignInSuccess: (userUid: String) -> Unit,
-        onSignInFailed: () -> Unit,
-    ) {
-        Firebase.auth.signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val userUid = task.result?.user?.uid
-                    if (userUid != null) {
-                        userInfoDataSource.checkUid(
-                            userUid,
-                            onCheckResult = { isNewUser ->
-                                if (isNewUser) {
-                                    onSignUpSuccess(userUid)
-                                } else {
-                                    onSignInSuccess(userUid)
-                                }
-                            }
-                        )
-                    } else {
-                        onSignInFailed()
-                    }
-                } else {
-                    onSignInFailed()
-                }
+        //onSignUpSuccess: (userUid: String) -> Unit,
+        //onSignInSuccess: (userUid: String) -> Unit,
+        //onSignInFailed: () -> Unit,
+    ): AuthStatus {
+        val authResult = Firebase.auth.signInWithCredential(credential).await()
+        authResult.user?.uid?.let { userUid ->
+            if (userInfoDataSource.isNewUser(userUid)) {
+                return AuthStatus.SignUpSuccess(userUid)//onSignUpSuccess(userUid)
+            } else {
+                return AuthStatus.SignInSuccess(userUid)//onSignInSuccess(userUid)
             }
-            .addOnSuccessListener { result ->
-                val userUid = result.user?.uid
-                if (userUid != null) {
-                    userInfoDataSource.checkUid(
-                        userUid,
-                        onCheckResult = { isNewUser ->
-                            if (isNewUser) {
-                                onSignUpSuccess(userUid)
-                            } else {
-                                onSignInSuccess(userUid)
-                            }
-                        }
-                    )
-                } else {
-                    onSignInFailed()
-                }
-            }.addOnFailureListener {
-                onSignInFailed()
-            }.addOnCanceledListener {
-                onSignInFailed()
-            }
+        } ?: run { return AuthStatus.Fail("") }
+//            .addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+//                    task.result?.user?.uid?.let { userUid ->
+//                        GlobalScope.launch {
+//                            if (userInfoDataSource.isNewUser(userUid)) {
+//                                onSignUpSuccess(userUid)
+//                            } else {
+//                                onSignInSuccess(userUid)
+//                            }
+//                        }.wait()
+//                    } ?: run { onSignInFailed() }
+//                } else {
+//                    onSignInFailed()
+//                }
+//            }
+//            .addOnSuccessListener { result ->
+//                result.user?.uid?.let { userUid ->
+//                    GlobalScope.launch {
+//                        if (userInfoDataSource.isNewUser(userUid)) {
+//                            onSignUpSuccess(userUid)
+//                        } else {
+//                            onSignInSuccess(userUid)
+//                        }
+//                    }
+//                } ?: run { onSignInFailed() }
+//            }.addOnFailureListener {
+//                onSignInFailed()
+//            }.addOnCanceledListener {
+//                onSignInFailed()
+//            }
     }
 
-    override fun logOut() {
+    override fun logOut(
+        isFullLogOut: Boolean,
+    ) {
         userProfileRepository.clearCurrentUser()
         // TODO clear cache and database
-        Firebase.auth.signOut()
+        if (isFullLogOut) {
+            Firebase.auth.signOut()
+        }
     }
 
     override suspend fun logIn(currentProfileId: String) {

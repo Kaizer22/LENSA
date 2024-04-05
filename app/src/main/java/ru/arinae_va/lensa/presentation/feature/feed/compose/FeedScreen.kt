@@ -236,7 +236,7 @@ internal fun FeedAndSearchBar(
                     VSpace(h = 24.dp)
                 }
                 item {
-                    if (cards.size > 5) {
+                    if (cards.size > 2) {
                         FeedLastItem(
                             onClick = {
                                 coroutineScope.launch {

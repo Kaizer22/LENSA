@@ -2,7 +2,6 @@ package ru.arinae_va.lensa.data.repositroy
 
 import android.net.Uri
 import android.webkit.URLUtil.isHttpsUrl
-import ru.arinae_va.lensa.data.datasource.local.IFavouritesStorage
 import ru.arinae_va.lensa.data.datasource.remote.IUserProfileDataSource
 import ru.arinae_va.lensa.domain.model.FeedFilter
 import ru.arinae_va.lensa.domain.model.UserProfileModel
@@ -12,7 +11,6 @@ import javax.inject.Inject
 
 class UserProfileRepository @Inject constructor(
     private val userInfoStorage: IUserProfileDataSource,
-    private val favouritesStorage: IFavouritesStorage,
 ) : IUserProfileRepository {
 
     private var currentUserProfile: UserProfileModel? = null
@@ -63,6 +61,9 @@ class UserProfileRepository @Inject constructor(
 
     override suspend fun getProfilesByIds(profileIds: List<String>): List<UserProfileModel> =
         userInfoStorage.getProfilesByIds(profileIds)
+
+    override suspend fun getProfilesByUserId(userId: String): List<UserProfileModel> =
+        userInfoStorage.getProfilesByUserId(userId)
 
     override fun clearCurrentUser() {
         currentUserProfile = null

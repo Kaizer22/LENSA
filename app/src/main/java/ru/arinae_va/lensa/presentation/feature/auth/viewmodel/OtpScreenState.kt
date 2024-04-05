@@ -11,6 +11,7 @@ internal data class OtpScreenState(
     val verificationId: String?,
     val token: PhoneAuthProvider.ForceResendingToken?,
     val otpInput: String,
+    val isShowSelectProfileDialog: Boolean,
     val isLoading: Boolean,
     val isOtpCodeResent: Boolean,
     val isResendEnabled: Boolean,

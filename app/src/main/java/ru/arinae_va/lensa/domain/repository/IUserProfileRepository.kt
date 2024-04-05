@@ -25,6 +25,8 @@ interface IUserProfileRepository {
     suspend fun getProfileById(profileUid: String): UserProfileModel
 
     suspend fun getProfilesByIds(profileIds: List<String>): List<UserProfileModel>
+
+    suspend fun getProfilesByUserId(userId: String): List<UserProfileModel>
     fun clearCurrentUser()
     suspend fun setCurrentUser(currentProfileId: String)
 }

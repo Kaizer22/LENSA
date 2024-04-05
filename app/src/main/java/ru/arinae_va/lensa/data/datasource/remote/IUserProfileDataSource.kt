@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 interface IUserProfileDataSource {
 
-    fun checkUid(uid: String, onCheckResult: (isNew: Boolean) -> Unit)
+    suspend fun isNewUser(userId: String): Boolean
 
     suspend fun upsertProfile(profile: UserProfileModel)
 
@@ -34,6 +34,8 @@ interface IUserProfileDataSource {
 
     suspend fun getProfileById(profileUid: String?): UserProfileModel
     suspend fun getProfilesByIds(profileIds: List<String>): List<UserProfileModel>
+
+    suspend fun getProfilesByUserId(userId: String): List<UserProfileModel>
 }
 
 private const val PROFILES_COLLECTION = "profile"
@@ -60,23 +62,11 @@ class FirebaseUserProfileDataSource @Inject constructor(
     private val firebaseStorage: StorageReference,
 ) : IUserProfileDataSource {
 
-    override fun checkUid(uid: String, onCheckResult: (isNew: Boolean) -> Unit) {
-        database.collection(PROFILES_COLLECTION).document(uid).get()
-            .addOnSuccessListener { data ->
-                onCheckResult(data.data == null)
-            }
-            .addOnFailureListener {
-                onCheckResult(true)
-            }
-            .addOnCanceledListener {
-                onCheckResult(true)
-            }
-    }
+    override suspend fun isNewUser(userId: String) =
+        getProfilesByUserId(userId).isEmpty()
 
     override suspend fun upsertProfile(profile: UserProfileModel) {
         val ref = database.collection(PROFILES_COLLECTION)
-            .document(profile.userId)
-            .collection(USER_PROFILES_COLLECTION)
             .document(profile.profileId)
         ref.set(profile).await()
     }
@@ -123,7 +113,7 @@ class FirebaseUserProfileDataSource @Inject constructor(
         baseQuery.get()
             .addOnSuccessListener {
                 result = it.documents.mapNotNull { doc ->
-                    doc.toObject<UserProfileResponse>()?.mapToSpecialistModel()
+                    doc.toObject<UserProfileResponse>()?.mapToUserProfileModel()
                 }
                 // TODO организовать иерархию сущностей на бэке для фильтрации
                 // TODO pagination
@@ -229,12 +219,11 @@ class FirebaseUserProfileDataSource @Inject constructor(
 
     override suspend fun getProfileById(profileUid: String?) = database
         .collection(PROFILES_COLLECTION)
-        .whereEqualTo(PROFILE_ID_FIELD, profileUid)
-        .limit(1)
+        .document(profileUid.orEmpty())
         .get()
         .await()
-        .documents[0].toObject(UserProfileResponse::class.java)
-        ?.mapToSpecialistModel()
+        .toObject(UserProfileResponse::class.java)
+        ?.mapToUserProfileModel()
         ?: UserProfileModel.EMPTY
 
     override suspend fun getProfilesByIds(profileIds: List<String>): List<UserProfileModel> =
@@ -244,8 +233,16 @@ class FirebaseUserProfileDataSource @Inject constructor(
             .get()
             .await()
             .documents.map { it.toObject(UserProfileResponse::class.java) }
-            .mapNotNull { it?.mapToSpecialistModel() }
+            .mapNotNull { it?.mapToUserProfileModel() }
 
+    override suspend fun getProfilesByUserId(userId: String): List<UserProfileModel> =
+        database
+            .collection(PROFILES_COLLECTION)
+            .whereEqualTo(USER_ID_FIELD, userId)
+            .get()
+            .await()
+            .documents.map { it.toObject(UserProfileResponse::class.java) }
+            .mapNotNull { it?.mapToUserProfileModel() }
 
 }
 

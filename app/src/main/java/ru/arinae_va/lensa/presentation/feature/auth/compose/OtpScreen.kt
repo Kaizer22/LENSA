@@ -168,6 +168,7 @@ fun OtpScreenPreview() = LensaTheme {
             validationErrors = emptyMap(),
             verificationId = null,
             token = null,
+            isShowSelectProfileDialog = false,
         ),
         onEnableResend = {},
         onResendOtp = {},

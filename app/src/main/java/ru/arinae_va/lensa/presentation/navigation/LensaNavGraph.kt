@@ -33,7 +33,7 @@ import ru.arinae_va.lensa.presentation.feature.registration.viewmodel.Registrati
 import ru.arinae_va.lensa.presentation.feature.settings.compose.AboutAppScreen
 import ru.arinae_va.lensa.presentation.feature.settings.compose.FeedbackScreen
 import ru.arinae_va.lensa.presentation.feature.settings.compose.SettingsScreen
-import ru.arinae_va.lensa.presentation.feature.settings.compose.SettingsViewModel
+import ru.arinae_va.lensa.presentation.feature.settings.viewmodel.SettingsViewModel
 import java.net.URLDecoder
 import java.net.URLEncoder
 

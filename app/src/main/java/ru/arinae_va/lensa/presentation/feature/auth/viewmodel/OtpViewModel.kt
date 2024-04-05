@@ -6,6 +6,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
+import ru.arinae_va.lensa.data.repositroy.AuthStatus
+import ru.arinae_va.lensa.data.repositroy.PhoneVerificationStatus
 import ru.arinae_va.lensa.domain.repository.IAuthRepository
 import ru.arinae_va.lensa.domain.repository.ISettingsRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
@@ -38,6 +41,7 @@ class OtpViewModel @Inject constructor(
             isLoading = false,
             isOtpCodeResent = false,
             isButtonNextEnabled = false,
+            isShowSelectProfileDialog = false,
             isResendEnabled = false,
             validationErrors = emptyMap(),
             verificationId = null,
@@ -89,40 +93,118 @@ class OtpViewModel @Inject constructor(
     private fun verifyPhoneNumber(phoneNumber: String) {
         viewModelScope.launch {
             setLoading(true)
-            authRepository.verifyPhoneNumber(
+            val result = authRepository.verifyPhoneNumber(
                 phoneNumber = phoneNumber,
-                onCodeSent = { vId, t ->
-                    setLoading(false)
-                    _state.tryEmit(
-                        state.value.copy(
-                            verificationId = vId,
-                            token = t,
-                            isButtonNextEnabled = state.value.validationErrors.isEmpty()
-                        )
-                    )
-                },
-                onSignInCompleted = {
-                    setLoading(false)
-                    navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
-                },
-                onSignUpCompleted = { currentUserId ->
-                    // TODO refactor
-                    viewModelScope.launch {
-                        authRepository.logIn(currentUserId)
-                        settingsRepository.updateLastLoggedInUser(currentUserId)
-                        navHostController.navigate(LensaScreens.FEED_SCREEN.name)
-                        setLoading(false)
-                    }
-                },
-                onVerificationFailed = {
+            )
+            when (result) {
+                is PhoneVerificationStatus.VerificationCompleted -> {
+                    processPhoneCredentials(result.credentials)
+                }
+                is PhoneVerificationStatus.VerificationFailed -> {
                     navHostController.navigate(
                         route = "${LensaScreens.COMMON_ERROR_SCREEN.name}/" +
                                 context.getString(R.string.code_sending_error)
                     )
-                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, result.error, Toast.LENGTH_LONG).show()
                     setLoading(false)
-                },
-            )
+                }
+                is PhoneVerificationStatus.CodeSent -> {
+                    setLoading(false)
+                    _state.tryEmit(
+                        state.value.copy(
+                            verificationId = result.verificationId,
+                            token = result.token,
+                            isButtonNextEnabled = state.value.validationErrors.isEmpty()
+                        )
+                    )
+                }
+                is PhoneVerificationStatus.SignInCompleted -> {
+                    onAddProfile()
+                }
+
+                is PhoneVerificationStatus.SignUpCompleted -> {
+                    processUserProfiles(result.userId)
+                }
+            }
+//                onCodeSent = { vId, t ->
+//                    setLoading(false)
+//                    _state.tryEmit(
+//                        state.value.copy(
+//                            verificationId = vId,
+//                            token = t,
+//                            isButtonNextEnabled = state.value.validationErrors.isEmpty()
+//                        )
+//                    )
+//                },
+//                onSignInCompleted = {
+//                    onAddProfile()
+//                },
+//                onSignUpCompleted = { currentUserId ->
+//                    // TODO refactor
+//                    viewModelScope.launch {
+//                        processUserProfiles(currentUserId)
+//                    }
+//                },
+//                onVerificationFailed = {
+//                    navHostController.navigate(
+//                        route = "${LensaScreens.COMMON_ERROR_SCREEN.name}/" +
+//                                context.getString(R.string.code_sending_error)
+//                    )
+//                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+//                    setLoading(false)
+//                },
+        }
+    }
+
+    private suspend fun processUserProfiles(currentUserId: String) {
+        val userProfiles = userProfileRepository.getProfilesByUserId(currentUserId)
+        when {
+            userProfiles.size == 1 -> {
+                with(userProfiles.first()) { onSelectProfile(profileId) }
+            }
+
+            userProfiles.size > 1 -> {
+                _state.tryEmit(
+                    state.value.copy(
+                        isShowSelectProfileDialog = true,
+                    )
+                )
+            }
+        }
+    }
+
+    fun onAddProfile() {
+        setLoading(false)
+        navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
+    }
+
+    fun onSelectProfile(profileId: String) {
+        viewModelScope.launch {
+            authRepository.logIn(profileId)
+            settingsRepository.updateLastLoggedInUser(profileId)
+            navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+            setLoading(false)
+        }
+    }
+
+    private suspend fun processPhoneCredentials(credential: PhoneAuthCredential) {
+        when (val result = authRepository.signInWithPhoneAuthCredential(credential)) {
+            is AuthStatus.SignInSuccess -> { processUserProfiles(result.userUid) }
+            is AuthStatus.Fail -> {
+                setLoading(false)
+                _state.tryEmit(
+                    state.value.copy(
+                        validationErrors = mapOf(
+                            OtpScreenInputField.OTP_CODE
+                                    to context.getString(R.string.wrong_otp_code_error)
+                        )
+                    )
+                )
+            }
+            is AuthStatus.SignUpSuccess -> {
+                navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
+                setLoading(false)
+            }
         }
     }
 
@@ -132,32 +214,28 @@ class OtpViewModel @Inject constructor(
             setLoading(true)
             state.value.verificationId?.let { vId ->
                 val credential = PhoneAuthProvider.getCredential(vId, code)
-                authRepository.signInWithPhoneAuthCredential(
-                    credential,
-                    onSignInFailed = {
-                        setLoading(false)
-                        _state.tryEmit(
-                            state.value.copy(
-                                validationErrors = mapOf(
-                                    OtpScreenInputField.OTP_CODE
-                                            to context.getString(R.string.wrong_otp_code_error)
-                                )
-                            )
-                        )
-                    },
-                    onSignUpSuccess = {
-                        navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
-                        setLoading(false)
-                    },
-                    onSignInSuccess = { currentUserId ->
-                        viewModelScope.launch {
-                            authRepository.logIn(currentUserId)
-                            settingsRepository.updateLastLoggedInUser(currentUserId)
-                            navHostController.navigate(LensaScreens.FEED_SCREEN.name)
-                            setLoading(false)
-                        }
-                    }
-                )
+                processPhoneCredentials(credential)
+//                    onSignInFailed = {
+//                        setLoading(false)
+//                        _state.tryEmit(
+//                            state.value.copy(
+//                                validationErrors = mapOf(
+//                                    OtpScreenInputField.OTP_CODE
+//                                            to context.getString(R.string.wrong_otp_code_error)
+//                                )
+//                            )
+//                        )
+//                    },
+//                    onSignUpSuccess = {
+//                        navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
+//                        setLoading(false)
+//                    },
+//                    onSignInSuccess = { currentUserId ->
+//                        viewModelScope.launch {
+//                            processUserProfiles(currentUserId)
+//                        }
+//                    }
+//                )
             }
         }
     }

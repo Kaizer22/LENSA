@@ -4,6 +4,7 @@ import java.time.LocalDateTime
 
 data class Review(
     val authorId: String,
+    val profileId: String,
     val name: String,
     val surname: String,
     val rating: Float,

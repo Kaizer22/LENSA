@@ -2,13 +2,10 @@ package ru.arinae_va.lensa.data.model
 
 import ru.arinae_va.lensa.domain.model.Price
 import ru.arinae_va.lensa.domain.model.PriceCurrency
-import ru.arinae_va.lensa.domain.model.Review
 import ru.arinae_va.lensa.domain.model.SocialMedia
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.model.UserProfileType
 import ru.arinae_va.lensa.presentation.feature.feed.compose.SocialMediaType
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class UserProfileResponse(
     val userId: String? = null,
@@ -56,26 +53,8 @@ class UserProfileResponse(
         minimalPrice = minimalPrice,
         maximalPrice = maximalPrice,
         phoneNumber = phoneNumber.orEmpty(),
-        reviews = reviews.orEmpty().map {
-            mapToReview(it)
-        },
+        reviews = reviews.orEmpty().map { it.toReview() },
     )
-
-    private fun mapToReview(reviewResponseModel: ReviewResponse): Review {
-        val parsedDt = LocalDateTime.parse(
-            reviewResponseModel.dateTime,
-            DateTimeFormatter.ISO_DATE_TIME
-        )
-        return Review(
-            authorId = reviewResponseModel.authorId.orEmpty(),
-            name = reviewResponseModel.name.orEmpty(),
-            surname = reviewResponseModel.surname.orEmpty(),
-            avatarUrl = reviewResponseModel.avatarUrl.orEmpty(),
-            rating = reviewResponseModel.rating ?: 0f,
-            text = reviewResponseModel.text.orEmpty(),
-            dateTime = parsedDt,
-        )
-    }
 
     private fun mapToPrice(priceResponseModel: PriceResponse) = Price(
         id = priceResponseModel.id.orEmpty(),

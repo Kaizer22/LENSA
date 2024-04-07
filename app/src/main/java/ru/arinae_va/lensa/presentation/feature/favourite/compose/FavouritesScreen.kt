@@ -92,7 +92,7 @@ private fun FavouritesContent(
 
             items(state.folders.keys.toList()) { folder ->
                 val urls = state.folders[folder]?.map { profile ->
-                    profile.portfolioUrls?.get(0).orEmpty()
+                    profile.avatarUrl.orEmpty()
                 }?.appendListToN(
                     n = FAVOURITES_FOLDER_PREVIEW_PICTURES_COUNT,
                     emptyValue = "",

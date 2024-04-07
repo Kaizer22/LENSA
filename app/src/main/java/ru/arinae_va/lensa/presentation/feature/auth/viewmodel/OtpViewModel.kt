@@ -46,6 +46,7 @@ class OtpViewModel @Inject constructor(
             validationErrors = emptyMap(),
             verificationId = null,
             token = null,
+            userProfiles = emptyList(),
         )
     )
     internal val state: StateFlow<OtpScreenState> = _state
@@ -167,6 +168,7 @@ class OtpViewModel @Inject constructor(
                 _state.tryEmit(
                     state.value.copy(
                         isShowSelectProfileDialog = true,
+                        userProfiles = userProfiles,
                     )
                 )
             }
@@ -189,7 +191,9 @@ class OtpViewModel @Inject constructor(
 
     private suspend fun processPhoneCredentials(credential: PhoneAuthCredential) {
         when (val result = authRepository.signInWithPhoneAuthCredential(credential)) {
-            is AuthStatus.SignInSuccess -> { processUserProfiles(result.userUid) }
+            is AuthStatus.SignInSuccess -> {
+                processUserProfiles(result.userUid)
+            }
             is AuthStatus.Fail -> {
                 setLoading(false)
                 _state.tryEmit(
@@ -256,5 +260,10 @@ class OtpViewModel @Inject constructor(
                 isResendEnabled = true,
             )
         )
+    }
+
+    fun onProfileSelectDismissed() {
+        navHostController.navigate(LensaScreens.AUTH_SCREEN.name)
+        setLoading(false)
     }
 }

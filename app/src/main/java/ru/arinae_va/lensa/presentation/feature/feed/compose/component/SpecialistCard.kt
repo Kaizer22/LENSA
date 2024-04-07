@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.R
@@ -32,7 +33,7 @@ fun SpecialistCard(
     showFavouritesButton: Boolean = false,
     onShowFavouriteButtonClick: (Boolean) -> Unit = {},
 ) {
-    Box {
+    Box(contentAlignment = Alignment.TopEnd) {
         Column(
             modifier = modifier.clickable(onClick = onClick),
         ) {
@@ -59,6 +60,10 @@ fun SpecialistCard(
         if (showFavouritesButton) {
             var favouriteButtonEnabled by remember { mutableStateOf(true)}
             LensaStateButton(
+                modifier = Modifier.padding(
+                    top = 20.dp,
+                    end = 20.dp,
+                ),
                 enabled = favouriteButtonEnabled,
                 onClick = { enabled ->
                     favouriteButtonEnabled = enabled

@@ -30,7 +30,6 @@ import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OTP_CODE_LENGTH
-import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpScreenInputField
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpScreenState
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpViewModel
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
@@ -48,13 +47,19 @@ fun OtpScreen(
         onEnableResend = viewModel::enableResend,
         onResendOtp = viewModel::onResendOtp,
         onOtpInputChanged = viewModel::onOtpInputChanged,
-        onNextClick = viewModel::verifyCode
+        onNextClick = viewModel::verifyCode,
+        onProfileSelected = viewModel::onSelectProfile,
+        onProfileSelectDismissed = viewModel::onProfileSelectDismissed,
+        onAddProfileClicked = viewModel::onAddProfile,
     )
 }
 
 @Composable
 private fun OtpContent(
     state: OtpScreenState,
+    onProfileSelected: (String) -> Unit,
+    onProfileSelectDismissed: () -> Unit,
+    onAddProfileClicked: () -> Unit,
     onResendOtp: () -> Unit,
     onOtpInputChanged: (String) -> Unit,
     onEnableResend: () -> Unit,
@@ -67,6 +72,16 @@ private fun OtpContent(
             timeToResend--
         }
         onEnableResend.invoke()
+    }
+
+    if (state.isShowSelectProfileDialog) {
+        SelectProfileDialog(
+            profiles = state.userProfiles,
+            onProfileSelected = onProfileSelected,
+            onDismiss = onProfileSelectDismissed,
+            onAddProfileClicked = onAddProfileClicked,
+            dismissButtonText = "ВЫЙТИ"
+        )
     }
     LensaReplaceLoader(
         isLoading = state.isLoading,
@@ -101,13 +116,14 @@ private fun OtpContent(
                     placeholder = stringResource(R.string.otp_screen_otp_input_placeholder),
                     onValueChanged = onOtpInputChanged,
                 )
-                state.validationErrors[OtpScreenInputField.OTP_CODE]?.let {
-                    Text(
-                        text = it,
-                        style = LensaTheme.typography.signature,
-                        color = LensaTheme.colors.textColorSecondary,
-                    )
-                }
+                // TODO маска ввода
+//                state.validationErrors[OtpScreenInputField.OTP_CODE]?.let {
+//                    Text(
+//                        text = it,
+//                        style = LensaTheme.typography.signature,
+//                        color = LensaTheme.colors.textColorSecondary,
+//                    )
+//                }
                 VSpace(h = 16.dp)
                 if (!state.isOtpCodeResent) {
                     LensaTextButton(
@@ -169,10 +185,15 @@ fun OtpScreenPreview() = LensaTheme {
             verificationId = null,
             token = null,
             isShowSelectProfileDialog = false,
+            userProfiles = emptyList(),
+            phoneNumberVerified = false,
         ),
         onEnableResend = {},
         onResendOtp = {},
         onNextClick = {},
         onOtpInputChanged = {},
+        onProfileSelected = {},
+        onProfileSelectDismissed = {},
+        onAddProfileClicked = {},
     )
 }

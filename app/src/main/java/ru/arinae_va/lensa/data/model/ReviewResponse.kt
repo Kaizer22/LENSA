@@ -1,9 +1,12 @@
 package ru.arinae_va.lensa.data.model
 
 import ru.arinae_va.lensa.domain.model.Review
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 data class ReviewResponse(
     val authorId: String? = null,
+    val profileId: String? = null,
     val name: String? = null,
     val surname: String? = null,
     val avatarUrl: String? = null,
@@ -13,6 +16,7 @@ data class ReviewResponse(
 )
 
 fun Review.toReviewResponse() = ReviewResponse(
+    profileId = profileId,
     authorId = authorId,
     name = name,
     surname = surname,
@@ -21,3 +25,20 @@ fun Review.toReviewResponse() = ReviewResponse(
     rating = rating,
     dateTime = dateTime.toString(),
 )
+
+fun ReviewResponse.toReview(): Review {
+    val parsedDt = LocalDateTime.parse(
+        dateTime,
+        DateTimeFormatter.ISO_DATE_TIME
+    )
+    return Review(
+        authorId = authorId.orEmpty(),
+        name = name.orEmpty(),
+        surname = surname.orEmpty(),
+        avatarUrl = avatarUrl.orEmpty(),
+        rating = rating ?: 0f,
+        text = text.orEmpty(),
+        dateTime = parsedDt,
+        profileId = profileId.orEmpty(),
+    )
+}

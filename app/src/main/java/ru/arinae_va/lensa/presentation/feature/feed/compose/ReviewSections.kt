@@ -143,7 +143,7 @@ fun AddReviewSection(
         horizontalArrangement = Arrangement.End,
     ) {
         LensaTextButton(
-            text = "ОПУБЛИКОВАТь",
+            text = "ОПУБЛИКОВАТЬ",
             onClick = onPostReview,
             type = LensaTextButtonType.DEFAULT,
         )

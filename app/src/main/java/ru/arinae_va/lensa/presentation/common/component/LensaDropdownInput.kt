@@ -53,8 +53,11 @@ fun LensaDropdownInput(
                 }
             )
             val filteredItems =
-                if (allowFreeInput && input.isNotBlank()) items.filter { it.contains(input) }
-                else items
+                if (allowFreeInput && input.isNotBlank()) items.filter {
+                    it.toLowerCase().contains(
+                        input.toLowerCase()
+                    )
+                } else items
             if (filteredItems.isNotEmpty()) {
                 ExposedDropdownMenu(
                     expanded = expanded,

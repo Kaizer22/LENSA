@@ -16,7 +16,7 @@ interface IUserProfileRepository {
         avatarUri: Uri? = null,
         portfolioUris: List<Uri>? = null,
         isNewUser: Boolean = false,
-    )
+    ): String?
 
     suspend fun getFeed(
         feedFilter: FeedFilter?

@@ -4,9 +4,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.domain.model.Price
-import ru.arinae_va.lensa.presentation.common.component.ExpandableButton
+import ru.arinae_va.lensa.presentation.common.component.LensaExpandableButton
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
+import ru.arinae_va.lensa.utils.ext.toFormattedNumberString
 
 @Composable
 fun PriceSection(
@@ -19,13 +20,13 @@ fun PriceSection(
     )
     VSpace(h = 12.dp)
     prices.forEach {
-        ExpandableButton(
+        LensaExpandableButton(
             text = it.name,
             isFillMaxWidth = true,
         ) {
             // TODO форматирование стоимости
             Text(
-                text = "\n${it.text}\n\nСтоимость: ${it.price}${it.currency.symbol}\n",
+                text = "\n${it.text}\n\nСтоимость: ${it.price.toFormattedNumberString()} ${it.currency.symbol}\n",
                 style = LensaTheme.typography.text,
                 color = LensaTheme.colors.textColor,
             )

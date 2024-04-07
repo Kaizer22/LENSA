@@ -11,6 +11,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
@@ -40,7 +41,7 @@ fun LensaImagePicker(
     emptyStateButtonSize: Dp = 40.dp,
 ) {
     val context = LocalContext.current
-    var imageData by remember{ mutableStateOf<Uri?>(null)}
+    var imageData by remember { mutableStateOf<Uri?>(null) }
     var isEmpty by remember { mutableStateOf(true) }
     var isPreloadedImage by remember { mutableStateOf(false) }
 
@@ -127,7 +128,12 @@ fun LensaImagePicker(
 
             if (isCancelIconVisible) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(
+                            top = 10.dp,
+                            end = 10.dp,
+                        ),
                     contentAlignment = Alignment.TopEnd
                 ) {
                     LensaIconButton(

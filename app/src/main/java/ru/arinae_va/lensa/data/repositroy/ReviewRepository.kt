@@ -10,6 +10,10 @@ class ReviewRepository @Inject constructor(
     private val reviewDataSource: IReviewDataSource,
     private val authRepository: IAuthRepository,
 ): IReviewRepository {
+
+    override suspend fun getReviewsByProfileId(profileId: String): List<Review> =
+        reviewDataSource.getReviewsByProfileId(profileId)
+
     override suspend fun upsertReview(targetProfileId: String, review: Review) {
         reviewDataSource.upsertReview(
             targetProfileId = targetProfileId,

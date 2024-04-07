@@ -135,6 +135,7 @@ fun LensaIconButton(
 @Composable
 fun LensaButtonWithIcon(
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(16.dp),
     @DrawableRes icon: Int,
     text: String,
     onClick: () -> Unit,
@@ -159,6 +160,7 @@ fun LensaButtonWithIcon(
             defaultElevation = 0.dp,
         ),
         iconPadding = 4.dp,
+        contentPadding = contentPadding,
         contentArrangement = Arrangement.SpaceBetween,
         isFillMaxWidth = isFillMaxWidth,
         textStyle = when (type) {
@@ -176,12 +178,14 @@ enum class ButtonWithIconType {
 
 @Composable
 fun LensaTextButton(
+    modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit,
     type: LensaTextButtonType,
     isFillMaxWidth: Boolean = false,
 ) {
     LensaButton(
+        modifier = modifier,
         text = text,
         onClick = onClick,
         borderStroke = null,
@@ -213,6 +217,7 @@ enum class LensaTextButtonType {
 
 @Composable
 fun LensaStateButton(
+    modifier: Modifier = Modifier,
     enabled: Boolean = false,
     onClick: (Boolean) -> Unit,
     iconSize: Dp = 24.dp,
@@ -220,6 +225,7 @@ fun LensaStateButton(
     @DrawableRes iconDisabledRes: Int,
 ) {
     LensaIconButton(
+        modifier = modifier,
         onClick = {
             onClick(!enabled)
         },

@@ -68,6 +68,7 @@ fun RegistrationScreen(
         onAvatarChanged = viewModel::onAvatarChanged,
         onPortfolioChanged = viewModel::onPortfolioChanged,
         onSaveClick = viewModel::onSaveClick,
+        onDismissClick = viewModel::onDismissClick,
     )
 }
 
@@ -89,6 +90,7 @@ private fun RegistrationContent(
     onPortfolioChanged: (List<Uri>) -> Unit,
     onSaveClick: () -> Unit,
     onGetInTouchClick: () -> Unit,
+    onDismissClick: () -> Unit,
 ) {
 
     var showPriceListDialog by remember { mutableStateOf(false) }
@@ -147,7 +149,7 @@ private fun RegistrationContent(
                     style = LensaTheme.typography.signature,
                     color = LensaTheme.colors.textColorSecondary,
                 )
-                VSpace(h = 28.dp)
+                VSpace(h = 16.dp)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_4_star),
@@ -297,7 +299,7 @@ private fun RegistrationContent(
                     text = "ОТМЕНИТЬ",
                     type = LensaTextButtonType.DEFAULT,
                     isFillMaxWidth = true,
-                    onClick = {}
+                    onClick = onDismissClick,
                 )
                 VSpace(h = 20.dp)
             }
@@ -326,6 +328,7 @@ fun RegistrationScreenPreview() {
             onPricesListChanged = {},
             onSocialMediasChanged = {},
             onSaveClick = {},
+            onDismissClick = {},
         )
     }
 }

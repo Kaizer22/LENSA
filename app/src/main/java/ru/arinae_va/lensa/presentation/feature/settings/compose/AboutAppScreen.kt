@@ -13,8 +13,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ru.arinae_va.lensa.R
+import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaHeader
 import ru.arinae_va.lensa.presentation.common.component.LensaIconButton
+import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
+import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
@@ -24,46 +27,56 @@ fun AboutAppScreen(
     navController: NavController,
 ) {
     setSystemUiColor()
-    Screen(
+    AboutAppContent(
         onBackPressed = {
             navController.popBackStack()
         },
+        onTermsAndConditionsClick = {},
     )
 }
 
 @Composable
-private fun Screen(
+private fun AboutAppContent(
     onBackPressed: () -> Unit,
+    onTermsAndConditionsClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = LensaTheme.colors.backgroundColor)
+            .padding(horizontal = 16.dp)
     ) {
         LensaHeader()
         Spacer(modifier = Modifier.height(100.dp))
         Text(
-            modifier = Modifier.padding(start = 16.dp),
             text = "ВЕРСИЯ",
             style = LensaTheme.typography.header1,
             color = LensaTheme.colors.textColor,
         )
         Text(
             modifier = Modifier.padding(
-                start = 32.dp,
+                start = 16.dp,
                 top = 32.dp,
             ),
             text = "0.0.8\nDEV",
             style = LensaTheme.typography.header2,
             color = LensaTheme.colors.textColor,
         )
-        VSpace(168.dp)
+        VSpace(h = 32.dp)
+        LensaTextButton(
+            modifier = Modifier.padding(start = 16.dp),
+            text = "Политика конфиденциальности\nи условия сервиса",
+            onClick = onTermsAndConditionsClick,
+            type = LensaTextButtonType.ACCENT,
+        )
+        FSpace()
         LensaIconButton(
             modifier = Modifier.padding(start = 16.dp),
             icon = R.drawable.ic_arrow_back,
             iconSize = 60.dp,
             onClick = onBackPressed,
         )
+        VSpace(h = 64.dp)
     }
 }
 
@@ -71,8 +84,9 @@ private fun Screen(
 @Composable
 fun AboutAppScreenPreview() {
     LensaTheme {
-        Screen(
+        AboutAppContent(
             onBackPressed = {},
+            onTermsAndConditionsClick = {},
         )
     }
 }

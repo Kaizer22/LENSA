@@ -3,7 +3,6 @@ package ru.arinae_va.lensa.presentation.common.component
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +20,7 @@ fun LensaAlertDialog(
     subtitle: String,
     confirmText: String,
     dismissText: String,
+    addSeparator: Boolean = true,
 ) {
     Dialog(
         onDismissRequest = onDismissClick,
@@ -40,9 +40,9 @@ fun LensaAlertDialog(
                     style = LensaTheme.typography.header2,
                     color = LensaTheme.colors.textColor,
                 )
-                VSpace(h = 24.dp)
-                Divider(color = LensaTheme.colors.dividerColor)
-                VSpace(h = 24.dp)
+                VSpace(h = 56.dp)
+                // Divider(color = LensaTheme.colors.dividerColor)
+                // VSpace(h = 24.dp)
                 Text(
                     text = subtitle,
                     style = LensaTheme.typography.header3,

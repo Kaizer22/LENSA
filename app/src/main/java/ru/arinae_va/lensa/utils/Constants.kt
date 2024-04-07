@@ -26,7 +26,8 @@ object Constants {
         "Монтажер",
         "Фуд-стилист",
         "Ретушер",
-        "Дизайнер"
+        "Графический дизайнер",
+        "Моушн-дизайнер"
     )
 
     internal val RUSSIAN_CITIES_LIST = listOf(

@@ -33,7 +33,10 @@ class ProfileDetailsViewModel @Inject constructor(
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             setLoading(true)
-            val result = userProfileRepository.getProfileById(profileUid)
+            var result = userProfileRepository.getProfileById(profileUid)
+            result = result.copy(
+                reviews = reviewRepository.getReviewsByProfileId(profileUid)
+            )
             _state.tryEmit(
                 state.value.copy(
                     userProfileModel = result,
@@ -87,9 +90,11 @@ class ProfileDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             userProfileRepository.currentProfileId()?.let { id ->
                 reviewRepository.upsertReview(
+                    // TODO refactor
                     targetProfileId = state.value.userProfileModel.profileId,
                     review = Review(
                         authorId = id,
+                        profileId = state.value.userProfileModel.profileId,
                         name = userProfileRepository.currentUserProfile()?.name.orEmpty(),
                         surname = userProfileRepository.currentUserProfile()?.surname.orEmpty(),
                         avatarUrl = userProfileRepository.currentUserProfile()?.avatarUrl.orEmpty(),

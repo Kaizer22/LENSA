@@ -29,9 +29,12 @@ class UserProfileRepository @Inject constructor(
         avatarUri: Uri?,
         portfolioUris: List<Uri>?,
         isNewUser: Boolean,
-    ) {
+    ): String? {
+        var resultId: String? = null
         val processedModel = if (isNewUser) {
-            model.copy(profileId = UUID.randomUUID().toString())
+            val newProfileUuid = UUID.randomUUID().toString()
+            resultId = newProfileUuid
+            model.copy(profileId = newProfileUuid)
         } else model
         userInfoStorage.upsertProfile(profile = processedModel)
         avatarUri?.let {
@@ -46,6 +49,7 @@ class UserProfileRepository @Inject constructor(
                 }
             }
         }
+        return resultId
     }
 
     // TODO caching

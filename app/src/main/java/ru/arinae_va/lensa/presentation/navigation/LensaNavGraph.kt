@@ -9,19 +9,18 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.google.gson.Gson
 import ru.arinae_va.lensa.presentation.common.screen.ErrorScreen
 import ru.arinae_va.lensa.presentation.feature.auth.compose.AuthScreen
-import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.AuthViewModel
 import ru.arinae_va.lensa.presentation.feature.auth.compose.OtpScreen
+import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.AuthViewModel
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpViewModel
 import ru.arinae_va.lensa.presentation.feature.favourite.compose.FavouritesFolderScreen
 import ru.arinae_va.lensa.presentation.feature.favourite.compose.FavouritesScreen
 import ru.arinae_va.lensa.presentation.feature.favourite.viewmodel.FavouritesFolderViewModel
 import ru.arinae_va.lensa.presentation.feature.favourite.viewmodel.FavouritesViewModel
 import ru.arinae_va.lensa.presentation.feature.feed.compose.FeedScreen
-import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.FeedViewModel
 import ru.arinae_va.lensa.presentation.feature.feed.compose.ProfileDetailsScreen
+import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.FeedViewModel
 import ru.arinae_va.lensa.presentation.feature.feed.viewmodel.ProfileDetailsViewModel
 import ru.arinae_va.lensa.presentation.feature.onboarding.compose.LensaSplashScreen
 import ru.arinae_va.lensa.presentation.feature.onboarding.compose.OnboardingScreen
@@ -34,8 +33,6 @@ import ru.arinae_va.lensa.presentation.feature.settings.compose.AboutAppScreen
 import ru.arinae_va.lensa.presentation.feature.settings.compose.FeedbackScreen
 import ru.arinae_va.lensa.presentation.feature.settings.compose.SettingsScreen
 import ru.arinae_va.lensa.presentation.feature.settings.viewmodel.SettingsViewModel
-import java.net.URLDecoder
-import java.net.URLEncoder
 
 const val PHONE_ID_KEY = "phone"
 const val ERROR_TEXT_KEY = "errorText"
@@ -45,16 +42,6 @@ const val PROFILE_UID_KEY = "profileUid"
 const val IS_SELF_PROFILE_KEY = "isSelf"
 const val FOLDER_NAME_KEY = "folderName"
 const val FOLDER_PROFILE_IDS_KEY = "folderProfileIds"
-
-fun <A> String?.fromJson(type: Class<A>): A {
-    //return Gson().fromJson(this, type)
-    return Gson().fromJson(URLDecoder.decode(this, "utf-8"), type)
-}
-
-fun <A> A.toJson(): String {
-    //return Gson().toJson(this)
-    return URLEncoder.encode(Gson().toJson(this), "utf-8")
-}
 
 @Composable
 fun LensaNavGraph(

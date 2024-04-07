@@ -186,9 +186,9 @@ class RegistrationViewModel @Inject constructor(
         }
     }
 
-    private suspend fun finishUpsert() {
+    private suspend fun finishUpsert(newUserId: String?) {
         if (!state.value.isEdit) {
-            authRepository.logIn(userProfileRepository.currentProfileId().orEmpty())
+            authRepository.logIn(newUserId.orEmpty())
         }
         navHostController.navigate(LensaScreens.FEED_SCREEN.name)
     }
@@ -220,13 +220,13 @@ class RegistrationViewModel @Inject constructor(
                     rating = if (state.value.isEdit) state.value.rating else null
                 )
 
-                userProfileRepository.upsertProfile(
+                val newUserId = userProfileRepository.upsertProfile(
                     model = model,
                     avatarUri = avatarUri,
                     isNewUser = !state.value.isEdit,
                 )
+                finishUpsert(newUserId)
             }
-            finishUpsert()
         }
     }
 
@@ -262,38 +262,38 @@ class RegistrationViewModel @Inject constructor(
                     else null,
                     rating = if (isEdit) state.value.rating else null
                 )
-                userProfileRepository.upsertProfile(
+                val newUserId = userProfileRepository.upsertProfile(
                     model = model,
                     avatarUri = avatarUri,
                     portfolioUris = portfolioUris,
                     isNewUser = !state.value.isEdit,
                 )
+                finishUpsert(newUserId)
             }
-            finishUpsert()
         }
     }
 
     private fun validateCustomerFields(): Boolean {
         with(state.value) {
             val validationErrors = mutableMapOf<RegistrationScreenInputField, String>()
-            if (name.isBlank())
-                validationErrors[RegistrationScreenInputField.NAME] =
-                    context.getString(R.string.registration_screen_name_validation_error)
             if (surname.isBlank())
                 validationErrors[RegistrationScreenInputField.SURNAME] =
                     context.getString(R.string.registration_screen_surname_validation_error)
+            if (name.isBlank())
+                validationErrors[RegistrationScreenInputField.NAME] =
+                    context.getString(R.string.registration_screen_name_validation_error)
             if (country.isBlank())
                 validationErrors[RegistrationScreenInputField.COUNTRY] =
                     context.getString(R.string.registration_screen_country_validation_error)
             if (city.isBlank())
                 validationErrors[RegistrationScreenInputField.CITY] =
                     context.getString(R.string.registration_screen_city_validation_error)
-            if (email.isNotEmpty() && !isValidEmail(email))
-                validationErrors[RegistrationScreenInputField.EMAIL] =
-                    context.getString(R.string.invalid_email_error)
             if (phoneNumber.isNotEmpty() && !isValidPhoneNumber(phoneNumber))
                 validationErrors[RegistrationScreenInputField.PHONE_NUMBER] =
                     context.getString(R.string.invalid_phone_number_error)
+            if (email.isNotEmpty() && !isValidEmail(email))
+                validationErrors[RegistrationScreenInputField.EMAIL] =
+                    context.getString(R.string.invalid_email_error)
             if (personalSite.isNotEmpty() && !isValidUrl(personalSite))
                 validationErrors[RegistrationScreenInputField.PERSONAL_WEBSITE] =
                     context.getString(R.string.invalid_personal_site_url_error)
@@ -310,40 +310,39 @@ class RegistrationViewModel @Inject constructor(
     private fun validateSpecialistFields(): Boolean {
         with(state.value) {
             val validationErrors = mutableMapOf<RegistrationScreenInputField, String>()
-            if (name.isBlank())
-                validationErrors[RegistrationScreenInputField.NAME] =
-                    context.getString(R.string.registration_screen_name_validation_error)
+            if (avatarUri == null)
+                validationErrors[RegistrationScreenInputField.AVATAR] =
+                    context.getString(R.string.registration_screen_avatar_validation_error)
             if (surname.isBlank())
                 validationErrors[RegistrationScreenInputField.SURNAME] =
                     context.getString(R.string.registration_screen_surname_validation_error)
+            if (name.isBlank())
+                validationErrors[RegistrationScreenInputField.NAME] =
+                    context.getString(R.string.registration_screen_name_validation_error)
+            if (specialization.isBlank())
+                validationErrors[RegistrationScreenInputField.SPECIALIZATION] =
+                    context.getString(R.string.registration_screen_specialization_validation_error)
             if (country.isBlank())
                 validationErrors[RegistrationScreenInputField.COUNTRY] =
                     context.getString(R.string.registration_screen_country_validation_error)
             if (city.isBlank())
                 validationErrors[RegistrationScreenInputField.CITY] =
                     context.getString(R.string.registration_screen_city_validation_error)
-            if (specialization.isBlank())
-                validationErrors[RegistrationScreenInputField.SPECIALIZATION] =
-                    context.getString(R.string.registration_screen_specialization_validation_error)
-            if (prices.isEmpty())
-                validationErrors[RegistrationScreenInputField.PRICES] =
-                    context.getString(R.string.registration_screen_prices_validation_error)
-            if (avatarUri == null)
-                validationErrors[RegistrationScreenInputField.AVATAR] =
-                    context.getString(R.string.registration_screen_avatar_validation_error)
-            if (portfolioUris.isEmpty())
-                validationErrors[RegistrationScreenInputField.PORTFOLIO] =
-                    context.getString(R.string.registration_screen_portfolio_validation_error)
-            if (email.isNotEmpty() && !isValidEmail(email))
-                validationErrors[RegistrationScreenInputField.EMAIL] =
-                    context.getString(R.string.invalid_email_error)
             if (phoneNumber.isNotEmpty() && !isValidPhoneNumber(phoneNumber))
                 validationErrors[RegistrationScreenInputField.PHONE_NUMBER] =
                     context.getString(R.string.invalid_phone_number_error)
+            if (email.isNotEmpty() && !isValidEmail(email))
+                validationErrors[RegistrationScreenInputField.EMAIL] =
+                    context.getString(R.string.invalid_email_error)
+            if (portfolioUris.isEmpty())
+                validationErrors[RegistrationScreenInputField.PORTFOLIO] =
+                    context.getString(R.string.registration_screen_portfolio_validation_error)
             if (personalSite.isNotEmpty() && !isValidUrl(personalSite))
                 validationErrors[RegistrationScreenInputField.PERSONAL_WEBSITE] =
                     context.getString(R.string.invalid_personal_site_url_error)
-
+            if (prices.isEmpty())
+                validationErrors[RegistrationScreenInputField.PRICES] =
+                    context.getString(R.string.registration_screen_prices_validation_error)
             _state.tryEmit(
                 state.value.copy(
                     validationErrors = validationErrors,
@@ -359,5 +358,13 @@ class RegistrationViewModel @Inject constructor(
                     "/$isSpecialist" +
                     "/$EMPTY_USER_ID"
         )
+    }
+
+    fun onDismissClick() {
+        if (state.value.isEdit) {
+            navHostController.navigate(LensaScreens.SETTINGS_SCREEN.name)
+        } else {
+            navHostController.navigate(LensaScreens.REGISTRATION_ROLE_SELECTOR_SCREEN.name)
+        }
     }
 }

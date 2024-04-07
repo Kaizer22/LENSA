@@ -8,4 +8,5 @@ data class SettingsScreenState(
     val isShowDeleteProfileDialog: Boolean,
     val isShowExitDialog: Boolean,
     val isShowSelectProfileDialog: Boolean,
+    val selectProfileDialogDismissButtonText: String,
 )

@@ -1,10 +1,13 @@
 package ru.arinae_va.lensa.presentation.feature.registration.compose
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,34 +39,41 @@ private fun RegistrationContent(
     onSpecialistClick: () -> Unit,
     onCustomerClick: () -> Unit,
 ) {
-    Column(modifier = Modifier.background(color = LensaTheme.colors.backgroundColor)) {
-        LensaHeader()
-        FSpace()
-        Divider(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = LensaTheme.colors.dividerColor,
-        )
-        LensaButtonWithIcon(
-            icon = R.drawable.ic_arrow_forward_2,
-            text = "СПЕЦИАЛИСТ",
-            isFillMaxWidth = true,
-            onClick = onSpecialistClick,
-        )
-        Divider(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = LensaTheme.colors.dividerColor,
-        )
-        LensaButtonWithIcon(
-            icon = R.drawable.ic_arrow_forward_2,
-            text = "ЗАКАЗЧИК",
-            isFillMaxWidth = true,
-            onClick = onCustomerClick,
-        )
-        Divider(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            color = LensaTheme.colors.dividerColor,
-        )
-        FSpace()
+    Box(
+        modifier = Modifier.fillMaxSize()
+            .background(color = LensaTheme.colors.backgroundColor),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column {
+            LensaHeader()
+            FSpace()
+        }
+        Column {
+            Divider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = LensaTheme.colors.dividerColor,
+            )
+            LensaButtonWithIcon(
+                icon = R.drawable.ic_arrow_forward_2,
+                text = "СПЕЦИАЛИСТ",
+                isFillMaxWidth = true,
+                onClick = onSpecialistClick,
+            )
+            Divider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = LensaTheme.colors.dividerColor,
+            )
+            LensaButtonWithIcon(
+                icon = R.drawable.ic_arrow_forward_2,
+                text = "ЗАКАЗЧИК",
+                isFillMaxWidth = true,
+                onClick = onCustomerClick,
+            )
+            Divider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = LensaTheme.colors.dividerColor,
+            )
+        }
     }
 }
 

@@ -31,6 +31,7 @@ class SettingsViewModel @Inject constructor(
             isShowExitDialog = false,
             isShowSelectProfileDialog = false,
             userProfiles = emptyList(),
+            selectProfileDialogDismissButtonText = "ОТМЕНИТЬ"
         )
     )
     internal val state: StateFlow<SettingsScreenState> = _state
@@ -57,18 +58,36 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             setLoading(true)
             userProfileRepository.deleteProfile()
-            setLoading(false)
+            val currentUserId = authRepository.currentUserId()
             logOut()
+            hideDeleteDialog()
+            showSelectProfileDialog(
+                currentUserId = currentUserId,
+                showScreenAfterwards = false,
+                exitDismissButtonText = true,
+            )
         }
     }
 
     fun onExitClick() {
-        viewModelScope.launch { logOut() }
+        viewModelScope.launch {
+            val userId = authRepository.currentUserId()
+            logOut()
+            hideExitDialog()
+            showSelectProfileDialog(
+                currentUserId = userId,
+                showScreenAfterwards = false,
+                exitDismissButtonText = true,
+            )
+        }
     }
 
     private fun logOut() {
         authRepository.logOut()
         settingsRepository.clearUser()
+    }
+
+    private fun toAuthScreen() {
         navHostController.navigate(LensaScreens.AUTH_SCREEN.name)
     }
 
@@ -130,28 +149,44 @@ class SettingsViewModel @Inject constructor(
         )
     }
 
-    fun showSelectProfileDialog() {
+    fun showSelectProfileDialog(
+        currentUserId: String? = null,
+        showScreenAfterwards: Boolean = true,
+        exitDismissButtonText: Boolean = false,
+    ) {
         viewModelScope.launch {
             setLoading(true)
+            val userId = currentUserId ?: authRepository.currentUserId().orEmpty()
             val profiles = userProfileRepository.getProfilesByUserId(
-                userId = authRepository.currentUserId().orEmpty()
+                userId = userId
             )
             _state.tryEmit(
                 state.value.copy(
                     userProfiles = profiles,
                     isShowSelectProfileDialog = true,
+                    selectProfileDialogDismissButtonText = if (exitDismissButtonText) {
+                        "ВЫХОД"
+                    } else {
+                        "ОТМЕНИТЬ"
+                    }
                 )
             )
-            setLoading(false)
+            if (showScreenAfterwards) {
+                setLoading(false)
+            }
         }
     }
 
     fun hideSelectProfileDialog() {
-        _state.tryEmit(
-            state.value.copy(
-                isShowSelectProfileDialog = false
+        if (authRepository.currentUserId().isNullOrEmpty()) {
+            toAuthScreen()
+        } else {
+            _state.tryEmit(
+                state.value.copy(
+                    isShowSelectProfileDialog = false
+                )
             )
-        )
+        }
     }
 
     fun onSelectProfile(profileId: String) {

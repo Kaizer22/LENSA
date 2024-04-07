@@ -77,13 +77,14 @@ private fun AuthContent(
                     inputType = KeyboardType.Phone,
                     onValueChanged = onPhoneNumberChanged,
                 )
-                state.validationErrors[AuthScreenField.PHONE_NUMBER]?.let {
-                    Text(
-                        text = it,
-                        style = LensaTheme.typography.signature,
-                        color = LensaTheme.colors.textColorSecondary,
-                    )
-                }
+                // TODO маска ввода
+//                state.validationErrors[AuthScreenField.PHONE_NUMBER]?.let {
+//                    Text(
+//                        text = it,
+//                        style = LensaTheme.typography.signature,
+//                        color = LensaTheme.colors.textColorSecondary,
+//                    )
+//                }
                 VSpace(h = 52.dp)
                 LensaButton(
                     text = stringResource(R.string.auth_screen_button_request_code),

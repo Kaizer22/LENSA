@@ -28,6 +28,7 @@ class AuthViewModel @Inject constructor(
     )
     internal val state: StateFlow<AuthScreenState> = _state
 
+    // TODO не отображать ПРОДОЛЖИТЬ до ввода кода
     fun onPhoneNumberChanged(phoneNumber: String) {
         val errors = if (isValidPhoneNumber(phoneNumber)) {
             emptyMap()

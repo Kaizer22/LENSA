@@ -3,6 +3,7 @@ package ru.arinae_va.lensa.presentation.feature.feed.compose
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.presentation.common.component.HSpace
@@ -21,10 +22,12 @@ fun PersonalInfoSection(
     with(state.userProfileModel) {
         SpecialistDetailsField(label = "Страна", text = country)
         SpecialistDetailsField(label = "Город", text = city)
-        SpecialistDetailsField(label = "Сайт", text = personalSite)
-        SpecialistDetailsField(label = "Почта", text = email)
+        if (personalSite.isNotEmpty())
+            SpecialistDetailsField(label = "Сайт", text = personalSite)
+        if (email.isNotEmpty())
+            SpecialistDetailsField(label = "Почта", text = email)
         VSpace(h = 12.dp)
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             socialMedias.forEach {
                 Icon(
                     painter = painterResource(id = it.type.icon),

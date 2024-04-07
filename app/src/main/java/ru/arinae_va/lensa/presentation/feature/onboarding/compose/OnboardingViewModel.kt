@@ -38,7 +38,7 @@ class OnboardingViewModel @Inject constructor(
     }
 
     fun onSplashShown() {
-        if (!settingsRepository.isNeedToShowOnboarding()) {
+        if (settingsRepository.isNeedToShowOnboarding()) {
             navHostController.navigate(LensaScreens.ONBOARDING_SCREEN.name)
         } else {
             if (isSuccessMemorizedLogIn) {

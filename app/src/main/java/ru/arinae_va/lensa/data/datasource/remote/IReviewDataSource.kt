@@ -2,11 +2,18 @@ package ru.arinae_va.lensa.data.datasource.remote
 
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import ru.arinae_va.lensa.data.model.ReviewResponse
+import ru.arinae_va.lensa.data.model.toReview
 import ru.arinae_va.lensa.data.model.toReviewResponse
 import ru.arinae_va.lensa.domain.model.Review
 import javax.inject.Inject
 
 interface IReviewDataSource {
+
+    suspend fun getReviewsByProfileId(
+        profileId: String
+    ): List<Review>
+
     suspend fun upsertReview(
         targetProfileId: String,
         currentUserId: String,
@@ -21,9 +28,21 @@ interface IReviewDataSource {
 
 private const val REVIEWS_COLLECTION = "review"
 
+private const val REVIEWS_PROFILE_ID_FIELD = "profileId"
+
 class FirebaseReviewDataSource @Inject constructor(
     private val database: FirebaseFirestore,
 ) : IReviewDataSource {
+    override suspend fun getReviewsByProfileId(profileId: String): List<Review> =
+        database.collection(REVIEWS_COLLECTION)
+            .whereEqualTo(REVIEWS_PROFILE_ID_FIELD, profileId)
+            .get()
+            .await()
+            .documents.map {
+                it.toObject(ReviewResponse::class.java)
+            }
+            .mapNotNull { it?.toReview() }
+
 
     override suspend fun upsertReview(
         targetProfileId: String,

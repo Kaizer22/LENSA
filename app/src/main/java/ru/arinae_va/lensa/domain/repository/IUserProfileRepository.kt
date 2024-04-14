@@ -18,6 +18,11 @@ interface IUserProfileRepository {
         isNewUser: Boolean = false,
     ): String?
 
+    suspend fun updateRating(
+        rating: Float,
+        profileId: String,
+    )
+
     suspend fun getFeed(
         feedFilter: FeedFilter?
     ): List<UserProfileModel> // by filter

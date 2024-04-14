@@ -20,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -46,17 +48,20 @@ fun LensaInput(
     maxLines: Int = 1,
     minLines: Int = 1,
     singleLine: Boolean = true,
+    isRoundedShape: Boolean = false,
+    isFillMaxWidth: Boolean = true,
     showLeadingIcon: Boolean = false,
     onLeadingIconClick: () -> Unit = {},
     showTrailingIcon: Boolean = false,
     onTrailingIconClick: () -> Unit = {},
     trailingIconRes: Int = R.drawable.ic_4_star,
     leadingIconRes: Int = R.drawable.ic_4_star,
+    focusRequester: FocusRequester = remember { FocusRequester() },
 ) {
     var input by remember(value) { mutableStateOf(value) }
     //val interactionSource = remember { MutableInteractionSource() }
 
-    var needToDrawRequiredIcon by remember { mutableStateOf(showRequired) }
+    val needToDrawRequiredIcon = showRequired && input.isEmpty()
 //
 //    val trailingIcon: @Composable (() -> Unit)? = if (showTrailingIcon || needToDrawRequiredIcon) {
 //        {
@@ -78,15 +83,17 @@ fun LensaInput(
 //        }
 //    } else null
     BasicTextField(
-        modifier = modifier.onFocusChanged { focusState ->
-            onFocusChanged(focusState.isFocused)
-        },
+        modifier = modifier
+            .onFocusChanged { focusState ->
+                onFocusChanged(focusState.isFocused)
+            }
+            .focusRequester(focusRequester),
         value = input,
         enabled = enabled,
         readOnly = readOnly,
         onValueChange = { newInput: String ->
             input = newInput.take(maxLength)
-            needToDrawRequiredIcon = !acceptRequiredCheck(newInput)
+            //needToDrawRequiredIcon = showRequired && !acceptRequiredCheck(newInput)
             onValueChanged(input)
         },
         singleLine = singleLine,
@@ -106,7 +113,12 @@ fun LensaInput(
                         color = Color.Transparent,
                         shape = LensaTheme.shapes.noRoundedCornersShape
                     )
-                    .border(width = 1.dp, color = LensaTheme.colors.textColor)
+                    .border(
+                        width = 1.dp,
+                        color = LensaTheme.colors.textColor,
+                        shape = if (isRoundedShape) LensaTheme.shapes.round40Dp
+                        else LensaTheme.shapes.noRoundedCornersShape,
+                    )
                     .padding(
                         horizontal = 12.dp,
                         vertical = 8.dp,
@@ -121,7 +133,10 @@ fun LensaInput(
                         )
                         HSpace(w = 12.dp)
                     }
-                    Box(modifier = Modifier.weight(1f)) {
+                    Box(
+                        modifier = if (isFillMaxWidth) Modifier.weight(1f)
+                        else Modifier
+                    ) {
                         if (input.isBlank()) {
                             Text(
                                 text = placeholder,
@@ -193,7 +208,7 @@ fun LensaMultilineInput(
     placeholder: String = "",
     onValueChanged: (String) -> Unit = {},
     maxLength: Int = MULTILINE_INPUT_MAX_LENGTH,
-    linesCount: Int = MULTILINE_INPUT_LINES_COUNT
+    linesCount: Int = MULTILINE_INPUT_LINES_COUNT,
 ) {
     var inputLength by remember(value) { mutableStateOf(value.length) }
     var input by remember(value) { mutableStateOf(value) }
@@ -209,8 +224,10 @@ fun LensaMultilineInput(
             placeholder = placeholder,
             value = input,
             showTrailingIcon = true,
+            trailingIconRes = R.drawable.ic_cancel,
             onTrailingIconClick = {
                 input = ""
+                inputLength = 0
             },
             singleLine = false,
             maxLines = linesCount,
@@ -252,6 +269,15 @@ fun LensaInputPreview() {
                 value = "Test",
                 showLeadingIcon = true,
                 showTrailingIcon = true,
+            )
+            VSpace(h = 16.dp)
+            LensaInput(
+                onValueChanged = {},
+                value = "",
+                placeholder = "Стилист по маникюру",
+                showLeadingIcon = true,
+                leadingIconRes = R.drawable.ic_loupe,
+                isRoundedShape = true,
             )
             VSpace(h = 16.dp)
             LensaMultilineInput(

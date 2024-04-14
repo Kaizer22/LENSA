@@ -26,6 +26,8 @@ class FeedViewModel @Inject constructor(
     private val _state = MutableStateFlow(FeedState.INITIAL)
     internal val state: StateFlow<FeedState> = _state
 
+    private var lastSearchQueryChange: Long = 0
+
     fun onAttach() {
         loadFeed()
     }
@@ -83,8 +85,16 @@ class FeedViewModel @Inject constructor(
     }
 
     fun onSearchTextChanged(searchQuery: String) {
-
+        lastSearchQueryChange = System.currentTimeMillis()
+        _state.tryEmit(
+            state.value.copy(
+                filter = state.value.filter.copy(searchQuery = searchQuery)
+            )
+        )
+        loadFeed()
     }
+
+
 
     fun onFilterCountryChanged(country: String) {
         _state.tryEmit(

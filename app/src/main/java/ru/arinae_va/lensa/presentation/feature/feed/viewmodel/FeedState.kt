@@ -9,7 +9,6 @@ internal enum class FeedFilterInputFields {
     SORT_TYPE,
 }
 internal data class FeedState(
-    val searchQuery: String,
     val filter: FeedFilter,
     val filterValidationErrors: Map<FeedFilterInputFields, String>,
     val isApplyFilterButtonEnabled: Boolean,
@@ -18,7 +17,6 @@ internal data class FeedState(
 ) {
     companion object {
         val INITIAL = FeedState(
-            searchQuery = "",
             filter = FeedFilter.EMPTY,
             feed = emptyList(),
             isApplyFilterButtonEnabled = true,

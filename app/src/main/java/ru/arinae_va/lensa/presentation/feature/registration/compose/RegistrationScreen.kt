@@ -92,11 +92,25 @@ private fun RegistrationContent(
     onGetInTouchClick: () -> Unit,
     onDismissClick: () -> Unit,
 ) {
+    // TODO how to decrease recompositions count?
+    val isLoading = state.isLoading
+    val surname = state.surname
+    val name = state.name
+    val prices = state.prices
+    val country = state.country
+    val city = state.city
+    val phoneNumber = state.phoneNumber
+    val email = state.email
+    val about = state.about
+    val portfolioUris = state.portfolioUris
+    val personalSite = state.personalSite
+    val socialMedias = state.socialMedias
+    val avatarUri = state.avatarUri?.toString()
 
     var showPriceListDialog by remember { mutableStateOf(false) }
     if (showPriceListDialog) {
         PriceListCreatorDialog(
-            defaultPricesList = state.prices,
+            defaultPricesList = prices,
             onSaveClick = { list ->
                 onPricesListChanged.invoke(list)
                 showPriceListDialog = false
@@ -109,7 +123,7 @@ private fun RegistrationContent(
     var showSocialMediaDialog by remember { mutableStateOf(false) }
     if (showSocialMediaDialog) {
         SocialMediaCreatorDialog(
-            defaultMedias = state.socialMedias,
+            defaultMedias = socialMedias,
             onSaveClick = { socialMediasMap ->
                 onSocialMediasChanged(socialMediasMap)
                 showSocialMediaDialog = false
@@ -121,7 +135,7 @@ private fun RegistrationContent(
     }
 
     LensaReplaceLoader(
-        isLoading = state.isLoading,
+        isLoading = isLoading,
     ) {
         Column(
             modifier = Modifier
@@ -137,7 +151,7 @@ private fun RegistrationContent(
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     LensaImagePicker(
-                        defaultLink = state.avatarUri?.toString(),
+                        defaultLink = avatarUri,
                         modifier = Modifier.size(216.dp),
                         onImagePicked = onAvatarChanged,
                         emptyStateButtonSize = 48.dp,
@@ -169,7 +183,7 @@ private fun RegistrationContent(
                     showRequired = true,
                     modifier = Modifier.fillMaxWidth(),
                     onValueChanged = onSurnameChanged,
-                    value = state.surname,
+                    value = surname,
                     placeholder = "Фамилия"
                 )
                 VSpace(h = 12.dp)
@@ -178,7 +192,7 @@ private fun RegistrationContent(
                     showRequired = true,
                     modifier = Modifier.fillMaxWidth(),
                     onValueChanged = onNameChanged,
-                    value = state.name,
+                    value = name,
                     placeholder = "Имя"
                 )
                 if (state.isSpecialistRegistrationScreen) {
@@ -196,13 +210,13 @@ private fun RegistrationContent(
                     showRequired = true,
                     modifier = Modifier.fillMaxWidth(),
                     onValueChanged = onCountryChanged,
-                    value = state.country,
+                    value = country,
                     placeholder = "Страна",
                     items = Constants.COUNTRIES_LIST,
                 )
                 VSpace(h = 12.dp)
                 LensaDropdownInput(
-                    value = state.city,
+                    value = city,
                     allowFreeInput = true,
                     showRequired = true,
                     modifier = Modifier.fillMaxWidth(),
@@ -214,7 +228,7 @@ private fun RegistrationContent(
                 LensaInput(
                     modifier = Modifier.fillMaxWidth(),
                     onValueChanged = onPhoneNumberChanged,
-                    value = state.phoneNumber,
+                    value = phoneNumber,
                     inputType = KeyboardType.Phone,
                     placeholder = "Номер телефона (+7...)"
                 )
@@ -222,21 +236,21 @@ private fun RegistrationContent(
                 LensaInput(
                     modifier = Modifier.fillMaxWidth(),
                     onValueChanged = onEmailChanged,
-                    value = state.email,
+                    value = email,
                     placeholder = "Почта"
                 )
                 VSpace(h = 12.dp)
                 LensaMultilineInput(
                     modifier = Modifier.fillMaxWidth(),
                     onValueChanged = onAboutChanged,
-                    value = state.about,
+                    value = about,
                     placeholder = "О себе"
                 )
             }
             if (state.isSpecialistRegistrationScreen) {
                 VSpace(h = 28.dp)
                 PortfolioCarousel(
-                    defaultList = state.portfolioUris,
+                    defaultList = portfolioUris,
                     onListChanged = onPortfolioChanged,
                 )
                 VSpace(h = 16.dp)
@@ -246,7 +260,7 @@ private fun RegistrationContent(
                 LensaInput(
                     modifier = Modifier.fillMaxWidth(),
                     onValueChanged = onPersonalWebsiteChanged,
-                    value = state.personalSite,
+                    value = personalSite,
                     placeholder = "Сайт"
                 )
                 VSpace(h = 12.dp)

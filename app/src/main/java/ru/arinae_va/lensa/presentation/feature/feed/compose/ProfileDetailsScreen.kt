@@ -12,12 +12,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -100,16 +103,23 @@ private fun ProfileDetailsContent(
         listOf(state.userProfileModel.avatarUrl.orEmpty())
     )}
     var shownImageIndex by remember { mutableStateOf(0) }
+    val reviews = state.userProfileModel.reviews
     LensaReplaceLoader(
         isLoading = state.isLoading,
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
+            val scrollState = rememberScrollState()
+            var reviewsY = 0f
+            LaunchedEffect(key1 = reviews) {
+                if (state.isNeedToScrollToReviews)
+                    scrollState.scrollTo(reviewsY.toInt())
+            }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .background(color = LensaTheme.colors.backgroundColor),
             ) {
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -172,6 +182,9 @@ private fun ProfileDetailsContent(
                         }
                         if (state.userProfileModel.reviews?.isNotEmpty() == true) {
                             ReviewsSection(
+                                modifier = Modifier.onGloballyPositioned {
+                                    reviewsY = it.positionInParent().y
+                                },
                                 state = state,
                                 onUserAvatarClick = onReviewAvatarClick,
                             )
@@ -268,6 +281,7 @@ fun SpecialistDetailsScreenPreview() {
                 isSelf = false,
                 isLoading = false,
                 isAddedToFavourites = false,
+                isNeedToScrollToReviews = false,
             ),
             onSettingsClick = {},
             onFavouritesClick = {},

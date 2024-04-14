@@ -21,7 +21,6 @@ interface IUserProfileDataSource {
 
     suspend fun uploadAvatarImage(profileUid: String, imageUri: Uri): Boolean
 
-    // TODO возврат результата операции, а не просто bool
     suspend fun uploadPortfolioImage(profileUid: String, imageUri: Uri): Boolean
     suspend fun setProfileAvatar(profileUid: String, downloadUrl: String): Boolean
     suspend fun addPortfolioPicture(profileUid: String, downloadUrl: String): Boolean
@@ -32,10 +31,13 @@ interface IUserProfileDataSource {
         feedFilter: FeedFilter?,
     ): List<UserProfileModel>
 
+    fun applyFilter(profiles: List<UserProfileModel>?, filter: FeedFilter): List<UserProfileModel>
+
     suspend fun getProfileById(profileUid: String?): UserProfileModel
     suspend fun getProfilesByIds(profileIds: List<String>): List<UserProfileModel>
 
     suspend fun getProfilesByUserId(userId: String): List<UserProfileModel>
+    suspend fun updateRating(rating: Float, profileId: String): Boolean
 }
 
 private const val PROFILES_COLLECTION = "profile"
@@ -62,6 +64,8 @@ class FirebaseUserProfileDataSource @Inject constructor(
     private val firebaseStorage: StorageReference,
 ) : IUserProfileDataSource {
 
+    private var feedCache: List<UserProfileModel> = emptyList()
+
     override suspend fun isNewUser(userId: String) =
         getProfilesByUserId(userId).isEmpty()
 
@@ -71,7 +75,8 @@ class FirebaseUserProfileDataSource @Inject constructor(
         ref.set(profile).await()
     }
 
-    override suspend fun setProfileAvatar(profileUid: String, downloadUrl: String
+    override suspend fun setProfileAvatar(
+        profileUid: String, downloadUrl: String,
     ): Boolean {
         var res = false
         val ref = database.collection(PROFILES_COLLECTION).document(profileUid)
@@ -83,7 +88,7 @@ class FirebaseUserProfileDataSource @Inject constructor(
 
     override suspend fun addPortfolioPicture(
         profileUid: String,
-        downloadUrl: String
+        downloadUrl: String,
     ): Boolean {
         var res = false
         val ref = database.collection(PROFILES_COLLECTION).document(profileUid)
@@ -125,15 +130,16 @@ class FirebaseUserProfileDataSource @Inject constructor(
                 result = listOf()
             }
             .await()
+        feedCache = result
         return result
     }
 
-    private fun applyFilter(
-        list: List<UserProfileModel>,
-        feedFilter: FeedFilter,
+    override fun applyFilter(
+        profiles: List<UserProfileModel>?,
+        filter: FeedFilter,
     ): List<UserProfileModel> {
-        with(feedFilter) {
-            var result = list
+        with(filter) {
+            var result = (profiles ?: feedCache)
                 .filter {
                     if (specialization.isNotEmpty()) it.specialization == specialization else true
                 }
@@ -147,7 +153,7 @@ class FirebaseUserProfileDataSource @Inject constructor(
                 }
 
             if (searchQuery.isNotEmpty())
-                result = search(searchQuery)
+                result = search(result, searchQuery)
 
             result = when (order) {
                 OrderType.RATING_ASC ->
@@ -161,8 +167,16 @@ class FirebaseUserProfileDataSource @Inject constructor(
         }
     }
 
-    private fun search(searchQuery: String): List<UserProfileModel> {
-        TODO("Not yet implemented")
+    private fun search(
+        profiles: List<UserProfileModel>,
+        searchQuery: String,
+    ): List<UserProfileModel> {
+        val query = searchQuery.lowercase()
+        return profiles.filter {
+            it.specialization.lowercase().contains(query) ||
+                    ("${it.surname} ${it.name}".lowercase()).contains(query)
+                    || it.about.lowercase().contains(query)
+        }
     }
 
     override suspend fun uploadAvatarImage(profileUid: String, imageUri: Uri): Boolean {
@@ -244,6 +258,13 @@ class FirebaseUserProfileDataSource @Inject constructor(
             .documents.map { it.toObject(UserProfileResponse::class.java) }
             .mapNotNull { it?.mapToUserProfileModel() }
 
+    override suspend fun updateRating(rating: Float, profileId: String): Boolean {
+        database
+            .collection(PROFILES_COLLECTION).document(profileId)
+            .update(RATING_FIELD, rating)
+            .await()
+        return true
+    }
 }
 
 data class FeedbackModel(

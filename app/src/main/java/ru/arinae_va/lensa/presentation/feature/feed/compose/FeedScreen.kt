@@ -204,6 +204,7 @@ internal fun FeedAndSearchBar(
     ) {
         LensaActionBar(
             modifier = Modifier.fillMaxWidth(),
+            searchQuery = state.filter.searchQuery,
             onMenuClick = onMenuClick,
             onSearchClick = {},
             onSearchTextChanged = onSearchTextChanged,

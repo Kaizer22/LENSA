@@ -30,16 +30,20 @@ class ProfileDetailsViewModel @Inject constructor(
     fun loadUserProfile(
         profileUid: String,
         isSelf: Boolean,
+        isNeedToScrollToReviews: Boolean = false,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             setLoading(true)
             var result = userProfileRepository.getProfileById(profileUid)
+            val reviews = reviewRepository.getReviewsByProfileId(profileUid)
             result = result.copy(
-                reviews = reviewRepository.getReviewsByProfileId(profileUid)
+                reviews = reviews,
+                rating = calculateRating(reviews)
             )
             _state.tryEmit(
                 state.value.copy(
                     userProfileModel = result,
+                    isNeedToScrollToReviews = isNeedToScrollToReviews,
                     isSelf = isSelf,
                     isAddedToFavourites = !isSelf && isProfileAddedToFavourites(profileUid),
                 )
@@ -47,6 +51,10 @@ class ProfileDetailsViewModel @Inject constructor(
             setLoading(false)
         }
     }
+
+    private fun calculateRating(reviews: List<Review>): Float = if (reviews.isNotEmpty())
+        reviews.map { it.rating }.sum() / reviews.size
+    else 0.0f
 
     private fun setLoading(isLoading: Boolean) {
         _state.tryEmit(
@@ -88,27 +96,54 @@ class ProfileDetailsViewModel @Inject constructor(
 
     fun onPostReview() {
         viewModelScope.launch {
+            setLoading(true)
             userProfileRepository.currentProfileId()?.let { id ->
+                val review = Review(
+                    authorId = id,
+                    profileId = state.value.userProfileModel.profileId,
+                    name = userProfileRepository.currentUserProfile()?.name.orEmpty(),
+                    surname = userProfileRepository.currentUserProfile()?.surname.orEmpty(),
+                    avatarUrl = userProfileRepository.currentUserProfile()?.avatarUrl.orEmpty(),
+                    text = state.value.reviewText,
+                    rating = state.value.rating,
+                    dateTime = LocalDateTime.now(),
+                )
                 reviewRepository.upsertReview(
                     // TODO refactor
                     targetProfileId = state.value.userProfileModel.profileId,
-                    review = Review(
-                        authorId = id,
-                        profileId = state.value.userProfileModel.profileId,
-                        name = userProfileRepository.currentUserProfile()?.name.orEmpty(),
-                        surname = userProfileRepository.currentUserProfile()?.surname.orEmpty(),
-                        avatarUrl = userProfileRepository.currentUserProfile()?.avatarUrl.orEmpty(),
-                        text = state.value.reviewText,
-                        rating = state.value.rating,
-                        dateTime = LocalDateTime.now(),
+                    review = review
+                )
+                loadReviews()
+                // TODO calculate rating on backend
+                val newRating = calculateRating(state.value.userProfileModel.reviews ?: emptyList())
+                userProfileRepository.updateRating(
+                    rating = newRating,
+                    profileId = state.value.userProfileModel.profileId
+                )
+                _state.tryEmit(
+                    state.value.copy(
+                        userProfileModel = state.value.userProfileModel.copy(
+                            rating = newRating
+                        )
                     )
                 )
-                loadUserProfile(
-                    profileUid = state.value.userProfileModel.profileId,
-                    isSelf = state.value.isSelf
-                )
+                setLoading(false)
             }
         }
+    }
+
+    private suspend fun loadReviews() {
+        val reviews =
+            reviewRepository.getReviewsByProfileId(state.value.userProfileModel.profileId)
+        _state.tryEmit(
+            state.value.copy(
+                userProfileModel = state.value.userProfileModel.copy(
+                    reviews = reviews,
+                ),
+                // send event?
+                isNeedToScrollToReviews = true,
+            )
+        )
     }
 
     fun onChatsClick() {

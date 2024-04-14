@@ -23,6 +23,7 @@ fun LensaExpandableButton(
     modifier: Modifier = Modifier,
     text: String,
     isFillMaxWidth: Boolean = false,
+    hideBottomDivider: Boolean = true,
     expandableContent: @Composable () -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -41,7 +42,9 @@ fun LensaExpandableButton(
             text = text,
             onClick = { isExpanded = !isExpanded }
         )
-        Divider(color = LensaTheme.colors.dividerColor)
+        if (hideBottomDivider) {
+            if (isExpanded) Divider(color = LensaTheme.colors.dividerColor)
+        } else Divider(color = LensaTheme.colors.dividerColor)
         AnimatedVisibility(
             visible = isExpanded,
             enter = fadeIn() + expandVertically(),

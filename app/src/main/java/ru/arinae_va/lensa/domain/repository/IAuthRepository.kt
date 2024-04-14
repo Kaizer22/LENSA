@@ -10,19 +10,12 @@ interface IAuthRepository {
 
     suspend fun verifyPhoneNumber(
         phoneNumber: String,
-        //onSignInCompleted: (userUid: String) -> Unit,
-        //onSignUpCompleted: (userUid: String) -> Unit,
-        //onVerificationFailed: (String) -> Unit,
-        //onCodeSent: (String, PhoneAuthProvider.ForceResendingToken) -> Unit,
     ): PhoneVerificationStatus
 
     suspend fun signInWithPhone(credentials: PhoneAuthCredential): PhoneVerificationStatus
 
     suspend fun signInWithPhoneAuthCredential(
         credential: PhoneAuthCredential,
-        //onSignUpSuccess: (userUid: String) -> Unit,
-        //onSignInSuccess: (userUid: String) -> Unit,
-        //onSignInFailed: () -> Unit,
     ): AuthStatus
 
     suspend fun logIn(currentProfileId: String)

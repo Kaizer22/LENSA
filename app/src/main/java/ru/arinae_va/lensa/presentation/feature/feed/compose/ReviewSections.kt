@@ -28,10 +28,13 @@ import ru.arinae_va.lensa.utils.datetimeFormatter
 
 @Composable
 fun ReviewsSection(
+    modifier: Modifier = Modifier,
     state: ProfileDetailsState,
     onUserAvatarClick: (String) -> Unit,
 ) {
-    Column {
+    Column(
+        modifier = modifier,
+    ) {
         Text(
             text = "ОТЗЫВЫ",
             style = LensaTheme.typography.header2,

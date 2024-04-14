@@ -52,6 +52,10 @@ class UserProfileRepository @Inject constructor(
         return resultId
     }
 
+    override suspend fun updateRating(rating: Float, profileId: String){
+        userInfoStorage.updateRating(rating, profileId)
+    }
+
     // TODO caching
     override suspend fun getFeed(feedFilter: FeedFilter?): List<UserProfileModel> {
         currentUserProfile?.let {

@@ -3,8 +3,11 @@ package ru.arinae_va.lensa
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.MutableState
 import androidx.navigation.NavHostController
 import dagger.hilt.android.AndroidEntryPoint
+import ru.arinae_va.lensa.presentation.common.component.LensaSnackbarHost
 import ru.arinae_va.lensa.presentation.navigation.LensaNavGraph
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 import javax.inject.Inject
@@ -42,13 +45,21 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var navHostController: NavHostController
+    @Inject
+    lateinit var snackbarHostState: MutableState<SnackbarHostState>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LensaTheme {
-                LensaNavGraph(
-                    navController = navHostController,
-                )
+                LensaSnackbarHost(
+                    state = snackbarHostState.value
+                ) {
+                    LensaNavGraph(
+                        navController = navHostController,
+                        snackbarHostState = snackbarHostState.value,
+                    )
+                }
             }
         }
     }

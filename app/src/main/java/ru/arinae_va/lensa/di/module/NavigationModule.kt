@@ -1,6 +1,8 @@
 package ru.arinae_va.lensa.di.module
 
 import android.content.Context
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.compose.DialogNavigator
@@ -21,4 +23,8 @@ object NavigationModule {
         navigatorProvider.addNavigator(ComposeNavigator())
         navigatorProvider.addNavigator(DialogNavigator())
     }
+
+    @Provides
+    @Singleton
+    fun provideSnackbarHostState() = mutableStateOf(SnackbarHostState())
 }

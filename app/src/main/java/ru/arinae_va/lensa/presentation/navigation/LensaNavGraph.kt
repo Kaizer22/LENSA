@@ -1,5 +1,6 @@
 package ru.arinae_va.lensa.presentation.navigation
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -14,6 +15,12 @@ import ru.arinae_va.lensa.presentation.feature.auth.compose.AuthScreen
 import ru.arinae_va.lensa.presentation.feature.auth.compose.OtpScreen
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.AuthViewModel
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpViewModel
+import ru.arinae_va.lensa.presentation.feature.chat.compose.ChatListScreen
+import ru.arinae_va.lensa.presentation.feature.chat.compose.ChatRequestListScreen
+import ru.arinae_va.lensa.presentation.feature.chat.compose.ChatScreen
+import ru.arinae_va.lensa.presentation.feature.chat.viewmodel.ChatListViewModel
+import ru.arinae_va.lensa.presentation.feature.chat.viewmodel.ChatRequestListViewModel
+import ru.arinae_va.lensa.presentation.feature.chat.viewmodel.ChatViewModel
 import ru.arinae_va.lensa.presentation.feature.favourite.compose.FavouritesFolderScreen
 import ru.arinae_va.lensa.presentation.feature.favourite.compose.FavouritesScreen
 import ru.arinae_va.lensa.presentation.feature.favourite.viewmodel.FavouritesFolderViewModel
@@ -42,10 +49,12 @@ const val PROFILE_UID_KEY = "profileUid"
 const val IS_SELF_PROFILE_KEY = "isSelf"
 const val FOLDER_NAME_KEY = "folderName"
 const val FOLDER_PROFILE_IDS_KEY = "folderProfileIds"
+const val CHAT_ID_KEY = "chatId"
 
 @Composable
 fun LensaNavGraph(
     navController: NavHostController,
+    snackbarHostState: SnackbarHostState,
 ) {
     // TODO вложенные графы для фичей, шаринг вью моделей
     return NavHost(
@@ -237,6 +246,34 @@ fun LensaNavGraph(
                 }
             }
             FavouritesFolderScreen(
+                viewModel = viewModel,
+            )
+        }
+
+        composable(route = LensaScreens.CHAT_LIST_SCREEN.name) {
+            val viewModel = hiltViewModel<ChatListViewModel>()
+            ChatListScreen(
+                viewModel = viewModel,
+            )
+        }
+
+        composable(route = LensaScreens.CHAT_REQUEST_LIST_SCREEN.name) {
+            val viewModel = hiltViewModel<ChatRequestListViewModel>()
+            ChatRequestListScreen(
+                viewModel = viewModel,
+            )
+        }
+
+        composable(route = LensaScreens.CHAT_SCREEN.name +
+                "/{$CHAT_ID_KEY}",
+                arguments = listOf(
+                    navArgument(CHAT_ID_KEY) {
+                        type = NavType.StringType
+                    }
+                )
+        ) {
+            val viewModel = hiltViewModel<ChatViewModel>()
+            ChatScreen(
                 viewModel = viewModel,
             )
         }

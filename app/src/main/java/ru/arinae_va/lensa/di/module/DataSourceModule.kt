@@ -8,9 +8,11 @@ import ru.arinae_va.lensa.data.datasource.local.FavouritesStorage
 import ru.arinae_va.lensa.data.datasource.local.IFavouritesStorage
 import ru.arinae_va.lensa.data.datasource.local.ISettingsStorage
 import ru.arinae_va.lensa.data.datasource.local.SettingsStorage
+import ru.arinae_va.lensa.data.datasource.remote.FirebaseChatsDataSource
 import ru.arinae_va.lensa.data.datasource.remote.FirebaseFeedbackDataSource
 import ru.arinae_va.lensa.data.datasource.remote.FirebaseReviewDataSource
 import ru.arinae_va.lensa.data.datasource.remote.FirebaseUserProfileDataSource
+import ru.arinae_va.lensa.data.datasource.remote.IChatsDataSource
 import ru.arinae_va.lensa.data.datasource.remote.IFeedbackDataSource
 import ru.arinae_va.lensa.data.datasource.remote.IReviewDataSource
 import ru.arinae_va.lensa.data.datasource.remote.IUserProfileDataSource
@@ -37,5 +39,8 @@ abstract class DataSourceModule {
 
     @Binds
     abstract fun reviewDataSource(reviewDataSource: FirebaseReviewDataSource): IReviewDataSource
+
+    @Binds
+    abstract fun chatsDataSource(chatsDataSource: FirebaseChatsDataSource): IChatsDataSource
     // endregion
 }

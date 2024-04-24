@@ -11,11 +11,11 @@ interface IFeedbackDataSource {
 
 private const val FEEDBACK_COLLECTION = "feedback"
 class FirebaseFeedbackDataSource @Inject constructor(
-    private val database: FirebaseFirestore,
+    database: FirebaseFirestore,
 ): IFeedbackDataSource {
-
+    private val feedbacks = database.collection(FEEDBACK_COLLECTION)
     override suspend fun sendFeedback(profileUid: String?, text: String) {
-        database.collection(FEEDBACK_COLLECTION).add(
+        feedbacks.add(
             FeedbackModel(
                 userUid = profileUid,
                 text = text,

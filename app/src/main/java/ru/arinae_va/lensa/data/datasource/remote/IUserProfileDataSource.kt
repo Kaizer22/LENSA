@@ -41,7 +41,6 @@ interface IUserProfileDataSource {
 }
 
 private const val PROFILES_COLLECTION = "profile"
-private const val USER_PROFILES_COLLECTION = "userProfiles"
 
 private const val AVATAR_FIELD = "avatarUrl"
 private const val PORTFOLIO_PICTURES_FIELD = "portfolioUrls"
@@ -64,23 +63,25 @@ class FirebaseUserProfileDataSource @Inject constructor(
     private val firebaseStorage: StorageReference,
 ) : IUserProfileDataSource {
 
+    private val profiles = database.collection(PROFILES_COLLECTION)
+
     private var feedCache: List<UserProfileModel> = emptyList()
 
     override suspend fun isNewUser(userId: String) =
         getProfilesByUserId(userId).isEmpty()
 
     override suspend fun upsertProfile(profile: UserProfileModel) {
-        val ref = database.collection(PROFILES_COLLECTION)
-            .document(profile.profileId)
-        ref.set(profile).await()
+        profiles.document(profile.profileId)
+            .set(profile)
+            .await()
     }
 
     override suspend fun setProfileAvatar(
         profileUid: String, downloadUrl: String,
     ): Boolean {
         var res = false
-        val ref = database.collection(PROFILES_COLLECTION).document(profileUid)
-        ref.update(AVATAR_FIELD, downloadUrl)
+        profiles.document(profileUid)
+            .update(AVATAR_FIELD, downloadUrl)
             .addOnSuccessListener { res = true }
             .await()
         return res
@@ -91,8 +92,8 @@ class FirebaseUserProfileDataSource @Inject constructor(
         downloadUrl: String,
     ): Boolean {
         var res = false
-        val ref = database.collection(PROFILES_COLLECTION).document(profileUid)
-        ref.update(PORTFOLIO_PICTURES_FIELD, FieldValue.arrayUnion(downloadUrl))
+        profiles.document(profileUid)
+            .update(PORTFOLIO_PICTURES_FIELD, FieldValue.arrayUnion(downloadUrl))
             .addOnSuccessListener { res = true }
             .await()
         return res
@@ -100,7 +101,8 @@ class FirebaseUserProfileDataSource @Inject constructor(
 
     override suspend fun deleteProfile(profileUid: String): Boolean {
         var res = false
-        database.collection(PROFILES_COLLECTION).document(profileUid).delete()
+        profiles.document(profileUid)
+            .delete()
             .addOnSuccessListener { res = true }
             .await()
         return res
@@ -111,7 +113,7 @@ class FirebaseUserProfileDataSource @Inject constructor(
         feedFilter: FeedFilter?,
     ): List<UserProfileModel> {
         var result = listOf<UserProfileModel>()
-        var baseQuery = database.collection(PROFILES_COLLECTION)
+        var baseQuery = profiles
             .whereEqualTo(PROFILE_TYPE_FIELD, UserProfileType.SPECIALIST.name)
             .whereNotEqualTo(USER_ID_FIELD, currentUserId)
         // TODO caching
@@ -231,8 +233,7 @@ class FirebaseUserProfileDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getProfileById(profileUid: String?) = database
-        .collection(PROFILES_COLLECTION)
+    override suspend fun getProfileById(profileUid: String?) = profiles
         .document(profileUid.orEmpty())
         .get()
         .await()
@@ -241,26 +242,21 @@ class FirebaseUserProfileDataSource @Inject constructor(
         ?: UserProfileModel.EMPTY
 
     override suspend fun getProfilesByIds(profileIds: List<String>): List<UserProfileModel> =
-        database
-            .collection(PROFILES_COLLECTION)
-            .whereIn(PROFILE_ID_FIELD, profileIds)
+        profiles.whereIn(PROFILE_ID_FIELD, profileIds)
             .get()
             .await()
             .documents.map { it.toObject(UserProfileResponse::class.java) }
             .mapNotNull { it?.mapToUserProfileModel() }
 
     override suspend fun getProfilesByUserId(userId: String): List<UserProfileModel> =
-        database
-            .collection(PROFILES_COLLECTION)
-            .whereEqualTo(USER_ID_FIELD, userId)
+        profiles.whereEqualTo(USER_ID_FIELD, userId)
             .get()
             .await()
             .documents.map { it.toObject(UserProfileResponse::class.java) }
             .mapNotNull { it?.mapToUserProfileModel() }
 
     override suspend fun updateRating(rating: Float, profileId: String): Boolean {
-        database
-            .collection(PROFILES_COLLECTION).document(profileId)
+        profiles.document(profileId)
             .update(RATING_FIELD, rating)
             .await()
         return true

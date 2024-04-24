@@ -1,5 +1,7 @@
 package ru.arinae_va.lensa.presentation.feature.feed.viewmodel
 
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
@@ -9,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.domain.model.Review
+import ru.arinae_va.lensa.domain.repository.IChatRequestRepository
 import ru.arinae_va.lensa.domain.repository.IFavouritesRepository
 import ru.arinae_va.lensa.domain.repository.IReviewRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
@@ -19,6 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileDetailsViewModel @Inject constructor(
     private val navHostController: NavHostController,
+    private val snackbarHostState: MutableState<SnackbarHostState>,
+    private val chatRequestRepository: IChatRequestRepository,
     private val userProfileRepository: IUserProfileRepository,
     private val favouritesRepository: IFavouritesRepository,
     private val reviewRepository: IReviewRepository,
@@ -151,7 +156,12 @@ class ProfileDetailsViewModel @Inject constructor(
     }
 
     fun onSendMessageClick(recipientUserId: String) {
-        TODO("Not yet implemented")
+        viewModelScope.launch {
+            chatRequestRepository.sendChatRequest(recipientUserId)
+            snackbarHostState.value.showSnackbar(
+                message = "Запрос отправлен"
+            )
+        }
     }
 
     fun onAddToFavouritesClick(isNeedToAdd: Boolean) {

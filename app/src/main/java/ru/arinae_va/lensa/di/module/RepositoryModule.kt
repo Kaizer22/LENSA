@@ -5,14 +5,20 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ru.arinae_va.lensa.data.repositroy.AuthRepository
+import ru.arinae_va.lensa.data.repositroy.ChatRepository
+import ru.arinae_va.lensa.data.repositroy.ChatRequestRepository
 import ru.arinae_va.lensa.data.repositroy.FavouritesRepository
 import ru.arinae_va.lensa.data.repositroy.FeedbackRepository
+import ru.arinae_va.lensa.data.repositroy.MessageRepository
 import ru.arinae_va.lensa.data.repositroy.ReviewRepository
 import ru.arinae_va.lensa.data.repositroy.SettingsRepository
 import ru.arinae_va.lensa.data.repositroy.UserProfileRepository
 import ru.arinae_va.lensa.domain.repository.IAuthRepository
+import ru.arinae_va.lensa.domain.repository.IChatRepository
+import ru.arinae_va.lensa.domain.repository.IChatRequestRepository
 import ru.arinae_va.lensa.domain.repository.IFavouritesRepository
 import ru.arinae_va.lensa.domain.repository.IFeedbackRepository
+import ru.arinae_va.lensa.domain.repository.IMessageRepository
 import ru.arinae_va.lensa.domain.repository.IReviewRepository
 import ru.arinae_va.lensa.domain.repository.ISettingsRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
@@ -44,4 +50,16 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun feedbackRepository(feedbackRepository: FeedbackRepository): IFeedbackRepository
+
+    @Singleton
+    @Binds
+    abstract fun chatRepository(chatRepository: ChatRepository): IChatRepository
+
+    @Singleton
+    @Binds
+    abstract fun messageRepository(messageRepository: MessageRepository): IMessageRepository
+
+    @Singleton
+    @Binds
+    abstract fun chatRequestRepository(chatRequestRepository: ChatRequestRepository): IChatRequestRepository
 }

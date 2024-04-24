@@ -31,11 +31,11 @@ private const val REVIEWS_COLLECTION = "review"
 private const val REVIEWS_PROFILE_ID_FIELD = "profileId"
 
 class FirebaseReviewDataSource @Inject constructor(
-    private val database: FirebaseFirestore,
+    database: FirebaseFirestore,
 ) : IReviewDataSource {
+    private val reviews = database.collection(REVIEWS_COLLECTION)
     override suspend fun getReviewsByProfileId(profileId: String): List<Review> =
-        database.collection(REVIEWS_COLLECTION)
-            .whereEqualTo(REVIEWS_PROFILE_ID_FIELD, profileId)
+        reviews.whereEqualTo(REVIEWS_PROFILE_ID_FIELD, profileId)
             .get()
             .await()
             .documents.map {
@@ -51,8 +51,7 @@ class FirebaseReviewDataSource @Inject constructor(
     ): Boolean {
         var res = true
         val mappedReview = review.toReviewResponse()
-        database.collection(REVIEWS_COLLECTION)
-            .document("${currentUserId}_${targetProfileId}")
+        reviews.document("${currentUserId}_${targetProfileId}")
             .set(mappedReview)
             .addOnCanceledListener { res = false }
             .addOnFailureListener { res = false }
@@ -62,8 +61,7 @@ class FirebaseReviewDataSource @Inject constructor(
     }
 
     override suspend fun deleteReview(targetProfileId: String, currentUserId: String) {
-        database.collection(REVIEWS_COLLECTION)
-            .document("${currentUserId}_${targetProfileId}").delete()
+        reviews.document("${currentUserId}_${targetProfileId}").delete()
             .await()
     }
 }

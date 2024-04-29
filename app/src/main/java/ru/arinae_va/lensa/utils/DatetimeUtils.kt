@@ -11,3 +11,7 @@ fun parseIsoDatetime(dateTime: String) = LocalDateTime.parse(
     dateTime,
     DateTimeFormatter.ISO_DATE_TIME
 )
+
+fun formatPrettyDatetime(dateTime: LocalDateTime): String {
+    return "-----"
+}

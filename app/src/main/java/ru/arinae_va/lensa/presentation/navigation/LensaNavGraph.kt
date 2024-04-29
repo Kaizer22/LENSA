@@ -1,6 +1,5 @@
 package ru.arinae_va.lensa.presentation.navigation
 
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -54,7 +53,6 @@ const val CHAT_ID_KEY = "chatId"
 @Composable
 fun LensaNavGraph(
     navController: NavHostController,
-    snackbarHostState: SnackbarHostState,
 ) {
     // TODO вложенные графы для фичей, шаринг вью моделей
     return NavHost(
@@ -252,6 +250,9 @@ fun LensaNavGraph(
 
         composable(route = LensaScreens.CHAT_LIST_SCREEN.name) {
             val viewModel = hiltViewModel<ChatListViewModel>()
+            LaunchedEffect(key1 = viewModel) {
+                viewModel.onAttach()
+            }
             ChatListScreen(
                 viewModel = viewModel,
             )
@@ -259,6 +260,9 @@ fun LensaNavGraph(
 
         composable(route = LensaScreens.CHAT_REQUEST_LIST_SCREEN.name) {
             val viewModel = hiltViewModel<ChatRequestListViewModel>()
+            LaunchedEffect(key1 = viewModel) {
+                viewModel.onAttach()
+            }
             ChatRequestListScreen(
                 viewModel = viewModel,
             )
@@ -271,11 +275,19 @@ fun LensaNavGraph(
                         type = NavType.StringType
                     }
                 )
-        ) {
+        ) { backStackEntry ->
             val viewModel = hiltViewModel<ChatViewModel>()
-            ChatScreen(
-                viewModel = viewModel,
-            )
+            val arguments = requireNotNull(backStackEntry.arguments)
+
+            val chatId = arguments.getString(CHAT_ID_KEY)
+            chatId?.let {
+                LaunchedEffect(key1 = viewModel) {
+                    viewModel.onAttach(chatId)
+                }
+                ChatScreen(
+                    viewModel = viewModel,
+                )
+            }
         }
     }
 }

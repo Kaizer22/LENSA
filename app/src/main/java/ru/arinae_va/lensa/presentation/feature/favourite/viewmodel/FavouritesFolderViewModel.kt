@@ -1,15 +1,13 @@
 package ru.arinae_va.lensa.presentation.feature.favourite.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.domain.repository.IFavouritesRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
+import ru.arinae_va.lensa.presentation.common.StateViewModel
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import javax.inject.Inject
 
@@ -18,10 +16,9 @@ class FavouritesFolderViewModel @Inject constructor(
     private val userProfileRepository: IUserProfileRepository,
     private val favouritesRepository: IFavouritesRepository,
     private val navHostController: NavHostController,
-) : ViewModel() {
-
-    private val _state = MutableStateFlow(FavouritesFolderState.INITIAL)
-    val state: StateFlow<FavouritesFolderState> = _state
+) : StateViewModel<FavouritesFolderState>(
+    initialState = FavouritesFolderState.INITIAL,
+) {
 
     fun loadProfiles(folderName: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -31,7 +28,7 @@ class FavouritesFolderViewModel @Inject constructor(
                 ?.savedUserIds
                 ?.let { idsInFolder ->
                     val profiles = userProfileRepository.getProfilesByIds(idsInFolder)
-                    _state.tryEmit(
+                    update(
                         state.value.copy(
                             folderName = folderName,
                             folderItems = profiles,
@@ -54,7 +51,7 @@ class FavouritesFolderViewModel @Inject constructor(
         val mutableIdsList = state.value.idsToDelete.toMutableList()
         if (isRemove) mutableIdsList += userId
         else mutableIdsList -= userId
-        _state.tryEmit(
+        update(
             state.value.copy(
                 idsToDelete = mutableIdsList
             )

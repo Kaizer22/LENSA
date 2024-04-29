@@ -1,18 +1,16 @@
 package ru.arinae_va.lensa.presentation.feature.feed.viewmodel
 
 import android.content.Context
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.FeedFilter
 import ru.arinae_va.lensa.domain.model.OrderType
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
+import ru.arinae_va.lensa.presentation.common.StateViewModel
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import javax.inject.Inject
 
@@ -21,11 +19,9 @@ class FeedViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val navHostController: NavHostController,
     private val userProfileRepository: IUserProfileRepository,
-) : ViewModel() {
-
-    private val _state = MutableStateFlow(FeedState.INITIAL)
-    internal val state: StateFlow<FeedState> = _state
-
+) : StateViewModel<FeedState>(
+    initialState = FeedState.INITIAL,
+) {
     private var lastSearchQueryChange: Long = 0
 
     fun onAttach() {
@@ -35,7 +31,7 @@ class FeedViewModel @Inject constructor(
     private fun loadFeed() {
         viewModelScope.launch {
             val result = userProfileRepository.getFeed(state.value.filter)
-            _state.tryEmit(
+            update(
                 state.value.copy(
                     feed = result,
                 )
@@ -60,7 +56,7 @@ class FeedViewModel @Inject constructor(
 
     fun onClearFilterClick() {
         viewModelScope.launch {
-            _state.emit(
+            updateSuspending(
                 state.value.copy(
                     filter = FeedFilter.EMPTY,
                 )
@@ -86,7 +82,7 @@ class FeedViewModel @Inject constructor(
 
     fun onSearchTextChanged(searchQuery: String) {
         lastSearchQueryChange = System.currentTimeMillis()
-        _state.tryEmit(
+        update(
             state.value.copy(
                 filter = state.value.filter.copy(searchQuery = searchQuery)
             )
@@ -97,7 +93,7 @@ class FeedViewModel @Inject constructor(
 
 
     fun onFilterCountryChanged(country: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 filter = state.value.filter.copy(country = country)
             )
@@ -105,7 +101,7 @@ class FeedViewModel @Inject constructor(
     }
 
     fun onFilterCityChanged(city: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 filter = state.value.filter.copy(city = city)
             )
@@ -113,7 +109,7 @@ class FeedViewModel @Inject constructor(
     }
 
     fun onFilterSpecializationChanged(specialization: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 filter = state.value.filter.copy(specialization = specialization)
             )
@@ -121,7 +117,7 @@ class FeedViewModel @Inject constructor(
     }
 
     fun onFilterOrderChanged(orderType: OrderType) {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 filter = state.value.filter.copy(order = orderType)
             )
@@ -130,7 +126,7 @@ class FeedViewModel @Inject constructor(
 
     fun onFilterPriceToChanged(priceTo: Int) {
         val validationErrors = validatePriceRange(state.value.filter.priceFrom, priceTo)
-        _state.tryEmit(
+        update(
             state.value.copy(
                 filter = state.value.filter.copy(
                     priceTo = priceTo
@@ -143,7 +139,7 @@ class FeedViewModel @Inject constructor(
 
     fun onFilterPriceFromChanged(priceFrom: Int) {
         val validationErrors = validatePriceRange(priceFrom, state.value.filter.priceTo)
-        _state.tryEmit(
+        update(
             state.value.copy(
                 filter = state.value.filter.copy(
                     priceFrom = priceFrom,

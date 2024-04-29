@@ -4,11 +4,11 @@ import ru.arinae_va.lensa.domain.model.Message
 import ru.arinae_va.lensa.utils.parseIsoDatetime
 
 data class MessageResponse(
-    val messageId: String?,
-    val authorProfileId: String?,
-    val chatId: String?,
-    val message: String?,
-    val dateTime: String?,
+    val messageId: String? = null,
+    val authorProfileId: String? = null,
+    val chatId: String? = null,
+    val message: String? = null,
+    val dateTime: String? = null,
 ) {
     fun toMessage() = Message(
         messageId = messageId.orEmpty(),

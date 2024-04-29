@@ -1,6 +1,5 @@
 package ru.arinae_va.lensa.domain.model
 
-import ru.arinae_va.lensa.data.model.ChatResponse
 import java.time.LocalDateTime
 
 data class Chat (
@@ -10,13 +9,12 @@ data class Chat (
     val name: String,
     val avatarUrl: String,
     val createTime: LocalDateTime,
+    val dialogData: DialogData? = null,
 )
 
-fun Chat.toChatResponse() = ChatResponse(
-    chatId = chatId,
-    creatorProfileId = creatorProfileId,
-    members = members,
-    name = name,
-    avatarUrl = avatarUrl,
-    createTime = createTime.toString(),
+data class DialogData(
+    val authorMemberName: String,
+    val targetMemberName: String,
+    val authorAvatarUrl: String?,
+    val targetAvatarUrl: String?,
 )

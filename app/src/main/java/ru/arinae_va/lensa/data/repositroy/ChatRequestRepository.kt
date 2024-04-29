@@ -15,13 +15,21 @@ class ChatRequestRepository @Inject constructor(
     override fun getChatRequests(profileId: String): Flow<List<ChatRequest>> =
         chatsDataSource.getChatRequests(profileId)
 
-    override suspend fun sendChatRequest(targetProfileId: String) {
-        userProfileRepository.currentProfileId()?.let { currentUserId ->
+    override suspend fun sendChatRequest(
+        targetProfileId: String,
+        targetProfileName: String,
+        targetProfileAvatarUrl: String?,
+    ) {
+        userProfileRepository.currentUserProfile()?.let { currentUserProfile ->
             val chatRequest = ChatRequest(
-                requestId = currentUserId + "_" + targetProfileId,
-                authorProfileId = currentUserId,
+                requestId = currentUserProfile.profileId + "_" + targetProfileId,
+                authorProfileId = currentUserProfile.profileId,
                 targetProfileId = targetProfileId,
+                targetName = targetProfileName,
+                targetAvatarUrl = targetProfileAvatarUrl,
                 dateTime = LocalDateTime.now(),
+                authorAvatarUrl = currentUserProfile.avatarUrl,
+                authorName = currentUserProfile.name + " " + currentUserProfile.surname,
             )
             chatsDataSource.sendChatRequest(chatRequest)
         }

@@ -2,19 +2,17 @@ package ru.arinae_va.lensa.presentation.feature.feed.viewmodel
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.domain.model.Review
 import ru.arinae_va.lensa.domain.repository.IChatRequestRepository
 import ru.arinae_va.lensa.domain.repository.IFavouritesRepository
 import ru.arinae_va.lensa.domain.repository.IReviewRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
+import ru.arinae_va.lensa.presentation.common.StateViewModel
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -27,10 +25,9 @@ class ProfileDetailsViewModel @Inject constructor(
     private val userProfileRepository: IUserProfileRepository,
     private val favouritesRepository: IFavouritesRepository,
     private val reviewRepository: IReviewRepository,
-) : ViewModel() {
-
-    private val _state = MutableStateFlow(ProfileDetailsState.INITIAL)
-    val state: StateFlow<ProfileDetailsState> = _state
+) : StateViewModel<ProfileDetailsState>(
+    initialState = ProfileDetailsState.INITIAL,
+) {
 
     fun loadUserProfile(
         profileUid: String,
@@ -45,7 +42,7 @@ class ProfileDetailsViewModel @Inject constructor(
                 reviews = reviews,
                 rating = calculateRating(reviews)
             )
-            _state.tryEmit(
+            update(
                 state.value.copy(
                     userProfileModel = result,
                     isNeedToScrollToReviews = isNeedToScrollToReviews,
@@ -62,7 +59,7 @@ class ProfileDetailsViewModel @Inject constructor(
     else 0.0f
 
     private fun setLoading(isLoading: Boolean) {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 isLoading = isLoading
             )
@@ -75,7 +72,7 @@ class ProfileDetailsViewModel @Inject constructor(
         }
 
     fun onRatingChanged(rating: Float) {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 rating = rating
             )
@@ -92,7 +89,7 @@ class ProfileDetailsViewModel @Inject constructor(
     }
 
     fun onReviewChanged(reviewText: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 reviewText = reviewText
             )
@@ -125,7 +122,7 @@ class ProfileDetailsViewModel @Inject constructor(
                     rating = newRating,
                     profileId = state.value.userProfileModel.profileId
                 )
-                _state.tryEmit(
+                update(
                     state.value.copy(
                         userProfileModel = state.value.userProfileModel.copy(
                             rating = newRating
@@ -140,7 +137,7 @@ class ProfileDetailsViewModel @Inject constructor(
     private suspend fun loadReviews() {
         val reviews =
             reviewRepository.getReviewsByProfileId(state.value.userProfileModel.profileId)
-        _state.tryEmit(
+        update(
             state.value.copy(
                 userProfileModel = state.value.userProfileModel.copy(
                     reviews = reviews,
@@ -152,12 +149,18 @@ class ProfileDetailsViewModel @Inject constructor(
     }
 
     fun onChatsClick() {
-        TODO("Not yet implemented")
+        navHostController.navigate(LensaScreens.CHAT_LIST_SCREEN.name)
     }
 
     fun onSendMessageClick(recipientUserId: String) {
         viewModelScope.launch {
-            chatRequestRepository.sendChatRequest(recipientUserId)
+            // TODO Проверка, что чат уже существует
+            chatRequestRepository.sendChatRequest(
+                targetProfileId = recipientUserId,
+                targetProfileName = state.value.userProfileModel.name + " " +
+                        state.value.userProfileModel.surname,
+                targetProfileAvatarUrl = state.value.userProfileModel.avatarUrl,
+            )
             snackbarHostState.value.showSnackbar(
                 message = "Запрос отправлен"
             )
@@ -177,7 +180,7 @@ class ProfileDetailsViewModel @Inject constructor(
                     folderName = state.value.userProfileModel.specialization,
                 )
             }
-            _state.tryEmit(
+            update(
                 state.value.copy(
                     isAddedToFavourites = isNeedToAdd,
                 )

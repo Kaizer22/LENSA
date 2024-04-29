@@ -45,6 +45,7 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var navHostController: NavHostController
+
     @Inject
     lateinit var snackbarHostState: MutableState<SnackbarHostState>
 
@@ -57,7 +58,6 @@ class MainActivity : ComponentActivity() {
                 ) {
                     LensaNavGraph(
                         navController = navHostController,
-                        snackbarHostState = snackbarHostState.value,
                     )
                 }
             }

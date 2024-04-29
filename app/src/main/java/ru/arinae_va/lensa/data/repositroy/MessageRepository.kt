@@ -1,5 +1,6 @@
 package ru.arinae_va.lensa.data.repositroy
 
+import kotlinx.coroutines.flow.Flow
 import ru.arinae_va.lensa.data.datasource.remote.IChatsDataSource
 import ru.arinae_va.lensa.domain.model.Message
 import ru.arinae_va.lensa.domain.repository.IMessageRepository
@@ -15,6 +16,9 @@ class MessageRepository @Inject constructor(
     override suspend fun deleteMessage(messageId: String) {
         chatsDataSource.deleteMessage(messageId)
     }
+
+    override fun getLastMessages(chatIds: List<String>): Flow<List<Message>> =
+        chatsDataSource.getLastMessages(chatIds)
 
     override fun getMessages(chatId: String) = chatsDataSource.getMessages(chatId)
 }

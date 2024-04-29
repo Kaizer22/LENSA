@@ -1,16 +1,14 @@
 package ru.arinae_va.lensa.presentation.feature.settings.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.domain.repository.IAuthRepository
 import ru.arinae_va.lensa.domain.repository.IFeedbackRepository
 import ru.arinae_va.lensa.domain.repository.ISettingsRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
+import ru.arinae_va.lensa.presentation.common.StateViewModel
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.utils.Constants
 import javax.inject.Inject
@@ -22,19 +20,16 @@ class SettingsViewModel @Inject constructor(
     private val feedbackRepository: IFeedbackRepository,
     private val navHostController: NavHostController,
     private val settingsRepository: ISettingsRepository,
-) : ViewModel() {
-
-    private val _state = MutableStateFlow(
-        SettingsScreenState(
-            isLoading = false,
-            isShowDeleteProfileDialog = false,
-            isShowExitDialog = false,
-            isShowSelectProfileDialog = false,
-            userProfiles = emptyList(),
-            selectProfileDialogDismissButtonText = "ОТМЕНИТЬ"
-        )
+) : StateViewModel<SettingsScreenState>(
+    initialState = SettingsScreenState(
+        isLoading = false,
+        isShowDeleteProfileDialog = false,
+        isShowExitDialog = false,
+        isShowSelectProfileDialog = false,
+        userProfiles = emptyList(),
+        selectProfileDialogDismissButtonText = "ОТМЕНИТЬ"
     )
-    internal val state: StateFlow<SettingsScreenState> = _state
+) {
 
     fun onAboutClick() = navHostController.navigate(LensaScreens.ABOUT_APP_SCREEN.name)
 
@@ -110,7 +105,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun setLoading(isLoading: Boolean) {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 isLoading = isLoading,
             )
@@ -118,7 +113,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun showDeleteDialog() {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 isShowDeleteProfileDialog = true
             )
@@ -126,7 +121,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun hideDeleteDialog() {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 isShowDeleteProfileDialog = false
             )
@@ -134,7 +129,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun showExitDialog() {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 isShowExitDialog = true
             )
@@ -142,7 +137,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun hideExitDialog() {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 isShowExitDialog = false
             )
@@ -160,7 +155,7 @@ class SettingsViewModel @Inject constructor(
             val profiles = userProfileRepository.getProfilesByUserId(
                 userId = userId
             )
-            _state.tryEmit(
+            update(
                 state.value.copy(
                     userProfiles = profiles,
                     isShowSelectProfileDialog = true,
@@ -181,7 +176,7 @@ class SettingsViewModel @Inject constructor(
         if (authRepository.currentUserId().isNullOrEmpty()) {
             toAuthScreen()
         } else {
-            _state.tryEmit(
+            update(
                 state.value.copy(
                     isShowSelectProfileDialog = false
                 )

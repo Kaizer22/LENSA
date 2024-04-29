@@ -4,7 +4,7 @@ import android.net.Uri
 import ru.arinae_va.lensa.domain.model.Price
 import ru.arinae_va.lensa.presentation.feature.feed.compose.SocialMediaType
 
-internal enum class RegistrationScreenInputField {
+enum class RegistrationScreenInputField {
     NAME, SURNAME, SPECIALIZATION, AVATAR,
     COUNTRY, CITY, PHONE_NUMBER, EMAIL, ABOUT,
     PERSONAL_WEBSITE,
@@ -16,7 +16,7 @@ internal enum class RegistrationScreenInputField {
     PRICES, PORTFOLIO
 }
 
-internal data class RegistrationScreenState(
+data class RegistrationScreenState(
     val isSpecialistRegistrationScreen: Boolean,
     val isEdit: Boolean,
     val isLoading: Boolean,

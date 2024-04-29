@@ -13,17 +13,19 @@ import ru.arinae_va.lensa.data.model.ChatRequestResponse
 import ru.arinae_va.lensa.data.model.ChatResponse
 import ru.arinae_va.lensa.data.model.MessageResponse
 import ru.arinae_va.lensa.data.model.toChatRequestResponse
+import ru.arinae_va.lensa.data.model.toChatResponse
 import ru.arinae_va.lensa.data.model.toMessageResponse
 import ru.arinae_va.lensa.domain.model.Chat
 import ru.arinae_va.lensa.domain.model.ChatRequest
+import ru.arinae_va.lensa.domain.model.DialogData
 import ru.arinae_va.lensa.domain.model.Message
-import ru.arinae_va.lensa.domain.model.toChatResponse
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.inject.Inject
 
 interface IChatsDataSource {
     fun getMessages(chatId: String): Flow<List<Message>>
+    fun getLastMessages(chatIds: List<String>): Flow<List<Message>>
     suspend fun upsertMessage(message: Message)
     suspend fun deleteMessage(messageId: String)
 
@@ -32,6 +34,7 @@ interface IChatsDataSource {
     suspend fun deleteChat(chatId: String)
 
     fun getChatRequests(profileId: String): Flow<List<ChatRequest>>
+    fun getChat(chatId: String): Flow<Chat>
     suspend fun sendChatRequest(chatRequest: ChatRequest)
     suspend fun approveChatRequest(chatRequest: ChatRequest)
     suspend fun cancelChatRequest(chatRequest: ChatRequest)
@@ -62,6 +65,28 @@ class FirebaseChatsDataSource @Inject constructor(
                 val messagesSnapshot = value?.documents
                     ?.mapNotNull { it.toObject(MessageResponse::class.java) }
                     ?.map { it.toMessage() }
+                messagesSnapshot?.let {
+                    coroutineScope.launch {
+                        send(messagesSnapshot)
+                    }
+                }
+            }
+        awaitClose {
+            listener.remove()
+        }
+    }
+
+    override fun getLastMessages(chatIds: List<String>)= callbackFlow {
+        val listener = messages.whereArrayContains(CHAT_ID_FIELD, chatIds)
+            .addSnapshotListener { value, error ->
+                error?.let { close(error) }
+                val messagesSnapshot = value?.documents
+                    ?.mapNotNull { it.toObject(MessageResponse::class.java) }
+                    ?.map { it.toMessage() }
+                    ?.groupBy { it.chatId }
+                    ?.map {
+                        it.value.maxBy { message -> message.dateTime }
+                    }
                 messagesSnapshot?.let {
                     coroutineScope.launch {
                         send(messagesSnapshot)
@@ -136,6 +161,24 @@ class FirebaseChatsDataSource @Inject constructor(
         }
     }
 
+    override fun getChat(chatId: String): Flow<Chat> = callbackFlow {
+        val listener = chats.whereEqualTo(CHAT_ID_FIELD, chatId)
+            .addSnapshotListener { value, error ->
+                error?.let { close(error) }
+                val chatSnapshot = value?.documents
+                    ?.mapNotNull { it.toObject(ChatResponse::class.java) }
+                    ?.map { it.toChat() }
+                chatSnapshot?.let {
+                    coroutineScope.launch {
+                        send(chatSnapshot.first())
+                    }
+                }
+            }
+        awaitClose {
+            listener.remove()
+        }
+    }
+
     override suspend fun sendChatRequest(chatRequest: ChatRequest) {
         val mapped = chatRequest.toChatRequestResponse()
         chatRequests.document(chatRequest.requestId)
@@ -154,6 +197,12 @@ class FirebaseChatsDataSource @Inject constructor(
             name = "",
             avatarUrl = "",
             createTime = LocalDateTime.now(),
+            dialogData = DialogData(
+                authorMemberName = chatRequest.authorName,
+                authorAvatarUrl = chatRequest.authorAvatarUrl,
+                targetMemberName = chatRequest.targetName,
+                targetAvatarUrl = chatRequest.targetAvatarUrl,
+            )
         )
         upsertChat(chat)
         cancelChatRequest(chatRequest)

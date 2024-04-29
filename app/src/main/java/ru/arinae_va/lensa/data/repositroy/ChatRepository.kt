@@ -1,5 +1,6 @@
 package ru.arinae_va.lensa.data.repositroy
 
+import kotlinx.coroutines.flow.Flow
 import ru.arinae_va.lensa.data.datasource.remote.IChatsDataSource
 import ru.arinae_va.lensa.domain.model.Chat
 import ru.arinae_va.lensa.domain.repository.IChatRepository
@@ -10,11 +11,13 @@ class ChatRepository @Inject constructor(
 ) : IChatRepository {
     override fun getChats(profileId: String) = chatsDataSource.getChats(profileId)
 
+    override fun getChat(chatId: String): Flow<Chat> = chatsDataSource.getChat(chatId)
+
     override suspend fun upsertChat(chat: Chat) {
-        TODO("Not yet implemented")
+        chatsDataSource.upsertChat(chat)
     }
 
     override suspend fun deleteChat(chatId: String) {
-        TODO("Not yet implemented")
+        chatsDataSource.deleteChat(chatId)
     }
 }

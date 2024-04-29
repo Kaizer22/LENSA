@@ -1,9 +1,9 @@
 package ru.arinae_va.lensa.presentation.feature.auth.viewmodel
 
-internal enum class AuthScreenField {
+enum class AuthScreenField {
     PHONE_NUMBER,
 }
-internal data class AuthScreenState(
+data class AuthScreenState(
     val phoneNumber: String,
     val isLoading: Boolean,
     val isEnabledNextButton: Boolean,

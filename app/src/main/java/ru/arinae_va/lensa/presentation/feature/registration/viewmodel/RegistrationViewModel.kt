@@ -4,13 +4,10 @@ import android.content.Context
 import android.net.Uri
 import android.webkit.URLUtil.isHttpsUrl
 import android.webkit.URLUtil.isValidUrl
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.Price
@@ -19,6 +16,7 @@ import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.model.UserProfileType
 import ru.arinae_va.lensa.domain.repository.IAuthRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
+import ru.arinae_va.lensa.presentation.common.StateViewModel
 import ru.arinae_va.lensa.presentation.feature.feed.compose.SocialMediaType
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.utils.Constants
@@ -34,13 +32,9 @@ class RegistrationViewModel @Inject constructor(
     private val navHostController: NavHostController,
     private val userProfileRepository: IUserProfileRepository,
     private val authRepository: IAuthRepository,
-) : ViewModel() {
-
-    private val _state = MutableStateFlow(
-        RegistrationScreenState.INITIAL
-    )
-    internal val state: StateFlow<RegistrationScreenState> = _state
-
+) : StateViewModel<RegistrationScreenState>(
+    initialState = RegistrationScreenState.INITIAL
+) {
     fun setUser(editUserId: String) {
         if (editUserId == userProfileRepository.currentProfileId()) {
             viewModelScope.launch {
@@ -50,7 +44,7 @@ class RegistrationViewModel @Inject constructor(
                 with(editableUser) {
                     val socialMediasMap = mutableMapOf<SocialMediaType, String>()
                     socialMedias.forEach { socialMediasMap[it.type] = it.link }
-                    _state.tryEmit(
+                    update(
                         state.value.copy(
                             isLoading = false,
                             isEdit = true,
@@ -76,49 +70,49 @@ class RegistrationViewModel @Inject constructor(
     }
 
     fun setLoading(isLoading: Boolean) {
-        _state.tryEmit(
+        update(
             state.value.copy(isLoading = isLoading)
         )
     }
 
     fun setType(isSpecialistScreenSelected: Boolean) {
-        _state.tryEmit(
+        update(
             state.value.copy(isSpecialistRegistrationScreen = isSpecialistScreenSelected)
         )
     }
 
     fun onNameChanged(name: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(name = name)
         )
     }
 
     fun onSurnameChanged(surname: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(surname = surname)
         )
     }
 
     fun onSpecializationChanged(specialization: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(specialization = specialization)
         )
     }
 
     fun onCountryChanged(country: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(country = country)
         )
     }
 
     fun onCityChanged(city: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(city = city)
         )
     }
 
     fun onPhoneNumberChanged(phoneNumber: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 phoneNumber = phoneNumber,
             )
@@ -126,43 +120,43 @@ class RegistrationViewModel @Inject constructor(
     }
 
     fun onEmailChanged(email: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(email = email)
         )
     }
 
     fun onAboutChanged(about: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(about = about)
         )
     }
 
     fun onPersonalWebsiteChanged(personalWebsite: String) {
-        _state.tryEmit(
+        update(
             state.value.copy(personalSite = personalWebsite)
         )
     }
 
     fun onPricesChanged(prices: List<Price>) {
-        _state.tryEmit(
+        update(
             state.value.copy(prices = prices)
         )
     }
 
     fun onSocialMediasChanged(socialMedias: Map<SocialMediaType, String>) {
-        _state.tryEmit(
+        update(
             state.value.copy(socialMedias = socialMedias)
         )
     }
 
     fun onAvatarChanged(avatar: Uri) {
-        _state.tryEmit(
+        update(
             state.value.copy(avatarUri = avatar)
         )
     }
 
     fun onPortfolioChanged(portfolio: List<Uri>) {
-        _state.tryEmit(
+        update(
             state.value.copy(
                 portfolioUris = portfolio,
             )
@@ -298,7 +292,7 @@ class RegistrationViewModel @Inject constructor(
                 validationErrors[RegistrationScreenInputField.PERSONAL_WEBSITE] =
                     context.getString(R.string.invalid_personal_site_url_error)
 
-            _state.tryEmit(
+            update(
                 state.value.copy(
                     validationErrors = validationErrors,
                 )
@@ -343,7 +337,7 @@ class RegistrationViewModel @Inject constructor(
             if (prices.isEmpty())
                 validationErrors[RegistrationScreenInputField.PRICES] =
                     context.getString(R.string.registration_screen_prices_validation_error)
-            _state.tryEmit(
+            update(
                 state.value.copy(
                     validationErrors = validationErrors,
                 )

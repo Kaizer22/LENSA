@@ -78,7 +78,7 @@ class FirebaseChatsDataSource @Inject constructor(
     }
 
     override fun getLastMessages(chatIds: List<String>)= callbackFlow {
-        val listener = messages.whereArrayContains(CHAT_ID_FIELD, chatIds)
+        val listener = messages.whereIn(CHAT_ID_FIELD, chatIds)
             .addSnapshotListener { value, error ->
                 error?.let { close(error) }
                 val messagesSnapshot = value?.documents

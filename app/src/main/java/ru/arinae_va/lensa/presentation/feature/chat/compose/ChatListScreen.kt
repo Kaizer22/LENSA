@@ -56,7 +56,6 @@ private fun ChatListContent(
     onDeleteChatClick: (String) -> Unit,
     onBackPressed: () -> Unit,
 ) {
-
     var isShowDeleteChatDialog by remember { mutableStateOf(false) }
     var chatToDeleteId by remember { mutableStateOf("") }
     if (isShowDeleteChatDialog) {
@@ -111,7 +110,7 @@ private fun ChatListContent(
                 )
                 VSpace(h = 12.dp)
                 Divider(color = LensaTheme.colors.dividerColor)
-                VSpace(h = 24.dp)
+                VSpace(h = 12.dp)
             }
             if (state.chats.isNotEmpty()) {
                 items(state.chats) { chat ->

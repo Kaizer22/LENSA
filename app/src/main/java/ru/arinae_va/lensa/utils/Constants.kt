@@ -62,4 +62,6 @@ object Constants {
     internal val DATETIME_FORMAT = "dd.MM.yyyy HH:mm"
     internal val DATE_FORMAT = "dd.MM.yyyy"
     internal val TIME_FORMAT = "HH:mm"
+    internal val DAY_OF_WEEK_FORMAT = "E."
+    internal val DAY_MONTH_FORMAT = "dd MMM"
 }

@@ -10,6 +10,7 @@ import ru.arinae_va.lensa.domain.model.ChatRequest
 import ru.arinae_va.lensa.domain.repository.IChatRequestRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.common.StateViewModel
+import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,6 +53,15 @@ class ChatRequestListViewModel @Inject constructor(
 
     fun onBackPressed() {
         navHostController.popBackStack()
+    }
+
+    fun onAvatarClick(profileId: String) {
+        val isSelf = false
+        navHostController.navigate(
+            LensaScreens.SPECIALIST_DETAILS_SCREEN.name +
+            "/$profileId" +
+            "/$isSelf"
+        )
     }
 
     fun onAcceptRequest(chatRequest: ChatRequest) {

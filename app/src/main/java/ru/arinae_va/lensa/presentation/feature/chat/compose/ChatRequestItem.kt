@@ -2,21 +2,21 @@ package ru.arinae_va.lensa.presentation.feature.chat.compose
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.HSpace
-import ru.arinae_va.lensa.presentation.common.component.LensaAsyncImage
+import ru.arinae_va.lensa.presentation.common.component.LensaAvatar
 import ru.arinae_va.lensa.presentation.common.component.LensaButton
+import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
+import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
@@ -24,8 +24,10 @@ import ru.arinae_va.lensa.presentation.theme.LensaTheme
 fun ChatRequestItem(
     authorName: String,
     avatarUrl: String,
+    authorSpecialization: String,
     onAcceptRequest: () -> Unit,
     onCancelRequest: () -> Unit,
+    onAvatarClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -40,21 +42,20 @@ fun ChatRequestItem(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(shape = LensaTheme.shapes.roundShape),
-            ) {
-                LensaAsyncImage(
-                    pictureUrl = avatarUrl,
+            LensaAvatar(avatarUrl = avatarUrl, onClick = onAvatarClick)
+            HSpace(w = 24.dp)
+            Column {
+                Text(
+                    text = authorName,
+                    style = LensaTheme.typography.text,
+                    color = LensaTheme.colors.textColor,
+                )
+                Text(
+                    text = authorSpecialization,
+                    style = LensaTheme.typography.signature,
+                    color = LensaTheme.colors.textColor,
                 )
             }
-            HSpace(w = 24.dp)
-            Text(
-                text = authorName,
-                style = LensaTheme.typography.text,
-                color = LensaTheme.colors.textColor,
-            )
         }
         VSpace(h = 16.dp)
         Text(
@@ -65,14 +66,17 @@ fun ChatRequestItem(
         VSpace(h = 16.dp)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             LensaButton(
-                text = "Принять",
+                text = "ПРИНЯТЬ",
                 onClick = onAcceptRequest,
             )
-            LensaButton(
-                text = "Отклонить",
+            FSpace()
+            LensaTextButton(
+                text = "ОТКЛОНИТЬ",
+                type = LensaTextButtonType.DEFAULT,
                 onClick = onCancelRequest,
             )
         }

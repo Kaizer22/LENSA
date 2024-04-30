@@ -38,6 +38,7 @@ fun ChatRequestListScreen(
         onBackPressed = viewModel::onBackPressed,
         onAcceptRequest = viewModel::onAcceptRequest,
         onCancelRequest = viewModel::onCancelRequest,
+        onAvatarClick = viewModel::onAvatarClick,
     )
 }
 
@@ -46,6 +47,7 @@ private fun ChatRequestListContent(
     state: ChatRequestListState,
     onAcceptRequest: (ChatRequest) -> Unit,
     onCancelRequest: (ChatRequest) -> Unit,
+    onAvatarClick: (String) -> Unit,
     onBackPressed: () -> Unit,
 ) {
     Column(
@@ -82,12 +84,16 @@ private fun ChatRequestListContent(
                     ChatRequestItem(
                         authorName = chatRequest.authorName,
                         avatarUrl = chatRequest.authorAvatarUrl.orEmpty(),
+                        authorSpecialization = chatRequest.authorSpecialization,
                         onAcceptRequest = {
                             onAcceptRequest.invoke(chatRequest)
                         },
                         onCancelRequest = {
                             onCancelRequest.invoke(chatRequest)
                         },
+                        onAvatarClick = {
+                            onAvatarClick.invoke(chatRequest.authorProfileId)
+                        }
                     )
                 }
             }
@@ -119,7 +125,8 @@ fun ChatRequestListPreview() {
             ),
             onAcceptRequest = {},
             onCancelRequest = {},
-            onBackPressed = {}
+            onBackPressed = {},
+            onAvatarClick = {}
         )
     }
 }

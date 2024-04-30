@@ -1,6 +1,8 @@
 package ru.arinae_va.lensa.presentation.feature.feed.viewmodel
 
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
@@ -186,6 +188,21 @@ class ProfileDetailsViewModel @Inject constructor(
                     isAddedToFavourites = isNeedToAdd,
                 )
             )
+        }
+        viewModelScope.launch {
+            val result = snackbarHostState.value.showSnackbar(
+                message = if (isNeedToAdd) "Добавлено в избранное"
+                else "Удалено из избранного",
+                actionLabel = "ПЕРЕЙТИ",
+                withDismissAction = true,
+                duration = SnackbarDuration.Long,
+            )
+            when (result) {
+                SnackbarResult.ActionPerformed -> navHostController.navigate(
+                    LensaScreens.FAVOURITES_SCREEN.name
+                )
+                SnackbarResult.Dismissed -> {}
+            }
         }
     }
 }

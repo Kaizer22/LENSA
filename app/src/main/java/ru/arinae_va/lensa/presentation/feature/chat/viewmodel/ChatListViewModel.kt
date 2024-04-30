@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -30,18 +32,35 @@ class ChatListViewModel @Inject constructor(
         isLoading = true,
     )
 ) {
+    private var messagesJob: Job? = null
 
     fun onAttach() {
+        // подписка на список чатов
         userProfileRepository.currentProfileId()?.let { currentProfileId ->
             viewModelScope.launch(Dispatchers.IO) {
                 val chats = chatRepository.getChats(currentProfileId)
                 observeChats(chats)
             }
-            viewModelScope.launch(Dispatchers.IO) {
-                val messages = messageRepository.getLastMessages(
-                    state.value.chats.map { it.chatId }
+        }
+    }
+
+    private suspend fun observeChats(chats: Flow<List<Chat>>) {
+        chats.collectLatest { latestChats ->
+            // завершение подписки на последние сообщения текущего списка чатов
+            messagesJob?.cancelChildren()
+            messagesJob?.cancel()
+            updateSuspending(
+                state.value.copy(
+                    chats = latestChats,
                 )
-                observeMessages(messages)
+            )
+            // подписка на обновленный список чатов
+            messagesJob = viewModelScope.launch(Dispatchers.IO) {
+                val chatIds = state.value.chats.map { it.chatId }
+                if (chatIds.isNotEmpty()) {
+                    val messages = messageRepository.getLastMessages(chatIds)
+                    observeMessages(messages)
+                }
             }
         }
     }
@@ -51,16 +70,6 @@ class ChatListViewModel @Inject constructor(
             update(
                 state.value.copy(
                     latestMessages = latestMessages,
-                )
-            )
-        }
-    }
-
-    private suspend fun observeChats(chats: Flow<List<Chat>>) {
-        chats.collectLatest { latestChats ->
-            update(
-                state.value.copy(
-                    chats = latestChats,
                 )
             )
         }

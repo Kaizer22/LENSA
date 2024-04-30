@@ -55,6 +55,8 @@ fun Chat.toChatResponse() = ChatResponse(
 private fun DialogData?.toDialogDataResponse() = DialogDataResponse(
     targetMemberName = this?.targetMemberName,
     targetAvatarUrl = this?.targetAvatarUrl,
+    targetSpecialization = this?.targetSpecialization,
     authorAvatarUrl = this?.authorAvatarUrl,
     authorMemberName = this?.authorMemberName,
+    authorSpecialization = this?.authorSpecialization,
 )

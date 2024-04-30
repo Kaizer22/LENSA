@@ -34,8 +34,10 @@ fun ChatRequest.toChatRequestResponse() = ChatRequestResponse(
     authorName = authorName,
     authorAvatarUrl = authorAvatarUrl,
     authorProfileId = authorProfileId,
+    authorSpecialization = authorSpecialization,
     targetProfileId = targetProfileId,
     targetAvatarUrl = targetAvatarUrl,
+    targetSpecialization = targetSpecialization,
     targetName = targetName,
     dateTime = dateTime.toString(),
 )

@@ -65,6 +65,7 @@ class FirebaseChatsDataSource @Inject constructor(
                 val messagesSnapshot = value?.documents
                     ?.mapNotNull { it.toObject(MessageResponse::class.java) }
                     ?.map { it.toMessage() }
+                    ?.sortedBy { it.dateTime }
                 messagesSnapshot?.let {
                     coroutineScope.launch {
                         send(messagesSnapshot)
@@ -202,6 +203,8 @@ class FirebaseChatsDataSource @Inject constructor(
                 authorAvatarUrl = chatRequest.authorAvatarUrl,
                 targetMemberName = chatRequest.targetName,
                 targetAvatarUrl = chatRequest.targetAvatarUrl,
+                targetSpecialization = chatRequest.targetSpecialization,
+                authorSpecialization = chatRequest.authorSpecialization,
             )
         )
         upsertChat(chat)

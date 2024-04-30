@@ -22,7 +22,7 @@ class ChatViewModel @Inject constructor(
     private val navHostController: NavHostController,
     private val chatRepository: IChatRepository,
     private val messageRepository: IMessageRepository,
-    private val userProfileRepository: IUserProfileRepository,
+    userProfileRepository: IUserProfileRepository,
 ): StateViewModel<ChatScreenState>(
     initialState = ChatScreenState(
         currentProfileId = userProfileRepository.currentProfileId().orEmpty(),

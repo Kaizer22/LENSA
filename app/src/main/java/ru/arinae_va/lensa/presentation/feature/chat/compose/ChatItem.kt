@@ -37,20 +37,9 @@ fun ChatItem(
     onDeleteClick: () -> Unit,
 ) {
     if (currentUserId.isNotEmpty()) {
-        val avatarUrl: String
-        val chatName: String
-        if (chat.dialogData != null) {
-            if (chat.creatorProfileId == currentUserId) {
-                avatarUrl = chat.dialogData.targetAvatarUrl.orEmpty()
-                chatName = chat.dialogData.targetMemberName
-            } else {
-                avatarUrl = chat.dialogData.authorAvatarUrl.orEmpty()
-                chatName = chat.dialogData.authorMemberName
-            }
-        } else {
-            avatarUrl = chat.avatarUrl
-            chatName = chat.name
-        }
+        val avatarUrl = remember { chat.getAvatarUrl(currentUserId) }
+        val chatName = remember { chat.getChatName(currentUserId) }
+        val specialization = remember { chat.getSpecailization(currentUserId) }
         var isActionMenuVisible by remember { mutableStateOf(false) }
         Column {
             DropdownMenu(
@@ -66,13 +55,16 @@ fun ChatItem(
                 )
             }
             Row(
-                modifier = Modifier.fillMaxWidth().combinedClickable(
-                    onClick = onClick,
-                    onLongClick = { isActionMenuVisible = true },
-                ).padding(
-                    horizontal = 8.dp,
-                    vertical = 8.dp,
-                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .combinedClickable(
+                        onClick = onClick,
+                        onLongClick = { isActionMenuVisible = true },
+                    )
+                    .padding(
+                        horizontal = 8.dp,
+                        vertical = 8.dp,
+                    ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 LensaAvatar(avatarUrl = avatarUrl)
@@ -83,11 +75,13 @@ fun ChatItem(
                         style = LensaTheme.typography.name,
                         color = LensaTheme.colors.textColor,
                     )
-                    Text(
-                        text = "специализация",
-                        style = LensaTheme.typography.smallAccent,
-                        color = LensaTheme.colors.textColor,
-                    )
+                    specialization?.let {
+                        Text(
+                            text = specialization,
+                            style = LensaTheme.typography.smallAccent,
+                            color = LensaTheme.colors.textColor,
+                        )
+                    }
                     VSpace(h = 8.dp)
                     Text(
                         text = latestMessage?.message ?: "Диалог создан",

@@ -18,6 +18,7 @@ class ChatRequestRepository @Inject constructor(
     override suspend fun sendChatRequest(
         targetProfileId: String,
         targetProfileName: String,
+        targetProfileSpecialization: String,
         targetProfileAvatarUrl: String?,
     ) {
         userProfileRepository.currentUserProfile()?.let { currentUserProfile ->
@@ -30,6 +31,8 @@ class ChatRequestRepository @Inject constructor(
                 dateTime = LocalDateTime.now(),
                 authorAvatarUrl = currentUserProfile.avatarUrl,
                 authorName = currentUserProfile.name + " " + currentUserProfile.surname,
+                authorSpecialization = currentUserProfile.specialization,
+                targetSpecialization = targetProfileSpecialization,
             )
             chatsDataSource.sendChatRequest(chatRequest)
         }

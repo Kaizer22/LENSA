@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
@@ -12,7 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.ChatRequest
@@ -49,6 +52,11 @@ private fun ChatRequestListContent(
         modifier = Modifier
             .fillMaxSize()
             .background(color = LensaTheme.colors.backgroundColor)
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 24.dp,
+            )
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             LensaIconButton(
@@ -68,8 +76,8 @@ private fun ChatRequestListContent(
         Divider(color = LensaTheme.colors.dividerColor)
         VSpace(h = 24.dp)
 
-        LazyColumn {
-            if (state.chatRequests.isNotEmpty()) {
+        if (state.chatRequests.isNotEmpty()) {
+            LazyColumn(modifier = Modifier.weight(1f)) {
                 items(items = state.chatRequests) { chatRequest ->
                     ChatRequestItem(
                         authorName = chatRequest.authorName,
@@ -82,13 +90,36 @@ private fun ChatRequestListContent(
                         },
                     )
                 }
-            } else {
-                item {
-                    Text(
-                        text = "Тут пока ничего нет"
-                    )
-                }
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                FSpace()
+                Text(
+                    text = "Нет входящих запросов",
+                    style = LensaTheme.typography.header3,
+                    color = LensaTheme.colors.textColor,
+                )
+                FSpace()
             }
         }
+    }
+}
+
+@Composable
+@Preview
+fun ChatRequestListPreview() {
+    LensaTheme {
+        ChatRequestListContent(
+            state = ChatRequestListState(
+                chatRequests = emptyList(),
+                isLoading = false,
+            ),
+            onAcceptRequest = {},
+            onCancelRequest = {},
+            onBackPressed = {}
+        )
     }
 }

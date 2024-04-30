@@ -13,11 +13,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.HSpace
+import ru.arinae_va.lensa.presentation.common.component.LensaAlertDialog
 import ru.arinae_va.lensa.presentation.common.component.LensaIconButton
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
@@ -52,6 +56,22 @@ private fun ChatListContent(
     onDeleteChatClick: (String) -> Unit,
     onBackPressed: () -> Unit,
 ) {
+
+    var isShowDeleteChatDialog by remember { mutableStateOf(false) }
+    var chatToDeleteId by remember { mutableStateOf("") }
+    if (isShowDeleteChatDialog) {
+        LensaAlertDialog(
+            onConfirmClick = { onDeleteChatClick.invoke(chatToDeleteId) },
+            onDismissClick = { isShowDeleteChatDialog = false },
+            title = "УДАЛЕНИЕ ЧАТА",
+            subtitle = "ЭТО БЕЗВОЗВРАТНО УДАЛИТ ЧАТ И ВСЕ СООБЩЕНИЯ В НЕМ. " +
+                    "ДЛЯ ВАС И ДЛЯ СОБЕСЕДНИКОВ. " +
+                    "ВЫ УВЕРЕНЫ?",
+            confirmText = "УДАЛИТЬ",
+            dismissText = "ОТМЕНИТЬ"
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -106,7 +126,9 @@ private fun ChatListContent(
                         },
                         onEditClick = onEditChatClick,
                         onDeleteClick = {
-                            onDeleteChatClick.invoke(chat.chatId)
+                            chatToDeleteId = chat.chatId
+                            isShowDeleteChatDialog = true
+                            //onDeleteChatClick.invoke(chat.chatId)
                         }
                     )
                 }
@@ -117,5 +139,4 @@ private fun ChatListContent(
             }
         }
     }
-
 }

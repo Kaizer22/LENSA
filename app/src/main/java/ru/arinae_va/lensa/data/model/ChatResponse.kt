@@ -29,12 +29,16 @@ data class DialogDataResponse(
     val targetMemberName: String? = null,
     val authorAvatarUrl: String? = null,
     val targetAvatarUrl: String? = null,
+    val authorSpecialization: String? = null,
+    val targetSpecialization: String? = null,
 ) {
     fun toDialogData() = DialogData(
         authorMemberName = authorMemberName.orEmpty(),
         authorAvatarUrl = authorAvatarUrl,
+        authorSpecialization = authorSpecialization.orEmpty(),
         targetAvatarUrl = targetAvatarUrl,
         targetMemberName = targetMemberName.orEmpty(),
+        targetSpecialization = targetSpecialization.orEmpty(),
     )
 }
 

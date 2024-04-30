@@ -160,6 +160,7 @@ class ProfileDetailsViewModel @Inject constructor(
                 targetProfileName = state.value.userProfileModel.name + " " +
                         state.value.userProfileModel.surname,
                 targetProfileAvatarUrl = state.value.userProfileModel.avatarUrl,
+                targetProfileSpecialization = state.value.userProfileModel.specialization
             )
             snackbarHostState.value.showSnackbar(
                 message = "Запрос отправлен"

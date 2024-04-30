@@ -9,6 +9,8 @@ data class ChatRequest(
     val targetAvatarUrl: String?,
     val targetName: String,
     val authorName: String,
+    val targetSpecialization: String,
+    val authorSpecialization: String,
     val authorProfileId: String,
     val targetProfileId: String,
     val dateTime: LocalDateTime,

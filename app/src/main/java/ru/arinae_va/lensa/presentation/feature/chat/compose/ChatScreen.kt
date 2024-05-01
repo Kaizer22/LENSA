@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.Chat
 import ru.arinae_va.lensa.domain.model.Message
+import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.HSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaAvatar
 import ru.arinae_va.lensa.presentation.common.component.LensaIconButton
@@ -49,6 +50,7 @@ fun ChatScreen(
         onEditMessageClick = viewModel::onEditMessageClick,
         onDeleteMessageClick = viewModel::onDeleteMessageClick,
         onSendMessageClick = viewModel::onSendMessageClick,
+        onCancelEditing = viewModel::onCancelEditing,
     )
 }
 
@@ -62,6 +64,7 @@ fun ChatScreenContent(
     onBackPressed: () -> Unit,
     onEditMessageClick: (String) -> Unit,
     onDeleteMessageClick: (String) -> Unit,
+    onCancelEditing: () -> Unit,
     onSendMessageClick: () -> Unit,
 ) {
     Scaffold(
@@ -75,10 +78,11 @@ fun ChatScreenContent(
         },
         bottomBar = {
             MessageInput(
-                modifier = Modifier.height(MESSAGE_INPUT_HEIGHT),
+                isEditing = state.editingMessageId != null,
                 input = state.messageInput,
                 onValueChanged = onMessageInputChanged,
                 onSendMessage = onSendMessageClick,
+                onCancelEditing = onCancelEditing,
             )
         },
     ) { paddingValues ->
@@ -105,10 +109,11 @@ fun ChatScreenContent(
                     }
                     MessageRow(
                         message = message,
+                        isEditing = message.messageId == state.editingMessageId,
                         isReceived = message.authorProfileId != state.currentProfileId,
                         showArrow = isNeedToShowArrow(state.messages, index, message),
-                        onEditMessage = {},
-                        onDeleteMessage = {},
+                        onEditMessage = { onEditMessageClick.invoke(message.messageId) },
+                        onDeleteMessage = { onDeleteMessageClick.invoke(message.messageId) },
                     )
                     VSpace(h = 8.dp)
                 }
@@ -136,6 +141,7 @@ fun ChatTopBar(
     Row(
         modifier = Modifier
             .height(TOP_BAR_HEIGHT)
+            .background(color = LensaTheme.colors.backgroundColor)
             .padding(
                 horizontal = 16.dp,
                 vertical = 8.dp,
@@ -180,33 +186,56 @@ fun ChatTopBar(
 
 @Composable
 fun MessageInput(
-    modifier: Modifier = Modifier,
+    isEditing: Boolean,
     input: String,
     onValueChanged: (String) -> Unit,
     onSendMessage: () -> Unit,
+    onCancelEditing: () -> Unit
 ) {
-    Row(
-        modifier = Modifier.padding(
-            horizontal = 16.dp,
-            vertical = 12.dp,
-        ),
-        verticalAlignment = Alignment.CenterVertically
+    Column(
+        modifier = Modifier
+            .background(color = LensaTheme.colors.backgroundColor)
+            .padding(
+                horizontal = 16.dp,
+                vertical = 12.dp,
+            ),
     ) {
-        Box(modifier = Modifier.weight(1f)) {
-            LensaInput(
-                placeholder = "Введите сообщение...",
-                onValueChanged = onValueChanged,
-                value = input,
-                isRoundedShape = true,
+        if (isEditing) {
+            Row {
+                Text(
+                    text = "Редактирование",
+                    style = LensaTheme.typography.text,
+                    color = LensaTheme.colors.textColor,
+                )
+                FSpace()
+                LensaIconButton(
+                    onClick = onCancelEditing,
+                    icon = R.drawable.ic_cancel,
+                    iconSize = 24.dp,
+                )
+                HSpace(w = 16.dp)
+            }
+            VSpace(h = 16.dp)
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(modifier = Modifier.weight(1f)) {
+                LensaInput(
+                    placeholder = "Введите сообщение...",
+                    onValueChanged = onValueChanged,
+                    value = input,
+                    isRoundedShape = true,
+                )
+            }
+            HSpace(w = 16.dp)
+            LensaIconButton(
+                onClick = {
+                    if (input.isNotEmpty()) onSendMessage.invoke()
+                },
+                icon = R.drawable.ic_arrow_forward,
+                iconSize = 28.dp,
             )
         }
-        HSpace(w = 16.dp)
-        LensaIconButton(
-            onClick = {
-                if (input.isNotEmpty()) onSendMessage.invoke()
-            },
-            icon = R.drawable.ic_arrow_forward,
-            iconSize = 28.dp,
-        )
     }
 }

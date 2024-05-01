@@ -1,6 +1,7 @@
 package ru.arinae_va.lensa.presentation.feature.chat.compose
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,16 +50,29 @@ fun ChatItem(
         var isActionMenuVisible by remember { mutableStateOf(false) }
         Column {
             DropdownMenu(
+                modifier = Modifier.background(color = LensaTheme.colors.fadeColor),
                 expanded = isActionMenuVisible,
                 onDismissRequest = { isActionMenuVisible = false }) {
                 if (!chat.isDialog()) {
                     DropdownMenuItem(
-                        text = { Text("Редактировать") },
+                        text = {
+                            Text(
+                                text = "РЕДАКТИРОВАТЬ",
+                                style = LensaTheme.typography.text,
+                                color = LensaTheme.colors.textColor,
+                            )
+                        },
                         onClick = onEditClick
                     )
                 }
                 DropdownMenuItem(
-                    text = { Text("Удалить") },
+                    text = {
+                        Text(
+                            text = "УДАЛИТЬ",
+                            style = LensaTheme.typography.text,
+                            color = LensaTheme.colors.textColor,
+                        )
+                    },
                     onClick = onDeleteClick
                 )
             }

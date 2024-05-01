@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.R
@@ -60,7 +61,10 @@ private fun ChatListContent(
     var chatToDeleteId by remember { mutableStateOf("") }
     if (isShowDeleteChatDialog) {
         LensaAlertDialog(
-            onConfirmClick = { onDeleteChatClick.invoke(chatToDeleteId) },
+            onConfirmClick = {
+                onDeleteChatClick.invoke(chatToDeleteId)
+                isShowDeleteChatDialog = false
+            },
             onDismissClick = { isShowDeleteChatDialog = false },
             title = "УДАЛЕНИЕ ЧАТА",
             subtitle = "ЭТО БЕЗВОЗВРАТНО УДАЛИТ ЧАТ И ВСЕ СООБЩЕНИЯ В НЕМ. " +
@@ -77,42 +81,13 @@ private fun ChatListContent(
             .background(color = LensaTheme.colors.backgroundColor)
             .padding(horizontal = 16.dp)
     ) {
-        LazyColumn {
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp)
-                ) {
-                    LensaIconButton(
-                        onClick = onBackPressed,
-                        icon = R.drawable.ic_arrow_back,
-                        iconSize = 28.dp,
-                    )
-                    FSpace()
-                    LensaIconButton(
-                        onClick = onChatRequestListClick,
-                        icon = R.drawable.ic_chat,
-                        iconSize = 28.dp,
-                    )
-                    HSpace(w = 16.dp)
-                    LensaIconButton(
-                        onClick = onAddGroupClick,
-                        icon = R.drawable.ic_plus,
-                        iconSize = 28.dp,
-                    )
-                }
-                VSpace(h = 24.dp)
-                Text(
-                    text = "ЧАТЫ",
-                    style = LensaTheme.typography.header2,
-                    color = LensaTheme.colors.textColor,
-                )
-                VSpace(h = 12.dp)
-                Divider(color = LensaTheme.colors.dividerColor)
-                VSpace(h = 12.dp)
-            }
-            if (state.chats.isNotEmpty()) {
+        Header(
+            onBackPressed = onBackPressed,
+            onChatRequestListClick = onChatRequestListClick,
+            onAddGroupClick = onAddGroupClick,
+        )
+        if (state.chats.isNotEmpty()) {
+            LazyColumn {
                 items(state.chats) { chat ->
                     ChatItem(
                         currentUserId = state.currentUserId,
@@ -131,11 +106,62 @@ private fun ChatListContent(
                         }
                     )
                 }
-            } else {
-                item {
-                    Text(text = "Тут пока ничего нет")
-                }
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                FSpace()
+                Text(
+                    text = "ПОКА НЕТ ЧАТОВ",
+                    style = LensaTheme.typography.header3,
+                    color = LensaTheme.colors.textColor,
+                )
+                FSpace()
             }
         }
+    }
+}
+
+@Composable
+fun Header(
+    onBackPressed: () -> Unit,
+    onChatRequestListClick: () -> Unit,
+    onAddGroupClick: () -> Unit,
+) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp)
+        ) {
+            LensaIconButton(
+                onClick = onBackPressed,
+                icon = R.drawable.ic_arrow_back,
+                iconSize = 28.dp,
+            )
+            FSpace()
+            LensaIconButton(
+                onClick = onChatRequestListClick,
+                icon = R.drawable.ic_chat,
+                iconSize = 28.dp,
+            )
+            HSpace(w = 16.dp)
+            LensaIconButton(
+                onClick = onAddGroupClick,
+                icon = R.drawable.ic_plus,
+                iconSize = 28.dp,
+            )
+        }
+        VSpace(h = 24.dp)
+        Text(
+            text = "ЧАТЫ",
+            style = LensaTheme.typography.header2,
+            color = LensaTheme.colors.textColor,
+        )
+        VSpace(h = 12.dp)
+        Divider(color = LensaTheme.colors.dividerColor)
+        VSpace(h = 12.dp)
     }
 }

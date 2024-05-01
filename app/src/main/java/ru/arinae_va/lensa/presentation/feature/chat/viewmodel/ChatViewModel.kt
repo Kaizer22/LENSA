@@ -64,7 +64,13 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onEditMessageClick(messageId: String) {
-
+        val message = state.value.messages.first { it.messageId == messageId }
+        update(
+            state.value.copy(
+                messageInput = message.message,
+                editingMessageId = messageId
+            )
+        )
     }
 
     fun onDeleteMessageClick(messageId: String) {
@@ -76,7 +82,12 @@ class ChatViewModel @Inject constructor(
     fun onSendMessageClick() {
         viewModelScope.launch {
             if (state.value.currentProfileId.isNotEmpty()) {
-                messageRepository.upsertMessage(
+                val message = if (!state.value.editingMessageId.isNullOrEmpty()) {
+                    state.value.messages.first { it.messageId == state.value.editingMessageId }
+                        .copy(
+                            message = state.value.messageInput,
+                        )
+                } else {
                     Message(
                         messageId = UUID.randomUUID().toString(),
                         authorProfileId = state.value.currentProfileId,
@@ -84,10 +95,12 @@ class ChatViewModel @Inject constructor(
                         message = state.value.messageInput,
                         dateTime = LocalDateTime.now(),
                     )
-                )
+                }
+                messageRepository.upsertMessage(message)
                 update(
                     state.value.copy(
                         messageInput = "",
+                        editingMessageId = null,
                     )
                 )
             }
@@ -102,6 +115,15 @@ class ChatViewModel @Inject constructor(
         update(
             state.value.copy(
                 messageInput = message,
+            )
+        )
+    }
+
+    fun onCancelEditing() {
+        update(
+            state.value.copy(
+                messageInput = "",
+                editingMessageId = null,
             )
         )
     }

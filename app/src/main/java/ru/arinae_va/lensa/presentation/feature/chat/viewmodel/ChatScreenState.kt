@@ -9,4 +9,5 @@ data class ChatScreenState(
     val chat: Chat?,
     val messages: List<Message>,
     val messageInput: String,
+    val editingMessageId: String? = null,
 )

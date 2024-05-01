@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter
 val datetimeFormatter = DateTimeFormatter.ofPattern(
     Constants.DATETIME_FORMAT
 )
+
 val dateFormatter = DateTimeFormatter.ofPattern(
     Constants.DATE_FORMAT
 )

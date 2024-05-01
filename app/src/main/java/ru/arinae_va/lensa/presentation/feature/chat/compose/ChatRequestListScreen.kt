@@ -104,7 +104,7 @@ private fun ChatRequestListContent(
             ) {
                 FSpace()
                 Text(
-                    text = "Нет входящих запросов",
+                    text = "НЕТ ВХОДЯЩИХ ЗАПРОСОВ",
                     style = LensaTheme.typography.header3,
                     color = LensaTheme.colors.textColor,
                 )

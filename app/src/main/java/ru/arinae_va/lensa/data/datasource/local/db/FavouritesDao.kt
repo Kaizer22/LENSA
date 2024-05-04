@@ -9,11 +9,14 @@ import androidx.room.Query
 interface FavouritesDao {
     @Query("SELECT * FROM $FAVOURITES_TABLE WHERE " +
             "$FAVOURITES_TABLE_COLUMN_HOST_USER_ID == :userId")
-    fun getAllByUserId(userId: String): List<FavouriteProfileEntity>
+    suspend fun getAllByUserId(userId: String): List<FavouriteProfileEntity>
 
     @Insert
-    fun insert(entity: FavouriteProfileEntity)
+    suspend fun insert(entity: FavouriteProfileEntity)
 
     @Delete
-    fun delete(entity: FavouriteProfileEntity)
+    suspend fun delete(entity: FavouriteProfileEntity)
+
+    @Query("DELETE FROM $FAVOURITES_TABLE")
+    suspend fun dropTableFavourites()
 }

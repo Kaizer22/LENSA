@@ -25,7 +25,7 @@ internal fun SpecializationSection(
         showRequired = true,
         modifier = Modifier.fillMaxWidth(),
         onValueChanged = onValueChanged,
-        items = Constants.SPECIALIZATIONS_LIST,
+        items = Constants.SPECIALIZATIONS_LIST.map { it.first },
         placeholder = "Специализация",
     )
     VSpace(h = 12.dp)

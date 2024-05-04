@@ -11,6 +11,7 @@ import ru.arinae_va.lensa.domain.model.FeedFilter
 import ru.arinae_va.lensa.domain.model.OrderType
 import ru.arinae_va.lensa.domain.model.UserProfileModel
 import ru.arinae_va.lensa.domain.model.UserProfileType
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 interface IUserProfileDataSource {
@@ -58,6 +59,8 @@ private const val AVATARS_STORAGE_ROOT_FOLDER = "avatars/"
 private const val AVATAR_STORAGE_FILE_NAME = "avatar"
 private const val PORTFOLIOS_STORAGE_ROOT_FOLDER = "portfolios/"
 
+private const val FEED_CACHE_TIMEOUT = 10L // seconds
+
 class FirebaseUserProfileDataSource @Inject constructor(
     private val database: FirebaseFirestore,
     private val firebaseStorage: StorageReference,
@@ -66,6 +69,7 @@ class FirebaseUserProfileDataSource @Inject constructor(
     private val profiles = database.collection(PROFILES_COLLECTION)
 
     private var feedCache: List<UserProfileModel> = emptyList()
+    private var feedUpdateTime: LocalDateTime = LocalDateTime.MIN
 
     override suspend fun isNewUser(userId: String) =
         getProfilesByUserId(userId).isEmpty()
@@ -112,28 +116,27 @@ class FirebaseUserProfileDataSource @Inject constructor(
         currentUserId: String,
         feedFilter: FeedFilter?,
     ): List<UserProfileModel> {
-        var result = listOf<UserProfileModel>()
-        var baseQuery = profiles
-            .whereEqualTo(PROFILE_TYPE_FIELD, UserProfileType.SPECIALIST.name)
-            .whereNotEqualTo(USER_ID_FIELD, currentUserId)
-        // TODO caching
-        baseQuery.get()
-            .addOnSuccessListener {
+        val currentTime = LocalDateTime.now()
+        if (feedUpdateTime.plusSeconds(FEED_CACHE_TIMEOUT) < currentTime) {
+            var result = listOf<UserProfileModel>()
+            val baseQuery = profiles
+                .whereEqualTo(PROFILE_TYPE_FIELD, UserProfileType.SPECIALIST.name)
+                .whereNotEqualTo(USER_ID_FIELD, currentUserId)
+            val docs = baseQuery.get().await()
+            docs?.let {
                 result = it.documents.mapNotNull { doc ->
                     doc.toObject<UserProfileResponse>()?.mapToUserProfileModel()
                 }
                 // TODO организовать иерархию сущностей на бэке для фильтрации
-                // TODO pagination
+//                // TODO pagination
                 feedFilter?.let { filter ->
                     result = applyFilter(result, filter)
                 }
-            }
-            .addOnFailureListener {
-                result = listOf()
-            }
-            .await()
-        feedCache = result
-        return result
+            } ?: run {}
+            return result
+        } else {
+            return feedCache
+        }
     }
 
     override fun applyFilter(

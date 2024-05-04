@@ -8,4 +8,6 @@ interface IFavouritesRepository {
     suspend fun removeFavourite(profileId: String, folderName: String)
 
     suspend fun getFavourites(): List<FavouriteFolder>
+
+    suspend fun dropTable()
 }

@@ -20,6 +20,8 @@ interface IFavouritesStorage {
         profileId: String,
         folderName: String
     )
+
+    suspend fun dropTable()
 }
 
 class FavouritesStorage @Inject constructor(
@@ -67,5 +69,9 @@ class FavouritesStorage @Inject constructor(
                 profileId = profileId,
             )
         )
+    }
+
+    override suspend fun dropTable() {
+        favouritesDao.dropTableFavourites()
     }
 }

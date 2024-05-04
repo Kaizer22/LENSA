@@ -35,4 +35,8 @@ class FavouritesRepository @Inject constructor(
         authRepository.currentUserId()?.let {
             favouritesStorage.getFoldersByHostId(it)
         } ?: emptyList()
+
+    override suspend fun dropTable() {
+        favouritesStorage.dropTable()
+    }
 }

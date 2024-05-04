@@ -22,18 +22,29 @@ class FavouritesViewModel @Inject constructor(
 ) {
 
     fun loadFolders() {
+        favouritesRepository
         viewModelScope.launch(Dispatchers.IO) {
+            setLoading(true)
             val foldersMap = mutableMapOf<String, List<UserProfileModel>>()
             favouritesRepository.getFavourites().forEach { folder ->
                 val users = userProfileRepository.getProfilesByIds(folder.savedUserIds)
                 foldersMap[folder.name] = users
             }
-            update(
+            updateSuspending(
                 state.value.copy(
                     folders = foldersMap,
                 )
             )
+            setLoading(false)
         }
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        update(
+            state.value.copy(
+                isLoading = isLoading,
+            )
+        )
     }
 
     fun onFolderClicked(folderName: String) {

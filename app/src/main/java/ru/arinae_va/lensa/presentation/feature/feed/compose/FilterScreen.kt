@@ -103,7 +103,7 @@ internal fun FilterContent(
                 value = specialization,
                 placeholder = "Специализация",
                 allowFreeInput = false,
-                items = Constants.SPECIALIZATIONS_LIST,
+                items = Constants.SPECIALIZATIONS_LIST.map { it.first },
                 onValueChanged = onSpecializationChanged,
             )
             VSpace(h = 12.dp)

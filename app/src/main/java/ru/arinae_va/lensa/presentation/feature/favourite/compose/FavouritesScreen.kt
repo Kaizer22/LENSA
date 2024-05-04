@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.presentation.common.component.LensaIconButton
+import ru.arinae_va.lensa.presentation.common.component.LensaReplaceLoader
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.feature.favourite.viewmodel.FavouritesState
@@ -69,42 +70,46 @@ private fun FavouritesContent(
     onFolderClick: (String) -> Unit,
     onBackPressed: () -> Unit,
 ) {
-    if (state.folders.isEmpty()) {
-        FavouritesEmpty(
-            header = "ИЗБРАННОЕ",
-            onBackPressed = onBackPressed,
-        )
-    } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = LensaTheme.colors.backgroundColor)
-                .padding(
-                    horizontal = 16.dp,
-                )
-        ) {
-            item {
-                FavouritesHeader(
-                    header = "ИЗБРАННОЕ",
-                    onBackPressed = onBackPressed,
-                )
-            }
+    LensaReplaceLoader(
+        isLoading = state.isLoading,
+    ) {
+        if (state.folders.isEmpty()) {
+            FavouritesEmpty(
+                header = "ИЗБРАННОЕ",
+                onBackPressed = onBackPressed,
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = LensaTheme.colors.backgroundColor)
+                    .padding(
+                        horizontal = 16.dp,
+                    )
+            ) {
+                item {
+                    FavouritesHeader(
+                        header = "ИЗБРАННОЕ",
+                        onBackPressed = onBackPressed,
+                    )
+                }
 
-            items(state.folders.keys.toList()) { folder ->
-                val urls = state.folders[folder]?.map { profile ->
-                    profile.avatarUrl.orEmpty()
-                }?.appendListToN(
-                    n = FAVOURITES_FOLDER_PREVIEW_PICTURES_COUNT,
-                    emptyValue = "",
-                )
-                FavouritesFolderItem(
-                    name = folder,
-                    picturesUrls = urls ?: emptyList(),
-                    onClick = {
-                        onFolderClick.invoke(folder)
-                    },
-                )
-                VSpace(h = 36.dp)
+                items(state.folders.keys.toList()) { folder ->
+                    val urls = state.folders[folder]?.map { profile ->
+                        profile.avatarUrl.orEmpty()
+                    }?.appendListToN(
+                        n = FAVOURITES_FOLDER_PREVIEW_PICTURES_COUNT,
+                        emptyValue = "",
+                    )
+                    FavouritesFolderItem(
+                        name = folder,
+                        picturesUrls = urls ?: emptyList(),
+                        onClick = {
+                            onFolderClick.invoke(folder)
+                        },
+                    )
+                    VSpace(h = 36.dp)
+                }
             }
         }
     }
@@ -147,7 +152,8 @@ fun FavouritesScreenPreview() {
     LensaTheme {
         FavouritesContent(
             state = FavouritesState(
-                folders = emptyMap()
+                folders = emptyMap(),
+                isLoading = false,
             ),
             onFolderClick = {},
             onBackPressed = {},

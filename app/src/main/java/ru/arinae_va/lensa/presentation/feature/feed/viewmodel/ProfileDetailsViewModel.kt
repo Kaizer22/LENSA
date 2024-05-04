@@ -16,6 +16,7 @@ import ru.arinae_va.lensa.domain.repository.IReviewRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.common.StateViewModel
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
+import ru.arinae_va.lensa.utils.Constants
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -175,7 +176,9 @@ class ProfileDetailsViewModel @Inject constructor(
             if (isNeedToAdd) {
                 favouritesRepository.addFavourite(
                     profileId = state.value.userProfileModel.profileId,
-                    folderName = state.value.userProfileModel.specialization,
+                    folderName = Constants.SPECIALIZATIONS_LIST.find {
+                        it.first == state.value.userProfileModel.specialization
+                    }?.second ?: "Специалисты",
                 )
             } else {
                 favouritesRepository.removeFavourite(

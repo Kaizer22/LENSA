@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.arinae_va.lensa.presentation.common.component.LensaReplaceLoader
 import ru.arinae_va.lensa.presentation.feature.favourite.viewmodel.FavouritesFolderState
 import ru.arinae_va.lensa.presentation.feature.favourite.viewmodel.FavouritesFolderViewModel
 import ru.arinae_va.lensa.presentation.feature.feed.compose.component.SpecialistCard
@@ -36,31 +37,35 @@ fun FavouritesFolderContent(
     onChangeFavouriteStatus: (userId: String, isNeedToDelete: Boolean) -> Unit,
     onSpecialistCardClick: (String) -> Unit,
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = LensaTheme.colors.backgroundColor)
-            .padding(
-                horizontal = 16.dp,
-            )
+    LensaReplaceLoader(
+        isLoading = state.isLoading,
     ) {
-        item {
-            FavouritesHeader(
-                header = state.folderName,
-                onBackPressed = onBackPressed,
-            )
-        }
-        items(state.folderItems) { profile ->
-            SpecialistCard(
-                onClick = { onSpecialistCardClick.invoke(profile.profileId) },
-                photoUrl = profile.avatarUrl,
-                rating = profile.rating ?: 0f,
-                text = "${profile.surname} ${profile.name}",
-                showFavouritesButton = true,
-                onShowFavouriteButtonClick = { isSelected ->
-                    onChangeFavouriteStatus.invoke(profile.profileId, isSelected)
-                }
-            )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = LensaTheme.colors.backgroundColor)
+                .padding(
+                    horizontal = 16.dp,
+                )
+        ) {
+            item {
+                FavouritesHeader(
+                    header = state.folderName,
+                    onBackPressed = onBackPressed,
+                )
+            }
+            items(state.folderItems) { profile ->
+                SpecialistCard(
+                    onClick = { onSpecialistCardClick.invoke(profile.profileId) },
+                    photoUrl = profile.avatarUrl,
+                    rating = profile.rating ?: 0f,
+                    text = "${profile.surname} ${profile.name}",
+                    showFavouritesButton = true,
+                    onShowFavouriteButtonClick = { isSelected ->
+                        onChangeFavouriteStatus.invoke(profile.profileId, !isSelected)
+                    }
+                )
+            }
         }
     }
 }
@@ -72,6 +77,7 @@ fun FavouritesFolderPreview() {
     LensaTheme {
         FavouritesFolderContent(
             state = FavouritesFolderState(
+                isLoading = false,
                 folderName = "Test",
                 folderItems = emptyList(),
                 idsToDelete = emptyList(),

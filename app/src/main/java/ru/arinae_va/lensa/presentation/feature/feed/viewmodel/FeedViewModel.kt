@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.FeedFilter
@@ -29,14 +30,24 @@ class FeedViewModel @Inject constructor(
     }
 
     private fun loadFeed() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            setLoading(true)
             val result = userProfileRepository.getFeed(state.value.filter)
-            update(
+            updateSuspending(
                 state.value.copy(
                     feed = result,
                 )
             )
+            setLoading(false)
         }
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        update(
+            state.value.copy(
+                isLoading = isLoading,
+            )
+        )
     }
 
     fun onProfileClick() {

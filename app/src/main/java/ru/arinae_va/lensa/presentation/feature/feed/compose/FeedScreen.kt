@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.domain.model.OrderType
 import ru.arinae_va.lensa.presentation.common.component.LensaActionBar
+import ru.arinae_va.lensa.presentation.common.component.LensaReplaceLoader
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButton
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButtonType
 import ru.arinae_va.lensa.presentation.common.component.VSpace
@@ -210,48 +211,50 @@ internal fun FeedAndSearchBar(
             onSearchTextChanged = onSearchTextChanged,
             onProfileClick = onProfileClick,
         )
-        if (cards.isNotEmpty()) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                state = listState,
-            ) {
+        LensaReplaceLoader(isLoading = state.isLoading) {
+            if (cards.isNotEmpty()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = listState,
+                ) {
 
-                item {
-                    FeedHeader(
-                        header = state.filter.specialization
-                            .ifEmpty { "СПЕЦИАЛИСТЫ" }
-                    )
-                }
-
-                items(items = cards) { cardModel ->
-                    VSpace(h = 24.dp)
-                    SpecialistCard(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        photoUrl = cardModel.photoUrl,
-                        rating = cardModel.rating,
-                        text = "${cardModel.surname} ${cardModel.name}",
-                        onClick = {
-                            onCardClick(cardModel.profileId)
-                        },
-                    )
-                    VSpace(h = 24.dp)
-                }
-                item {
-                    if (cards.size > 2) {
-                        FeedLastItem(
-                            onClick = {
-                                coroutineScope.launch {
-                                    listState.animateScrollToItem(index = 0)
-                                }
-                            }
+                    item {
+                        FeedHeader(
+                            header = state.filter.specialization
+                                .ifEmpty { "СПЕЦИАЛИСТЫ" }
                         )
                     }
+
+                    items(items = cards) { cardModel ->
+                        VSpace(h = 24.dp)
+                        SpecialistCard(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            photoUrl = cardModel.photoUrl,
+                            rating = cardModel.rating,
+                            text = "${cardModel.surname} ${cardModel.name}",
+                            onClick = {
+                                onCardClick(cardModel.profileId)
+                            },
+                        )
+                        VSpace(h = 24.dp)
+                    }
+                    item {
+                        if (cards.size > 2) {
+                            FeedLastItem(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        listState.animateScrollToItem(index = 0)
+                                    }
+                                }
+                            )
+                        }
+                    }
                 }
+            } else {
+                FeedEmptyState(
+                    onErrorClearFilter = onErrorClearFilter,
+                )
             }
-        } else {
-            FeedEmptyState(
-                onErrorClearFilter = onErrorClearFilter,
-            )
         }
     }
 }

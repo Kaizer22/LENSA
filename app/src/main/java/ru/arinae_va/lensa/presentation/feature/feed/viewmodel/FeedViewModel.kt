@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.FeedFilter
@@ -17,6 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
+    private val ioDispatcher: CoroutineDispatcher,
     @ApplicationContext private val context: Context,
     private val navHostController: NavHostController,
     private val userProfileRepository: IUserProfileRepository,
@@ -30,7 +31,7 @@ class FeedViewModel @Inject constructor(
     }
 
     private fun loadFeed() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(ioDispatcher) {
             setLoading(true)
             val result = userProfileRepository.getFeed(state.value.filter)
             updateSuspending(

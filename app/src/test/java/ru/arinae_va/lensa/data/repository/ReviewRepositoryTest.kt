@@ -20,18 +20,18 @@ class ReviewRepositoryTest {
     // Мок data source отзывов
     private val reviewDataSource = mockk<IReviewDataSource>()
     // Мок репозитория авторизации (используется для доступа к
-    // данным о текущей пользовательской сессии
+    // данным о текущей пользовательской сессии)
     private val authRepository = mockk<IAuthRepository>()
-
-    private val testProfileId = "testProfileId"
-    private val testCurrentUserId = "testCurrentUserId"
 
     // Тестируемый класс репозитория
     private val reviewRepository = ReviewRepository(
         reviewDataSource = reviewDataSource,
         authRepository = authRepository,
     )
-    // Тестовые данные - тестовый отзыв и список, содержащий этот один отзыв
+    // Тестовые данные - тестовые id, отзыв и список, содержащий этот один отзыв
+    private val testProfileId = "testProfileId"
+    private val testCurrentUserId = "testCurrentUserId"
+
     private val testReview = Review(
         authorId = "testAuthorId",
         profileId = "testProfileId",

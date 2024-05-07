@@ -6,6 +6,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -184,7 +185,11 @@ class OtpViewModel @Inject constructor(
         viewModelScope.launch {
             authRepository.logIn(profileId)
             settingsRepository.updateLastLoggedInUser(profileId)
-            navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+            navHostController.navigate(route = LensaScreens.FEED_SCREEN.name,
+                navOptions = NavOptions.Builder()
+                .setPopUpTo(LensaScreens.FEED_SCREEN.name, inclusive = true)
+                .build()
+            )
             setLoading(false)
         }
     }

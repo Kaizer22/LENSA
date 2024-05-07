@@ -14,6 +14,7 @@ data class FeedState(
     val isApplyFilterButtonEnabled: Boolean,
     val feed: List<UserProfileModel>,
     val isLoading: Boolean,
+    val isRefreshing: Boolean,
 ) {
     companion object {
         val INITIAL = FeedState(
@@ -21,6 +22,7 @@ data class FeedState(
             feed = emptyList(),
             isApplyFilterButtonEnabled = true,
             isLoading = false,
+            isRefreshing = false,
             filterValidationErrors = emptyMap(),
         )
     }

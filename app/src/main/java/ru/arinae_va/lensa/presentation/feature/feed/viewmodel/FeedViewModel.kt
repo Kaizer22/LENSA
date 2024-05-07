@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.FeedFilter
@@ -51,6 +52,14 @@ class FeedViewModel @Inject constructor(
         )
     }
 
+    private fun setRefreshing(isRefreshing: Boolean) {
+        update(
+            state.value.copy(
+                isRefreshing = isRefreshing,
+            )
+        )
+    }
+
     fun onProfileClick() {
         val isSelf = true
         userProfileRepository.currentProfileId().let {
@@ -78,7 +87,17 @@ class FeedViewModel @Inject constructor(
     }
 
     fun onRefreshClick() {
-        loadFeed()
+        viewModelScope.launch(ioDispatcher) {
+            setRefreshing(true)
+            val result = userProfileRepository.getFeed(state.value.filter)
+            delay(2000L)
+            updateSuspending(
+                state.value.copy(
+                    feed = result,
+                )
+            )
+            setRefreshing(false)
+        }
     }
 
     fun onCardClick(profileUid: String) {

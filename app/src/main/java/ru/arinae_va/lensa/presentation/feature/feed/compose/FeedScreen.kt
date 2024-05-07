@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +32,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.domain.model.OrderType
 import ru.arinae_va.lensa.presentation.common.component.LensaActionBar
@@ -65,6 +68,7 @@ fun FeedScreen(
         onPriceFromChanged = viewModel::onFilterPriceFromChanged,
         onProfileClick = viewModel::onProfileClick,
         onCardClick = viewModel::onCardClick,
+        onRefreshFeed = viewModel::onRefreshClick,
         onApplyFilterClick = viewModel::onApplyFilterClick,
         onClearFilterClick = viewModel::onClearFilterClick,
     )
@@ -89,6 +93,7 @@ private fun FeedContent(
     onSearchTextChanged: (String) -> Unit,
     onProfileClick: () -> Unit,
     onCardClick: (userUid: String) -> Unit,
+    onRefreshFeed: () -> Unit,
 ) {
     var sideMenuState by remember { mutableStateOf(SideMenuState.HIDDEN) }
     BoxWithConstraints {
@@ -116,6 +121,7 @@ private fun FeedContent(
 
         FeedAndSearchBar(
             state = state,
+            onRefreshFeed = onRefreshFeed,
             onMenuClick = { sideMenuState = SideMenuState.OPENING },
             onSearchTextChanged = onSearchTextChanged,
             onProfileClick = onProfileClick,
@@ -173,9 +179,11 @@ private fun FeedContent(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun FeedAndSearchBar(
     state: FeedState,
+    onRefreshFeed: () -> Unit,
     onErrorClearFilter: () -> Unit,
     onMenuClick: () -> Unit,
     onSearchTextChanged: (String) -> Unit,
@@ -214,49 +222,55 @@ internal fun FeedAndSearchBar(
             onSearchTextChanged = onSearchTextChanged,
             onProfileClick = onProfileClick,
         )
-        LensaReplaceLoader(isLoading = state.isLoading) {
-            if (cards.isNotEmpty()) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    state = listState,
-                ) {
+        val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = state.isRefreshing)
+        SwipeRefresh(
+            state = swipeRefreshState,
+            onRefresh = onRefreshFeed,
+        ) {
+            LensaReplaceLoader(isLoading = state.isLoading) {
+                if (cards.isNotEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        state = listState,
+                    ) {
 
-                    item {
-                        FeedHeader(
-                            header = state.filter.specialization
-                                .ifEmpty { "СПЕЦИАЛИСТЫ" }
-                        )
-                    }
-
-                    items(items = cards) { cardModel ->
-                        VSpace(h = 24.dp)
-                        SpecialistCard(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            photoUrl = cardModel.photoUrl,
-                            rating = cardModel.rating,
-                            text = "${cardModel.surname} ${cardModel.name}",
-                            onClick = {
-                                onCardClick(cardModel.profileId)
-                            },
-                        )
-                        VSpace(h = 24.dp)
-                    }
-                    item {
-                        if (cards.size > 2) {
-                            FeedLastItem(
-                                onClick = {
-                                    coroutineScope.launch {
-                                        listState.animateScrollToItem(index = 0)
-                                    }
-                                }
+                        item {
+                            FeedHeader(
+                                header = state.filter.specialization
+                                    .ifEmpty { "СПЕЦИАЛИСТЫ" }
                             )
                         }
+
+                        items(items = cards) { cardModel ->
+                            VSpace(h = 24.dp)
+                            SpecialistCard(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                photoUrl = cardModel.photoUrl,
+                                rating = cardModel.rating,
+                                text = "${cardModel.surname} ${cardModel.name}",
+                                onClick = {
+                                    onCardClick(cardModel.profileId)
+                                },
+                            )
+                            VSpace(h = 24.dp)
+                        }
+                        item {
+                            if (cards.size > 2) {
+                                FeedLastItem(
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            listState.animateScrollToItem(index = 0)
+                                        }
+                                    }
+                                )
+                            }
+                        }
                     }
+                } else {
+                    FeedEmptyState(
+                        onErrorClearFilter = onErrorClearFilter,
+                    )
                 }
-            } else {
-                FeedEmptyState(
-                    onErrorClearFilter = onErrorClearFilter,
-                )
             }
         }
     }
@@ -346,17 +360,18 @@ fun FeedScreenPreview() {
     LensaTheme {
         FeedContent(
             state = FeedState.INITIAL,
-            onSearchTextChanged = {},
+            onSpecializationChanged = {},
             onCountryChanged = {},
             onCityChanged = {},
-            onSpecializationChanged = {},
-            onOrderChanged = {},
-            onPriceToChanged = {},
             onPriceFromChanged = {},
+            onPriceToChanged = {},
+            onOrderChanged = {},
             onApplyFilterClick = {},
             onClearFilterClick = {},
+            onSearchTextChanged = {},
             onProfileClick = {},
-            onCardClick = {}
+            onCardClick = {},
+            onRefreshFeed = {}
         )
     }
 }

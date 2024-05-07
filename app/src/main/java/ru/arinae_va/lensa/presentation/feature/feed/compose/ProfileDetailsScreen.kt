@@ -41,7 +41,7 @@ import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 
 enum class SocialMediaType(
-    @DrawableRes val icon: Int
+    @DrawableRes val icon: Int,
 ) {
     INSTAGRAM(icon = R.drawable.ic_instagram),
     TELEGRAM(icon = R.drawable.ic_telegram),
@@ -98,10 +98,12 @@ private fun ProfileDetailsContent(
         state.userProfileModel.type == UserProfileType.CUSTOMER
     }
 
-    var isShowImagePreview by remember{ mutableStateOf(false) }
-    var previewImages by remember { mutableStateOf(
-        listOf(state.userProfileModel.avatarUrl.orEmpty())
-    )}
+    var isShowImagePreview by remember { mutableStateOf(false) }
+    var previewImages by remember {
+        mutableStateOf(
+            listOf(state.userProfileModel.avatarUrl.orEmpty())
+        )
+    }
     var shownImageIndex by remember { mutableStateOf(0) }
     val reviews = state.userProfileModel.reviews
     LensaReplaceLoader(
@@ -116,6 +118,9 @@ private fun ProfileDetailsContent(
                 if (state.isNeedToScrollToReviews)
                     scrollState.scrollTo(reviewsY.toInt())
             }
+//            Cloudy(
+//                key1 = isShowImagePreview,
+//            ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -192,6 +197,8 @@ private fun ProfileDetailsContent(
                     }
                 }
             }
+            //}
+
             // TODO комопонент-обертка
             if (isShowImagePreview && previewImages.isNotEmpty()) {
                 LensaZoomablePreview(

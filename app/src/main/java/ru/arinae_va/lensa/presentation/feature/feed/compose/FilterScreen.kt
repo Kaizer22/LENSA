@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.R
@@ -133,6 +134,7 @@ internal fun FilterContent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 LensaInput(
+                    inputType = KeyboardType.Decimal,
                     value = if (priceFrom == 0) "" else priceFrom.toString(),
                     modifier = Modifier.weight(1f),
                     placeholder = "От",
@@ -150,6 +152,7 @@ internal fun FilterContent(
                 )
                 HSpace(w = 8.dp)
                 LensaInput(
+                    inputType = KeyboardType.Decimal,
                     value = if (priceTo == Int.MAX_VALUE) "" else priceTo.toString(),
                     modifier = Modifier.weight(1f),
                     showTrailingIcon = true,

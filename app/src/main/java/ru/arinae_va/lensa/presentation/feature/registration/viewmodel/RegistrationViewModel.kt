@@ -6,6 +6,7 @@ import android.webkit.URLUtil.isHttpsUrl
 import android.webkit.URLUtil.isValidUrl
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -184,7 +185,15 @@ class RegistrationViewModel @Inject constructor(
         if (!state.value.isEdit) {
             authRepository.logIn(newUserId.orEmpty())
         }
-        navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+        if (!state.value.isEdit) {
+            navHostController.navigate(route = LensaScreens.FEED_SCREEN.name,
+                navOptions = NavOptions.Builder()
+                    .setPopUpTo(LensaScreens.FEED_SCREEN.name, inclusive = true)
+                    .build()
+            )
+        } else {
+            navHostController.navigate(LensaScreens.FEED_SCREEN.name)
+        }
     }
 
     private suspend fun upsertCustomer() {

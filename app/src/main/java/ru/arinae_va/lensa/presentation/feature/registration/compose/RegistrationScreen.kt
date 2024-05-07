@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -139,6 +140,7 @@ private fun RegistrationContent(
     ) {
         Column(
             modifier = Modifier
+                .testTag("registration_screen_scrollable_container")
                 .background(color = LensaTheme.colors.backgroundColor)
                 .verticalScroll(
                     rememberScrollState()
@@ -179,18 +181,20 @@ private fun RegistrationContent(
                 }
                 VSpace(h = 24.dp)
                 LensaInput(
+                    modifier = Modifier.testTag("registration_screen_surname_input")
+                        .fillMaxWidth(),
                     inputType = KeyboardType.Text,
                     showRequired = true,
-                    modifier = Modifier.fillMaxWidth(),
                     onValueChanged = onSurnameChanged,
                     value = surname,
                     placeholder = "Фамилия"
                 )
                 VSpace(h = 12.dp)
                 LensaInput(
+                    modifier = Modifier.testTag("registration_screen_name_input")
+                        .fillMaxWidth(),
                     inputType = KeyboardType.Text,
                     showRequired = true,
-                    modifier = Modifier.fillMaxWidth(),
                     onValueChanged = onNameChanged,
                     value = name,
                     placeholder = "Имя"
@@ -205,10 +209,11 @@ private fun RegistrationContent(
                 }
                 VSpace(h = 12.dp)
                 LensaDropdownInput(
+                    modifier = Modifier.testTag("registration_screen_country_input")
+                        .fillMaxWidth(),
                     inputType = KeyboardType.Text,
                     allowFreeInput = true,
                     showRequired = true,
-                    modifier = Modifier.fillMaxWidth(),
                     onValueChanged = onCountryChanged,
                     value = country,
                     placeholder = "Страна",
@@ -216,10 +221,11 @@ private fun RegistrationContent(
                 )
                 VSpace(h = 12.dp)
                 LensaDropdownInput(
+                    modifier = Modifier.testTag("registration_screen_city_input")
+                        .fillMaxWidth(),
                     value = city,
                     allowFreeInput = true,
                     showRequired = true,
-                    modifier = Modifier.fillMaxWidth(),
                     onValueChanged = onCityChanged,
                     placeholder = "Город",
                     items = Constants.RUSSIAN_CITIES_LIST,
@@ -301,6 +307,7 @@ private fun RegistrationContent(
                     VSpace(h = 20.dp)
                 }
                 LensaButton(
+                    modifier = Modifier.testTag("registration_screen_button_save"),
                     enabled = state.isButtonNextEnabled,
                     text = "СОХРАНИТЬ",
                     isFillMaxWidth = true,

@@ -27,6 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -198,13 +199,15 @@ internal fun FeedAndSearchBar(
 
     Column(
         modifier = Modifier
+            .testTag("feed_screen_content_container")
             .background(
                 color = LensaTheme.colors.backgroundColor
             )
             .fillMaxSize(),
     ) {
         LensaActionBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             searchQuery = state.filter.searchQuery,
             onMenuClick = onMenuClick,
             onSearchClick = {},
@@ -264,7 +267,7 @@ fun FeedEmptyState(
     modifier: Modifier = Modifier,
     onErrorClearFilter: () -> Unit,
 ) {
-    Column(modifier = modifier.fillMaxSize(),) {
+    Column(modifier = modifier.fillMaxSize()) {
         FeedHeader(header = "ИЗВИНИТЕ")
         Box(
             modifier = modifier.fillMaxSize(),

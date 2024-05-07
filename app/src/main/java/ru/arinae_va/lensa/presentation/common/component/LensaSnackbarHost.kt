@@ -10,11 +10,12 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun LensaSnackbarHost(
+    modifier: Modifier = Modifier,
     state: SnackbarHostState,
     contetnt: @Composable () -> Unit,
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter,
     ) {
         contetnt.invoke()

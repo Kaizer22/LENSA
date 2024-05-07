@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -71,7 +72,8 @@ private fun AuthContent(
             )
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 LensaInput(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
+                        .testTag("auth_screen_phone_input"),
                     maxLength = Constants.RUSSIAN_PHONE_NUMBER_LENGTH,
                     value = state.phoneNumber,
                     inputType = KeyboardType.Phone,
@@ -87,6 +89,7 @@ private fun AuthContent(
 //                }
                 VSpace(h = 52.dp)
                 LensaButton(
+                    modifier = Modifier.testTag("auth_screen_button_get_code"),
                     text = stringResource(R.string.auth_screen_button_request_code),
                     onClick = onSendVerificationCodeClick,
                     enabled = state.isEnabledNextButton,

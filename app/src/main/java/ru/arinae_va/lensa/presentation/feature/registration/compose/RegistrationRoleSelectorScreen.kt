@@ -9,6 +9,7 @@ import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.R
@@ -64,6 +65,7 @@ private fun RegistrationContent(
                 color = LensaTheme.colors.dividerColor,
             )
             LensaButtonWithIcon(
+                modifier = Modifier.testTag("role_selector_screen_button_customer"),
                 icon = R.drawable.ic_arrow_forward_2,
                 text = "ЗАКАЗЧИК",
                 isFillMaxWidth = true,

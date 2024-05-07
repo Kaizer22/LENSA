@@ -5,6 +5,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.navigation.NavHostController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.arinae_va.lensa.presentation.common.component.LensaSnackbarHost
@@ -49,11 +53,13 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var snackbarHostState: MutableState<SnackbarHostState>
 
+    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LensaTheme {
                 LensaSnackbarHost(
+                    modifier = Modifier.semantics { testTagsAsResourceId = true },
                     state = snackbarHostState.value
                 ) {
                     LensaNavGraph(

@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -109,7 +110,9 @@ private fun OtpContent(
             )
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 LensaInput(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .testTag("otp_screen_otp_input")
+                        .fillMaxWidth(),
                     maxLength = OTP_CODE_LENGTH,
                     value = state.otpInput,
                     inputType = KeyboardType.Number,
@@ -151,6 +154,7 @@ private fun OtpContent(
 
                 VSpace(h = 16.dp)
                 LensaButton(
+                    modifier = Modifier.testTag("otp_screen_button_continue"),
                     text = stringResource(R.string.otp_screen_continue_btn),
                     onClick = onNextClick,
                     isFillMaxWidth = true,

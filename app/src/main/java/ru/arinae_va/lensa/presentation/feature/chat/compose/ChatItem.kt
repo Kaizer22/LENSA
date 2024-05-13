@@ -88,30 +88,31 @@ fun ChatItem(
                     ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                HSpace(w = 4.dp)
                 LensaAvatar(avatarUrl = avatarUrl)
-                HSpace(w = 16.dp)
+                HSpace(w = 12.dp)
                 Column {
                     Row {
                         Column {
                             Text(
-                                text = chatName,
+                                text = chatName.uppercase(),
                                 style = LensaTheme.typography.name,
                                 color = LensaTheme.colors.textColor,
                             )
-                            specialization?.let {
-                                Text(
-                                    text = specialization,
-                                    style = LensaTheme.typography.smallAccent,
-                                    color = LensaTheme.colors.textColor,
-                                )
-                            }
+//                            specialization?.let {
+//                                Text(
+//                                    text = specialization,
+//                                    style = LensaTheme.typography.smallAccent,
+//                                    color = LensaTheme.colors.textColor,
+//                                )
+//                            }
                         }
                         FSpace()
                         latestMessage?.let {
                             Text(
                                 text = formatPrettyDatetime(latestMessage.dateTime),
                                 style = LensaTheme.typography.signature,
-                                color = LensaTheme.colors.textColor,
+                                color = LensaTheme.colors.textColorSecondary,
                             )
                         }
                     }
@@ -125,7 +126,7 @@ fun ChatItem(
                         } else "$messagePrefix: " + latestMessage.message
                         Text(
                             text = latestMessageText,
-                            maxLines = 1,
+                            maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             style = LensaTheme.typography.signature,
                             color = LensaTheme.colors.textColor,
@@ -136,10 +137,7 @@ fun ChatItem(
                     }
                 }
             }
-            Divider(
-                modifier = Modifier.padding(horizontal = 24.dp),
-                color = LensaTheme.colors.dividerColor,
-            )
+            Divider(color = LensaTheme.colors.dividerColor)
         }
     }
 }

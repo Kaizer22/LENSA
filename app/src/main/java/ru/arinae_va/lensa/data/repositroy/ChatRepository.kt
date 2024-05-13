@@ -9,6 +9,8 @@ import javax.inject.Inject
 class ChatRepository @Inject constructor(
     private val chatsDataSource: IChatsDataSource,
 ) : IChatRepository {
+    override suspend fun isChatExist(chatId: String): Boolean = chatsDataSource.isChatExist(chatId)
+
     override fun getChats(profileId: String) = chatsDataSource.getChats(profileId)
 
     override fun getChat(chatId: String): Flow<Chat> = chatsDataSource.getChat(chatId)

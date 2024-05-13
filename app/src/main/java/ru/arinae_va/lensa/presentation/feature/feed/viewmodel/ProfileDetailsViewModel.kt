@@ -9,8 +9,11 @@ import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.arinae_va.lensa.domain.model.Chat
+import ru.arinae_va.lensa.domain.model.DialogData
 import ru.arinae_va.lensa.domain.model.Review
-import ru.arinae_va.lensa.domain.repository.IChatRequestRepository
+import ru.arinae_va.lensa.domain.repository.IAuthRepository
+import ru.arinae_va.lensa.domain.repository.IChatRepository
 import ru.arinae_va.lensa.domain.repository.IFavouritesRepository
 import ru.arinae_va.lensa.domain.repository.IReviewRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
@@ -24,7 +27,9 @@ import javax.inject.Inject
 class ProfileDetailsViewModel @Inject constructor(
     private val navHostController: NavHostController,
     private val snackbarHostState: MutableState<SnackbarHostState>,
-    private val chatRequestRepository: IChatRequestRepository,
+    //private val chatRequestRepository: IChatRequestRepository,
+    private val authRepository: IAuthRepository,
+    private val chatRepository: IChatRepository,
     private val userProfileRepository: IUserProfileRepository,
     private val favouritesRepository: IFavouritesRepository,
     private val reviewRepository: IReviewRepository,
@@ -155,20 +160,62 @@ class ProfileDetailsViewModel @Inject constructor(
         navHostController.navigate(LensaScreens.CHAT_LIST_SCREEN.name)
     }
 
-    fun onSendMessageClick(recipientUserId: String) {
+    fun onSendMessageClick(recipientProfileId: String) {
         viewModelScope.launch {
             // TODO Проверка, что чат уже существует
-            chatRequestRepository.sendChatRequest(
-                targetProfileId = recipientUserId,
-                targetProfileName = state.value.userProfileModel.name + " " +
-                        state.value.userProfileModel.surname,
-                targetProfileAvatarUrl = state.value.userProfileModel.avatarUrl,
-                targetProfileSpecialization = state.value.userProfileModel.specialization
-            )
-            snackbarHostState.value.showSnackbar(
-                message = "Запрос отправлен"
-            )
+            userProfileRepository.currentUserProfile()?.let { currentProfile ->
+                val chatId = getChatId(
+                    currentUserId = currentProfile.profileId,
+                    recipientId = recipientProfileId,
+                )
+                if (chatRepository.isChatExist(chatId)) {
+                    navHostController.navigate(
+                        LensaScreens.CHAT_SCREEN.name + "/${chatId}"
+                    )
+                } else {
+                    val chat = Chat(
+                        chatId = chatId,
+                        creatorProfileId = currentProfile.profileId,
+                        members = listOf(
+                            currentProfile.profileId,
+                            recipientProfileId,
+                        ),
+                        name = "",
+                        avatarUrl = "",
+                        createTime = LocalDateTime.now(),
+                        dialogData = DialogData(
+                            authorMemberName = currentProfile.profileId,
+                            authorAvatarUrl = currentProfile.avatarUrl,
+                            targetMemberName = state.value.userProfileModel.name + " " +
+                                    state.value.userProfileModel.surname,
+                            targetAvatarUrl = state.value.userProfileModel.avatarUrl,
+                            targetSpecialization = state.value.userProfileModel.specialization,
+                            authorSpecialization = currentProfile.specialization,
+                        )
+                    )
+                    chatRepository.upsertChat(chat)
+                    val result = snackbarHostState.value.showSnackbar(
+                        message = "Чат создан",
+                        actionLabel = "ПЕРЕЙТИ",
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Long,
+                    )
+                    when (result) {
+                        SnackbarResult.ActionPerformed -> navHostController.navigate(
+                            LensaScreens.CHAT_SCREEN.name + "/${chatId}"
+                        )
+
+                        SnackbarResult.Dismissed -> {}
+                    }
+                }
+            }
         }
+    }
+
+    private fun getChatId(currentUserId: String, recipientId: String): String {
+        val ids = arrayOf(currentUserId, recipientId)
+        ids.sort()
+        return "${ids[0]}_${ids[1]}"
     }
 
     fun onAddToFavouritesClick(isNeedToAdd: Boolean) {
@@ -204,6 +251,7 @@ class ProfileDetailsViewModel @Inject constructor(
                 SnackbarResult.ActionPerformed -> navHostController.navigate(
                     LensaScreens.FAVOURITES_SCREEN.name
                 )
+
                 SnackbarResult.Dismissed -> {}
             }
         }

@@ -69,11 +69,11 @@ fun LensaZoomablePreview(
         Box(
             contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = LensaTheme.colors.fadeColor)
-            ) {}
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .background(color = LensaTheme.colors.fadeColor)
+//            ) {}
             LensaAsyncImage(
                 modifier = Modifier
                     .fillMaxSize()

@@ -1,4 +1,4 @@
-package ru.arinae_va.lensa.presentation.feature.chat.compose
+package ru.arinae_va.lensa.presentation.feature.chat.compose.legacy
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement

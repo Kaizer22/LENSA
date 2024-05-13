@@ -38,6 +38,7 @@ fun ChatListScreen(
     val state by viewModel.state.collectAsState()
     ChatListContent(
         state = state,
+        onSearchTextChanged = viewModel::onSearchTextChanged,
         onAddGroupClick = viewModel::onAddGroupClick,
         onChatRequestListClick = viewModel::onChatRequestListClick,
         onChatClick = viewModel::onChatClick,
@@ -50,6 +51,7 @@ fun ChatListScreen(
 @Composable
 private fun ChatListContent(
     state: ChatListState,
+    onSearchTextChanged: (String) -> Unit,
     onChatRequestListClick: () -> Unit,
     onAddGroupClick: () -> Unit,
     onChatClick: (String) -> Unit,
@@ -83,6 +85,7 @@ private fun ChatListContent(
     ) {
         Header(
             onBackPressed = onBackPressed,
+            onSearchTextChanged = onSearchTextChanged,
             onChatRequestListClick = onChatRequestListClick,
             onAddGroupClick = onAddGroupClick,
         )
@@ -114,7 +117,7 @@ private fun ChatListContent(
             ) {
                 FSpace()
                 Text(
-                    text = "ПОКА НЕТ ЧАТОВ",
+                    text = "НА ДАННЫЙ МОМЕНТ У ВАС НЕТ ЧАТОВ",
                     style = LensaTheme.typography.header3,
                     color = LensaTheme.colors.textColor,
                 )
@@ -127,6 +130,7 @@ private fun ChatListContent(
 @Composable
 fun Header(
     onBackPressed: () -> Unit,
+    onSearchTextChanged: (String) -> Unit,
     onChatRequestListClick: () -> Unit,
     onAddGroupClick: () -> Unit,
 ) {
@@ -143,14 +147,14 @@ fun Header(
             )
             FSpace()
             LensaIconButton(
-                onClick = onChatRequestListClick,
-                icon = R.drawable.ic_chat,
+                onClick = {},//onChatRequestListClick,
+                icon = R.drawable.ic_loupe,
                 iconSize = 28.dp,
             )
             HSpace(w = 16.dp)
             LensaIconButton(
                 onClick = onAddGroupClick,
-                icon = R.drawable.ic_plus,
+                icon = R.drawable.ic_edit,
                 iconSize = 28.dp,
             )
         }
@@ -162,6 +166,5 @@ fun Header(
         )
         VSpace(h = 12.dp)
         Divider(color = LensaTheme.colors.dividerColor)
-        VSpace(h = 12.dp)
     }
 }

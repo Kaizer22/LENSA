@@ -16,6 +16,8 @@ import ru.arinae_va.lensa.data.datasource.remote.IChatsDataSource
 import ru.arinae_va.lensa.data.datasource.remote.IFeedbackDataSource
 import ru.arinae_va.lensa.data.datasource.remote.IReviewDataSource
 import ru.arinae_va.lensa.data.datasource.remote.IUserProfileDataSource
+import ru.arinae_va.lensa.data.datasource.remote.legacy.FirebaseChatRequestsDataSource
+import ru.arinae_va.lensa.data.datasource.remote.legacy.IChatRequestsDataSource
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -42,5 +44,8 @@ abstract class DataSourceModule {
 
     @Binds
     abstract fun chatsDataSource(chatsDataSource: FirebaseChatsDataSource): IChatsDataSource
+
+    @Binds
+    abstract fun chatRequestsDataSource(chatRequestsDataSource: FirebaseChatRequestsDataSource): IChatRequestsDataSource
     // endregion
 }

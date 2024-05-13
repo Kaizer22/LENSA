@@ -1,7 +1,7 @@
-package ru.arinae_va.lensa.domain.repository
+package ru.arinae_va.lensa.domain.repository.legacy
 
 import kotlinx.coroutines.flow.Flow
-import ru.arinae_va.lensa.domain.model.ChatRequest
+import ru.arinae_va.lensa.domain.model.legacy.ChatRequest
 
 interface IChatRequestRepository {
     fun getChatRequests(profileId: String): Flow<List<ChatRequest>>

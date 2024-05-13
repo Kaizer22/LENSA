@@ -1,13 +1,10 @@
-package ru.arinae_va.lensa.presentation.feature.chat.viewmodel
+package ru.arinae_va.lensa.presentation.feature.chat.compose.legacy
 
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import ru.arinae_va.lensa.domain.model.ChatRequest
-import ru.arinae_va.lensa.domain.repository.IChatRequestRepository
+import ru.arinae_va.lensa.domain.model.legacy.ChatRequest
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.common.StateViewModel
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
@@ -17,7 +14,7 @@ import javax.inject.Inject
 class ChatRequestListViewModel @Inject constructor(
     private val navHostController: NavHostController,
     private val userProfileRepository: IUserProfileRepository,
-    private val chatRequestRepository: IChatRequestRepository,
+    //private val chatRequestRepository: IChatRequestRepository,
 ) : StateViewModel<ChatRequestListState>(
     initialState = ChatRequestListState(
         chatRequests = emptyList(),
@@ -34,21 +31,21 @@ class ChatRequestListViewModel @Inject constructor(
     }
 
     fun onAttach() {
-        viewModelScope.launch(Dispatchers.IO) {
-            userProfileRepository.currentProfileId()?.let { currentProfileId ->
-                chatRequestRepository.getChatRequests(
-                    profileId = currentProfileId,
-                ).collectLatest { newList ->
-                    setLoading(true)
-                    update(
-                        state.value.copy(
-                            chatRequests = newList,
-                            isLoading = false,
-                        )
-                    )
-                }
-            }
-        }
+//        viewModelScope.launch(Dispatchers.IO) {
+//            userProfileRepository.currentProfileId()?.let { currentProfileId ->
+//                chatRequestRepository.getChatRequests(
+//                    profileId = currentProfileId,
+//                ).collectLatest { newList ->
+//                    setLoading(true)
+//                    update(
+//                        state.value.copy(
+//                            chatRequests = newList,
+//                            isLoading = false,
+//                        )
+//                    )
+//                }
+//            }
+//        }
     }
 
     fun onBackPressed() {
@@ -66,13 +63,13 @@ class ChatRequestListViewModel @Inject constructor(
 
     fun onAcceptRequest(chatRequest: ChatRequest) {
         viewModelScope.launch {
-            chatRequestRepository.approveChatRequest(chatRequest)
+            //chatRequestRepository.approveChatRequest(chatRequest)
         }
     }
 
     fun onCancelRequest(chatRequest: ChatRequest) {
         viewModelScope.launch {
-            chatRequestRepository.cancelChatRequest(chatRequest)
+            //chatRequestRepository.cancelChatRequest(chatRequest)
         }
     }
 }

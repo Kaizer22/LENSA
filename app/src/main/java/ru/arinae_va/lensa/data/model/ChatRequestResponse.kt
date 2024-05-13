@@ -1,6 +1,6 @@
 package ru.arinae_va.lensa.data.model
 
-import ru.arinae_va.lensa.domain.model.ChatRequest
+import ru.arinae_va.lensa.domain.model.legacy.ChatRequest
 import ru.arinae_va.lensa.utils.parseIsoDatetime
 
 data class ChatRequestResponse(

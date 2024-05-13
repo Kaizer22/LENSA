@@ -15,10 +15,10 @@ import ru.arinae_va.lensa.presentation.feature.auth.compose.OtpScreen
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.AuthViewModel
 import ru.arinae_va.lensa.presentation.feature.auth.viewmodel.OtpViewModel
 import ru.arinae_va.lensa.presentation.feature.chat.compose.ChatListScreen
-import ru.arinae_va.lensa.presentation.feature.chat.compose.ChatRequestListScreen
+import ru.arinae_va.lensa.presentation.feature.chat.compose.legacy.ChatRequestListScreen
 import ru.arinae_va.lensa.presentation.feature.chat.compose.ChatScreen
 import ru.arinae_va.lensa.presentation.feature.chat.viewmodel.ChatListViewModel
-import ru.arinae_va.lensa.presentation.feature.chat.viewmodel.ChatRequestListViewModel
+import ru.arinae_va.lensa.presentation.feature.chat.compose.legacy.ChatRequestListViewModel
 import ru.arinae_va.lensa.presentation.feature.chat.viewmodel.ChatViewModel
 import ru.arinae_va.lensa.presentation.feature.favourite.compose.FavouritesFolderScreen
 import ru.arinae_va.lensa.presentation.feature.favourite.compose.FavouritesScreen

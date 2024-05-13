@@ -102,4 +102,8 @@ class ChatListViewModel @Inject constructor(
             chatRepository.deleteChat(chatId)
         }
     }
+
+    fun onSearchTextChanged(searchQuery: String) {
+        TODO("Not yet implemented")
+    }
 }

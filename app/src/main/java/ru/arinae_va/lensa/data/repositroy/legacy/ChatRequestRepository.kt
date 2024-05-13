@@ -1,19 +1,19 @@
-package ru.arinae_va.lensa.data.repositroy
+package ru.arinae_va.lensa.data.repositroy.legacy
 
 import kotlinx.coroutines.flow.Flow
-import ru.arinae_va.lensa.data.datasource.remote.IChatsDataSource
-import ru.arinae_va.lensa.domain.model.ChatRequest
-import ru.arinae_va.lensa.domain.repository.IChatRequestRepository
+import ru.arinae_va.lensa.data.datasource.remote.legacy.IChatRequestsDataSource
+import ru.arinae_va.lensa.domain.model.legacy.ChatRequest
+import ru.arinae_va.lensa.domain.repository.legacy.IChatRequestRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import java.time.LocalDateTime
 import javax.inject.Inject
 
 class ChatRequestRepository @Inject constructor(
-    private val chatsDataSource: IChatsDataSource,
+    private val chatIChatRequestsDataSource: IChatRequestsDataSource,
     private val userProfileRepository: IUserProfileRepository,
 ): IChatRequestRepository {
     override fun getChatRequests(profileId: String): Flow<List<ChatRequest>> =
-        chatsDataSource.getChatRequests(profileId)
+        chatIChatRequestsDataSource.getChatRequests(profileId)
 
     override suspend fun sendChatRequest(
         targetProfileId: String,
@@ -34,15 +34,15 @@ class ChatRequestRepository @Inject constructor(
                 authorSpecialization = currentUserProfile.specialization,
                 targetSpecialization = targetProfileSpecialization,
             )
-            chatsDataSource.sendChatRequest(chatRequest)
+            chatIChatRequestsDataSource.sendChatRequest(chatRequest)
         }
     }
 
     override suspend fun approveChatRequest(chatRequest: ChatRequest) {
-        chatsDataSource.approveChatRequest(chatRequest)
+        chatIChatRequestsDataSource.approveChatRequest(chatRequest)
     }
 
     override suspend fun cancelChatRequest(chatRequest: ChatRequest) {
-        chatsDataSource.cancelChatRequest(chatRequest)
+        chatIChatRequestsDataSource.cancelChatRequest(chatRequest)
     }
 }

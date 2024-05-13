@@ -20,12 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.smarttoolfactory.bubble.ArrowAlignment
-import com.smarttoolfactory.bubble.ArrowShape
-import com.smarttoolfactory.bubble.bubble
-import com.smarttoolfactory.bubble.rememberBubbleState
 import ru.arinae_va.lensa.domain.model.Message
 import ru.arinae_va.lensa.presentation.common.component.FSpace
+import ru.arinae_va.lensa.presentation.common.component.HSpace
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
 import ru.arinae_va.lensa.utils.formatMessageDatetime
 import java.time.LocalDateTime
@@ -40,17 +37,6 @@ fun MessageRow(
     onEditMessage: () -> Unit,
     onDeleteMessage: () -> Unit,
 ) {
-    val bubbleState = rememberBubbleState(
-        cornerRadius = 8.dp,
-        alignment = if (isReceived) ArrowAlignment.LeftTop
-        else ArrowAlignment.RightTop,
-        arrowShape = ArrowShape.HalfTriangle,
-        arrowOffsetX = 0.dp,
-        arrowOffsetY = 0.dp,
-        arrowWidth = 14.dp,
-        arrowHeight = 14.dp,
-        drawArrow = showArrow,
-    )
     var isActionMenuVisible by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
@@ -65,17 +51,26 @@ fun MessageRow(
         if (!isReceived) FSpace()
         Column(
             modifier = Modifier
-                .weight(2.5f)
-                .bubble(
-                    bubbleState = bubbleState,
+                .background(
                     color = if (isReceived) LensaTheme.colors.receivedMessage
                     else LensaTheme.colors.sentMessageColor,
+                    shape = if (showArrow) {
+                        if (isReceived) {
+                            LensaTheme.shapes.receivedMessageShape
+                        } else {
+                            LensaTheme.shapes.sentMessageShape
+                        }
+                    } else LensaTheme.shapes.messageShape
                 )
+                .weight(3f)
                 .combinedClickable(
                     onClick = {},
                     onLongClick = { isActionMenuVisible = true }
                 )
-                .padding(8.dp)
+                .padding(
+                    horizontal = 18.dp,
+                    vertical = 8.dp
+                )
         ) {
             if (!isReceived) {
                 DropdownMenu(
@@ -110,20 +105,26 @@ fun MessageRow(
                     )
                 }
             }
-            Text(
-                text = message.message,
-                style = LensaTheme.typography.text,
-                color = LensaTheme.colors.textColor,
-            )
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                //modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
             ) {
                 Text(
-                    text = formatMessageDatetime(message.dateTime),
-                    style = LensaTheme.typography.signature,
+                    text = message.message,
+                    style = LensaTheme.typography.accentTextButton,
                     color = LensaTheme.colors.textColor,
                 )
+                FSpace()
+                HSpace(w = 10.dp)
+                Column(
+                    verticalArrangement = Arrangement.Bottom,
+                ) {
+                    Text(
+                        text = formatMessageDatetime(message.dateTime),
+                        style = LensaTheme.typography.smallAccent,
+                        color = LensaTheme.colors.textColorSecondary,
+                    )
+                }
             }
         }
         if (isReceived) FSpace()
@@ -141,6 +142,7 @@ fun MessagePreview() {
                     authorProfileId = "",
                     chatId = "",
                     message = "Test message",
+                    isRead = false,
                     dateTime = LocalDateTime.now(),
                 ),
                 isReceived = true,
@@ -154,10 +156,11 @@ fun MessagePreview() {
                     authorProfileId = "",
                     chatId = "",
                     message = "Test message",
+                    isRead = false,
                     dateTime = LocalDateTime.now(),
                 ),
                 isReceived = false,
-                showArrow = true,
+                showArrow = false,
                 onEditMessage = {},
                 onDeleteMessage = {}
             )
@@ -167,11 +170,12 @@ fun MessagePreview() {
                     authorProfileId = "",
                     chatId = "",
                     message = "Test message",
+                    isRead = false,
                     dateTime = LocalDateTime.now(),
                 ),
                 isEditing = true,
                 isReceived = false,
-                showArrow = false,
+                showArrow = true,
                 onEditMessage = {},
                 onDeleteMessage = {}
             )

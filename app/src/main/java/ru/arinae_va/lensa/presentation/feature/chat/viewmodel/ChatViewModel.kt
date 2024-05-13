@@ -13,6 +13,7 @@ import ru.arinae_va.lensa.domain.repository.IChatRepository
 import ru.arinae_va.lensa.domain.repository.IMessageRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.common.StateViewModel
+import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.inject.Inject
@@ -94,6 +95,7 @@ class ChatViewModel @Inject constructor(
                         chatId = state.value.chat?.chatId.orEmpty(),
                         message = state.value.messageInput,
                         dateTime = LocalDateTime.now(),
+                        isRead = false,
                     )
                 }
                 messageRepository.upsertMessage(message)
@@ -126,5 +128,18 @@ class ChatViewModel @Inject constructor(
                 editingMessageId = null,
             )
         )
+    }
+
+    // If not a group
+    fun onAvatarClick() {
+        val isSelf = false
+        state.value.chat?.members?.find { it != state.value.currentProfileId }?.let { receiverId ->
+            navHostController.navigate(
+                "${LensaScreens.SPECIALIST_DETAILS_SCREEN.name}/" +
+                        "$receiverId/" +
+                        "$isSelf"
+            )
+        }
+
     }
 }

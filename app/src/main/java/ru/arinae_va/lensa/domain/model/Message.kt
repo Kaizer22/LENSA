@@ -7,5 +7,6 @@ data class Message (
     val authorProfileId: String,
     val chatId: String,
     val message: String,
+    val isRead: Boolean,
     val dateTime: LocalDateTime,
 )

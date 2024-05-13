@@ -42,6 +42,11 @@ fun formatPrettyDatetime(dateTime: LocalDateTime): String {
     }
 }
 
-fun formatChatDate(dateTime: LocalDateTime) = dateTime.format(
-    dateFormatter
-)
+fun formatChatDate(dateTime: LocalDateTime): String {
+    val now = LocalDateTime.now()
+    return if (now.year == dateTime.year && now.dayOfYear == dateTime.dayOfYear) {
+        "Сегодня"
+    } else {
+        dateTime.format(dateFormatter)
+    }
+}

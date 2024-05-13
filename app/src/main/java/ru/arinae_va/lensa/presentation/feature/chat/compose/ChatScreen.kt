@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -51,6 +52,7 @@ fun ChatScreen(
         onDeleteMessageClick = viewModel::onDeleteMessageClick,
         onSendMessageClick = viewModel::onSendMessageClick,
         onCancelEditing = viewModel::onCancelEditing,
+        onAvatarClick = viewModel::onAvatarClick,
     )
 }
 
@@ -66,6 +68,7 @@ fun ChatScreenContent(
     onDeleteMessageClick: (String) -> Unit,
     onCancelEditing: () -> Unit,
     onSendMessageClick: () -> Unit,
+    onAvatarClick: () -> Unit,
 ) {
     Scaffold(
         modifier = Modifier.background(color = LensaTheme.colors.backgroundColor),
@@ -73,6 +76,7 @@ fun ChatScreenContent(
             ChatTopBar(
                 currentProfileId = state.currentProfileId,
                 chat = state.chat,
+                onAvatarClick = onAvatarClick,
                 onBackPressed = onBackPressed,
             )
         },
@@ -96,17 +100,21 @@ fun ChatScreenContent(
             }
         }
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().background(color = LensaTheme.colors.backgroundColor),
             contentAlignment = Alignment.BottomCenter,
         ) {
             LazyColumn(
                 state = scrollState,
-                modifier = Modifier.padding(paddingValues),
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp)
+                ,
             ) {
                 itemsIndexed(state.messages) { index, message ->
                     if (isNeedToShowDay(state.messages, index, message)) {
                         DayRow(message.dateTime)
                     }
+                    VSpace(h = 4.dp)
                     MessageRow(
                         message = message,
                         isEditing = message.messageId == state.editingMessageId,
@@ -115,7 +123,6 @@ fun ChatScreenContent(
                         onEditMessage = { onEditMessageClick.invoke(message.messageId) },
                         onDeleteMessage = { onDeleteMessageClick.invoke(message.messageId) },
                     )
-                    VSpace(h = 8.dp)
                 }
             }
         }
@@ -136,51 +143,60 @@ fun isNeedToShowArrow(messages: List<Message>, index: Int, message: Message): Bo
 fun ChatTopBar(
     currentProfileId: String,
     chat: Chat?,
+    onAvatarClick: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .height(TOP_BAR_HEIGHT)
-            .background(color = LensaTheme.colors.backgroundColor)
+    Column(
+        modifier = Modifier.background(color = LensaTheme.colors.backgroundColor)
             .padding(
-                horizontal = 16.dp,
-                vertical = 8.dp,
-            )
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        LensaIconButton(
-            onClick = onBackPressed,
-            icon = R.drawable.ic_arrow_back,
-            iconSize = 28.dp,
+            horizontal = 16.dp,
         )
-        HSpace(w = 24.dp)
-        val chatAvatarUrl = remember(chat) {
-            chat?.getAvatarUrl(currentProfileId)
-        }
-        val chatName = remember(chat) {
-            chat?.getChatName(currentProfileId)
-        }
-        val specialization = remember(chat) {
-            chat?.getSpecailization(currentProfileId)
-        }
-        LensaAvatar(avatarUrl = chatAvatarUrl.orEmpty())
-        HSpace(w = 12.dp)
-        Column {
-            Text(
-                text = chatName.orEmpty(),
-                style = LensaTheme.typography.name,
-                color = LensaTheme.colors.textColor,
+    ) {
+        Row(
+            modifier = Modifier
+                .height(TOP_BAR_HEIGHT)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            LensaIconButton(
+                onClick = onBackPressed,
+                icon = R.drawable.ic_arrow_back,
+                iconSize = 28.dp,
             )
-            specialization?.let {
+            FSpace()
+            val chatAvatarUrl = remember(chat) {
+                chat?.getAvatarUrl(currentProfileId)
+            }
+            val chatName = remember(chat) {
+                chat?.getChatName(currentProfileId)
+            }
+            val specialization = remember(chat) {
+                chat?.getSpecailization(currentProfileId)
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 Text(
-                    text = specialization,
-                    style = LensaTheme.typography.signature,
+                    text = chatName.orEmpty().uppercase(),
+                    style = LensaTheme.typography.name,
                     color = LensaTheme.colors.textColor,
                 )
+                specialization?.let {
+                    Text(
+                        text = specialization,
+                        style = LensaTheme.typography.signature,
+                        color = LensaTheme.colors.textColorSecondary,
+                    )
+                }
             }
+            FSpace()
+            LensaAvatar(
+                avatarUrl = chatAvatarUrl.orEmpty(),
+                onClick = onAvatarClick,
+            )
         }
-
+        HSpace(w = 12.dp)
+        Divider(color = LensaTheme.colors.textColor)
     }
 }
 

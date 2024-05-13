@@ -17,7 +17,7 @@ import java.time.LocalDateTime
 @Composable
 fun DayRow(dateTime: LocalDateTime) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(12.dp),
+        modifier = Modifier.fillMaxWidth().padding(14.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
         Box(
@@ -28,7 +28,7 @@ fun DayRow(dateTime: LocalDateTime) {
         ) {
             Text(
                 text = formatChatDate(dateTime),
-                style = LensaTheme.typography.text,
+                style = LensaTheme.typography.smallAccent,
                 color = LensaTheme.colors.textColor,
             )
         }

@@ -9,8 +9,8 @@ import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.arinae_va.lensa.domain.model.chats.Chat
-import ru.arinae_va.lensa.domain.model.chats.DialogData
+import ru.arinae_va.lensa.domain.model.chat.Chat
+import ru.arinae_va.lensa.domain.model.chat.DialogData
 import ru.arinae_va.lensa.domain.model.user.Review
 import ru.arinae_va.lensa.domain.repository.IAuthRepository
 import ru.arinae_va.lensa.domain.repository.IChatRepository

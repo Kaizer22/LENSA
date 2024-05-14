@@ -23,8 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.arinae_va.lensa.domain.model.chats.Chat
-import ru.arinae_va.lensa.domain.model.chats.Message
+import ru.arinae_va.lensa.domain.model.chat.Chat
+import ru.arinae_va.lensa.domain.model.chat.Message
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.HSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaAvatar

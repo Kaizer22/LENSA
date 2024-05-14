@@ -13,8 +13,8 @@ import ru.arinae_va.lensa.data.model.ChatResponse
 import ru.arinae_va.lensa.data.model.MessageResponse
 import ru.arinae_va.lensa.data.model.toChatResponse
 import ru.arinae_va.lensa.data.model.toMessageResponse
-import ru.arinae_va.lensa.domain.model.chats.Chat
-import ru.arinae_va.lensa.domain.model.chats.Message
+import ru.arinae_va.lensa.domain.model.chat.Chat
+import ru.arinae_va.lensa.domain.model.chat.Message
 import javax.inject.Inject
 
 interface IChatsDataSource {

@@ -1,7 +1,7 @@
 package ru.arinae_va.lensa.domain.repository
 
 import kotlinx.coroutines.flow.Flow
-import ru.arinae_va.lensa.domain.model.chats.Chat
+import ru.arinae_va.lensa.domain.model.chat.Chat
 
 interface IChatRepository {
     suspend fun isChatExist(chatId: String): Boolean

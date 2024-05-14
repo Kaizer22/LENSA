@@ -26,7 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.R
-import ru.arinae_va.lensa.domain.model.Price
+import ru.arinae_va.lensa.domain.model.user.Price
 import ru.arinae_va.lensa.presentation.common.component.HSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaButton
 import ru.arinae_va.lensa.presentation.common.component.LensaDropdownInput

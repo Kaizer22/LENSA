@@ -5,7 +5,7 @@ import kotlinx.coroutines.tasks.await
 import ru.arinae_va.lensa.data.model.ReviewResponse
 import ru.arinae_va.lensa.data.model.toReview
 import ru.arinae_va.lensa.data.model.toReviewResponse
-import ru.arinae_va.lensa.domain.model.Review
+import ru.arinae_va.lensa.domain.model.user.Review
 import javax.inject.Inject
 
 interface IReviewDataSource {

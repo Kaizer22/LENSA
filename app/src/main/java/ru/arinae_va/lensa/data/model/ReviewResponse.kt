@@ -1,6 +1,6 @@
 package ru.arinae_va.lensa.data.model
 
-import ru.arinae_va.lensa.domain.model.Review
+import ru.arinae_va.lensa.domain.model.user.Review
 import ru.arinae_va.lensa.utils.parseIsoDatetime
 
 data class ReviewResponse(

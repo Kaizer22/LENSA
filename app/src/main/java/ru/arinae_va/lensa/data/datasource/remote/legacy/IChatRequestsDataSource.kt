@@ -11,9 +11,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import ru.arinae_va.lensa.data.model.ChatRequestResponse
 import ru.arinae_va.lensa.data.model.toChatRequestResponse
-import ru.arinae_va.lensa.domain.model.Chat
+import ru.arinae_va.lensa.domain.model.chats.Chat
 import ru.arinae_va.lensa.domain.model.legacy.ChatRequest
-import ru.arinae_va.lensa.domain.model.DialogData
+import ru.arinae_va.lensa.domain.model.chats.DialogData
 import java.time.LocalDateTime
 import java.util.UUID
 import javax.inject.Inject

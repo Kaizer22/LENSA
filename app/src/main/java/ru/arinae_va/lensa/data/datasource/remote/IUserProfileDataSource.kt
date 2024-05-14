@@ -7,16 +7,20 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.tasks.await
 import ru.arinae_va.lensa.data.model.UserProfileResponse
-import ru.arinae_va.lensa.domain.model.FeedFilter
-import ru.arinae_va.lensa.domain.model.OrderType
-import ru.arinae_va.lensa.domain.model.UserProfileModel
-import ru.arinae_va.lensa.domain.model.UserProfileType
+import ru.arinae_va.lensa.domain.model.user.FeedFilter
+import ru.arinae_va.lensa.domain.model.user.OrderType
+import ru.arinae_va.lensa.domain.model.user.UserProfileModel
+import ru.arinae_va.lensa.domain.model.user.UserProfileType
 import java.time.LocalDateTime
 import javax.inject.Inject
 
 interface IUserProfileDataSource {
 
     suspend fun isNewUser(userId: String): Boolean
+
+    suspend fun addProfileToBlackList(currentProfileId: String, profileId: String)
+
+    suspend fun removeProfileFromBlackList(currentProfileId: String, profileId: String)
 
     suspend fun upsertProfile(profile: UserProfileModel)
 
@@ -48,6 +52,7 @@ private const val PORTFOLIO_PICTURES_FIELD = "portfolioUrls"
 private const val USER_ID_FIELD = "userId"
 private const val PROFILE_ID_FIELD = "profileId"
 private const val PROFILE_TYPE_FIELD = "type"
+private const val BLACK_LIST_FIELD = "blackList"
 private const val SPECIALIZATION_FIELD = "specialization"
 private const val COUNTRY_FIELD = "country"
 private const val RATING_FIELD = "rating"
@@ -73,6 +78,18 @@ class FirebaseUserProfileDataSource @Inject constructor(
 
     override suspend fun isNewUser(userId: String) =
         getProfilesByUserId(userId).isEmpty()
+
+    override suspend fun addProfileToBlackList(currentProfileId: String, profileId: String) {
+        profiles.document(currentProfileId)
+            .update(BLACK_LIST_FIELD, FieldValue.arrayUnion(profileId))
+            .await()
+    }
+
+    override suspend fun removeProfileFromBlackList(currentProfileId: String, profileId: String) {
+        profiles.document(currentProfileId)
+            .update(BLACK_LIST_FIELD, FieldValue.arrayRemove(profileId))
+            .await()
+    }
 
     override suspend fun upsertProfile(profile: UserProfileModel) {
         profiles.document(profile.profileId)

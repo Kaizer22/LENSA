@@ -1,6 +1,6 @@
 package ru.arinae_va.lensa.data.model
 
-import ru.arinae_va.lensa.domain.model.PriceCurrency
+import ru.arinae_va.lensa.domain.model.user.PriceCurrency
 
 data class PriceResponse(
     val id: String? = null,

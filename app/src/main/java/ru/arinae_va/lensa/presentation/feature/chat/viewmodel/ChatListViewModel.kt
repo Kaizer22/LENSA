@@ -9,8 +9,8 @@ import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import ru.arinae_va.lensa.domain.model.Chat
-import ru.arinae_va.lensa.domain.model.Message
+import ru.arinae_va.lensa.domain.model.chats.Chat
+import ru.arinae_va.lensa.domain.model.chats.Message
 import ru.arinae_va.lensa.domain.repository.IChatRepository
 import ru.arinae_va.lensa.domain.repository.IMessageRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
@@ -95,6 +95,13 @@ class ChatListViewModel @Inject constructor(
 
     fun onEditChatClick() {
         // TODO open editor
+    }
+
+    fun onBlockProfileClick(chatId: String, profileId: String) {
+        onDeleteChatClick(chatId)
+        viewModelScope.launch {
+            userProfileRepository.addProfileToBlackList(profileId)
+        }
     }
 
     fun onDeleteChatClick(chatId: String) {

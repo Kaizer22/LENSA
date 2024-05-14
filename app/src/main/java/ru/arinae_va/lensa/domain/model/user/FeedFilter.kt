@@ -1,4 +1,4 @@
-package ru.arinae_va.lensa.domain.model
+package ru.arinae_va.lensa.domain.model.user
 
 data class FeedFilter(
     val specialization: String,

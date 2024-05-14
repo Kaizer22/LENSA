@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.arinae_va.lensa.domain.model.UserProfileModel
+import ru.arinae_va.lensa.domain.model.user.UserProfileModel
 import ru.arinae_va.lensa.domain.repository.IFavouritesRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.common.StateViewModel

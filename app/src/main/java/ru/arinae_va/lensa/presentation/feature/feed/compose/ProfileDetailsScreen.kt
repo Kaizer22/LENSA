@@ -25,11 +25,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import ru.arinae_va.lensa.R
-import ru.arinae_va.lensa.domain.model.Price
-import ru.arinae_va.lensa.domain.model.PriceCurrency
-import ru.arinae_va.lensa.domain.model.SocialMedia
-import ru.arinae_va.lensa.domain.model.UserProfileModel
-import ru.arinae_va.lensa.domain.model.UserProfileType
+import ru.arinae_va.lensa.domain.model.user.Price
+import ru.arinae_va.lensa.domain.model.user.PriceCurrency
+import ru.arinae_va.lensa.domain.model.user.SocialMedia
+import ru.arinae_va.lensa.domain.model.user.UserProfileModel
+import ru.arinae_va.lensa.domain.model.user.UserProfileType
 import ru.arinae_va.lensa.presentation.common.component.LensaAsyncImage
 import ru.arinae_va.lensa.presentation.common.component.LensaBackgroundBlur
 import ru.arinae_va.lensa.presentation.common.component.LensaReplaceLoader
@@ -219,6 +219,7 @@ fun SpecialistDetailsScreenPreview() {
                 userProfileModel = UserProfileModel(
                     userId = "",
                     profileId = "",
+                    blackList = emptyList(),
                     type = UserProfileType.SPECIALIST,
                     name = "Арина",
                     surname = "Еремеева",

@@ -1,7 +1,7 @@
 package ru.arinae_va.lensa.data.repositroy
 
 import ru.arinae_va.lensa.data.datasource.remote.IReviewDataSource
-import ru.arinae_va.lensa.domain.model.Review
+import ru.arinae_va.lensa.domain.model.user.Review
 import ru.arinae_va.lensa.domain.repository.IAuthRepository
 import ru.arinae_va.lensa.domain.repository.IReviewRepository
 import javax.inject.Inject

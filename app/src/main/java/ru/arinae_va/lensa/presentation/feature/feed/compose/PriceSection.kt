@@ -5,7 +5,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import ru.arinae_va.lensa.domain.model.Price
+import ru.arinae_va.lensa.domain.model.user.Price
 import ru.arinae_va.lensa.presentation.common.component.LensaExpandableButton
 import ru.arinae_va.lensa.presentation.common.component.VSpace
 import ru.arinae_va.lensa.presentation.theme.LensaTheme

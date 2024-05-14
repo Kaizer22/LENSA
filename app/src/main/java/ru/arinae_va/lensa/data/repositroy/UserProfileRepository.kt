@@ -3,8 +3,8 @@ package ru.arinae_va.lensa.data.repositroy
 import android.net.Uri
 import android.webkit.URLUtil.isHttpsUrl
 import ru.arinae_va.lensa.data.datasource.remote.IUserProfileDataSource
-import ru.arinae_va.lensa.domain.model.FeedFilter
-import ru.arinae_va.lensa.domain.model.UserProfileModel
+import ru.arinae_va.lensa.domain.model.user.FeedFilter
+import ru.arinae_va.lensa.domain.model.user.UserProfileModel
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import java.util.UUID
 import javax.inject.Inject
@@ -17,6 +17,17 @@ class UserProfileRepository @Inject constructor(
     override fun currentUserProfile(): UserProfileModel? = currentUserProfile
 
     override fun currentProfileId(): String? = currentUserProfile?.profileId
+    override suspend fun addProfileToBlackList(blockedProfileId: String) {
+        currentUserProfile?.let {
+            userInfoStorage.addProfileToBlackList(it.profileId, blockedProfileId)
+        }
+    }
+
+    override suspend fun removeProfileFromBlackList(profileId: String) {
+        currentUserProfile?.let {
+            userInfoStorage.removeProfileFromBlackList(it.profileId, profileId)
+        }
+    }
 
     override suspend fun deleteProfile() {
         currentUserProfile?.let {

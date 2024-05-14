@@ -1,15 +1,16 @@
 package ru.arinae_va.lensa.data.model
 
-import ru.arinae_va.lensa.domain.model.Price
-import ru.arinae_va.lensa.domain.model.PriceCurrency
-import ru.arinae_va.lensa.domain.model.SocialMedia
-import ru.arinae_va.lensa.domain.model.UserProfileModel
-import ru.arinae_va.lensa.domain.model.UserProfileType
+import ru.arinae_va.lensa.domain.model.user.Price
+import ru.arinae_va.lensa.domain.model.user.PriceCurrency
+import ru.arinae_va.lensa.domain.model.user.SocialMedia
+import ru.arinae_va.lensa.domain.model.user.UserProfileModel
+import ru.arinae_va.lensa.domain.model.user.UserProfileType
 import ru.arinae_va.lensa.presentation.feature.feed.compose.SocialMediaType
 
 class UserProfileResponse(
     val userId: String? = null,
     val profileId: String? = null,
+    val blackList: List<String>? = null,
     val type: String? = null,
     val name: String? = null,
     val surname: String? = null,
@@ -32,6 +33,7 @@ class UserProfileResponse(
     fun mapToUserProfileModel(): UserProfileModel = UserProfileModel(
         userId = userId.orEmpty(),
         profileId = profileId.orEmpty(),
+        blackList = blackList ?: emptyList(),
         type = type?.let { UserProfileType.valueOf(it) } ?: UserProfileType.CUSTOMER,
         name = name.orEmpty(),
         surname = surname.orEmpty(),

@@ -1,6 +1,6 @@
 package ru.arinae_va.lensa.presentation.feature.favourite.viewmodel
 
-import ru.arinae_va.lensa.domain.model.UserProfileModel
+import ru.arinae_va.lensa.domain.model.user.UserProfileModel
 
 data class FavouritesFolderState(
     val isLoading: Boolean,

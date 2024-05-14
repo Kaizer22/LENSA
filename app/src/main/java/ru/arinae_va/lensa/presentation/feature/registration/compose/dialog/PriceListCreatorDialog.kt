@@ -1,7 +1,6 @@
 package ru.arinae_va.lensa.presentation.feature.registration.compose.dialog
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -20,8 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import ru.arinae_va.lensa.R
-import ru.arinae_va.lensa.domain.model.Price
-import ru.arinae_va.lensa.domain.model.PriceCurrency
+import ru.arinae_va.lensa.domain.model.user.Price
+import ru.arinae_va.lensa.domain.model.user.PriceCurrency
 import ru.arinae_va.lensa.presentation.common.component.LensaButton
 import ru.arinae_va.lensa.presentation.common.component.LensaInput
 import ru.arinae_va.lensa.presentation.common.component.LensaMultilineInput

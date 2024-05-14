@@ -9,8 +9,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
-import ru.arinae_va.lensa.domain.model.FeedFilter
-import ru.arinae_va.lensa.domain.model.OrderType
+import ru.arinae_va.lensa.domain.model.user.FeedFilter
+import ru.arinae_va.lensa.domain.model.user.OrderType
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.common.StateViewModel
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens

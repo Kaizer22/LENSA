@@ -15,13 +15,13 @@ import kotlinx.coroutines.test.setMain
 import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.Assertions
-import ru.arinae_va.lensa.domain.model.FeedFilter
-import ru.arinae_va.lensa.domain.model.OrderType
-import ru.arinae_va.lensa.domain.model.Price
-import ru.arinae_va.lensa.domain.model.PriceCurrency
-import ru.arinae_va.lensa.domain.model.SocialMedia
-import ru.arinae_va.lensa.domain.model.UserProfileModel
-import ru.arinae_va.lensa.domain.model.UserProfileType
+import ru.arinae_va.lensa.domain.model.user.FeedFilter
+import ru.arinae_va.lensa.domain.model.user.OrderType
+import ru.arinae_va.lensa.domain.model.user.Price
+import ru.arinae_va.lensa.domain.model.user.PriceCurrency
+import ru.arinae_va.lensa.domain.model.user.SocialMedia
+import ru.arinae_va.lensa.domain.model.user.UserProfileModel
+import ru.arinae_va.lensa.domain.model.user.UserProfileType
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.feature.feed.compose.SocialMediaType
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
@@ -67,6 +67,7 @@ class FeedViewModelTest {
     private val testUserProfile1 = UserProfileModel(
         userId = "",
         profileId = testProfileId1,
+        blackList = emptyList(),
         type = UserProfileType.SPECIALIST,
         name = testName,
         surname = "",
@@ -97,6 +98,7 @@ class FeedViewModelTest {
     private val testUserProfile2 = UserProfileModel(
         userId = "",
         profileId = testProfileId2,
+        blackList = emptyList(),
         type = UserProfileType.SPECIALIST,
         name = "",
         surname = "",

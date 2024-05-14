@@ -1,13 +1,17 @@
 package ru.arinae_va.lensa.domain.repository
 
 import android.net.Uri
-import ru.arinae_va.lensa.domain.model.FeedFilter
-import ru.arinae_va.lensa.domain.model.UserProfileModel
+import ru.arinae_va.lensa.domain.model.user.FeedFilter
+import ru.arinae_va.lensa.domain.model.user.UserProfileModel
 
 interface IUserProfileRepository {
 
     fun currentUserProfile(): UserProfileModel?
     fun currentProfileId(): String?
+
+    suspend fun addProfileToBlackList(blockedProfileId: String)
+
+    suspend fun removeProfileFromBlackList(profileId: String)
 
     suspend fun deleteProfile()
 

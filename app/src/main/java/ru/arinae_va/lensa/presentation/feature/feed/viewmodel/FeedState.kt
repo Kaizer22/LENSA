@@ -1,7 +1,7 @@
 package ru.arinae_va.lensa.presentation.feature.feed.viewmodel
 
-import ru.arinae_va.lensa.domain.model.FeedFilter
-import ru.arinae_va.lensa.domain.model.UserProfileModel
+import ru.arinae_va.lensa.domain.model.user.FeedFilter
+import ru.arinae_va.lensa.domain.model.user.UserProfileModel
 
 enum class FeedFilterInputFields {
     SPECIALIZATION, COUNTRY, CITY,

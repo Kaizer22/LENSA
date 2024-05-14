@@ -1,4 +1,4 @@
-package ru.arinae_va.lensa.domain.model
+package ru.arinae_va.lensa.domain.model.user
 
 enum class UserProfileType {
     SPECIALIST, CUSTOMER,
@@ -6,6 +6,7 @@ enum class UserProfileType {
 data class UserProfileModel(
     val userId: String,
     val profileId: String,
+    val blackList: List<String>,
     val type: UserProfileType,
     val name: String,
     val surname: String,
@@ -29,6 +30,7 @@ data class UserProfileModel(
         val EMPTY = UserProfileModel(
             userId = "",
             profileId = "",
+            blackList = emptyList(),
             type = UserProfileType.CUSTOMER,
             name = "",
             surname = "",

@@ -1,4 +1,4 @@
-package ru.arinae_va.lensa.domain.model
+package ru.arinae_va.lensa.domain.model.chats
 
 import java.time.LocalDateTime
 

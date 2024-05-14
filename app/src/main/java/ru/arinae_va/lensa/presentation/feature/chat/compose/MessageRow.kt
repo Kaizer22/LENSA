@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.arinae_va.lensa.domain.model.Message
+import ru.arinae_va.lensa.domain.model.chats.Message
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.HSpace
 import ru.arinae_va.lensa.presentation.theme.LensaTheme

@@ -1,6 +1,6 @@
 package ru.arinae_va.lensa.domain.repository
 
-import ru.arinae_va.lensa.domain.model.Review
+import ru.arinae_va.lensa.domain.model.user.Review
 
 interface IReviewRepository {
 

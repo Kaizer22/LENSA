@@ -11,10 +11,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
-import ru.arinae_va.lensa.domain.model.Price
-import ru.arinae_va.lensa.domain.model.SocialMedia
-import ru.arinae_va.lensa.domain.model.UserProfileModel
-import ru.arinae_va.lensa.domain.model.UserProfileType
+import ru.arinae_va.lensa.domain.model.user.Price
+import ru.arinae_va.lensa.domain.model.user.SocialMedia
+import ru.arinae_va.lensa.domain.model.user.UserProfileModel
+import ru.arinae_va.lensa.domain.model.user.UserProfileType
 import ru.arinae_va.lensa.domain.repository.IAuthRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.common.StateViewModel
@@ -202,6 +202,7 @@ class RegistrationViewModel @Inject constructor(
                 val model = UserProfileModel(
                     userId = authRepository.currentUserId().orEmpty(),
                     profileId = userProfileRepository.currentProfileId().orEmpty(),
+                    blackList = emptyList(),
                     type = UserProfileType.CUSTOMER,
                     name = name,
                     surname = surname,
@@ -239,6 +240,7 @@ class RegistrationViewModel @Inject constructor(
                 val model = UserProfileModel(
                     userId = authRepository.currentUserId().orEmpty(),
                     profileId = userProfileRepository.currentProfileId().orEmpty(),
+                    blackList = emptyList(),
                     type = UserProfileType.SPECIALIST,
                     name = name,
                     surname = surname,

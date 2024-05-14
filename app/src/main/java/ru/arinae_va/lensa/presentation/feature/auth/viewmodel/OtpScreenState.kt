@@ -1,7 +1,7 @@
 package ru.arinae_va.lensa.presentation.feature.auth.viewmodel
 
 import com.google.firebase.auth.PhoneAuthProvider
-import ru.arinae_va.lensa.domain.model.UserProfileModel
+import ru.arinae_va.lensa.domain.model.user.UserProfileModel
 
 internal enum class OtpScreenInputField {
     OTP_CODE,

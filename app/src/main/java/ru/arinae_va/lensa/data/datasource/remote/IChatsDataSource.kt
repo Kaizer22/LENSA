@@ -13,11 +13,12 @@ import ru.arinae_va.lensa.data.model.ChatResponse
 import ru.arinae_va.lensa.data.model.MessageResponse
 import ru.arinae_va.lensa.data.model.toChatResponse
 import ru.arinae_va.lensa.data.model.toMessageResponse
-import ru.arinae_va.lensa.domain.model.Chat
-import ru.arinae_va.lensa.domain.model.Message
+import ru.arinae_va.lensa.domain.model.chats.Chat
+import ru.arinae_va.lensa.domain.model.chats.Message
 import javax.inject.Inject
 
 interface IChatsDataSource {
+
     fun getMessages(chatId: String): Flow<List<Message>>
     fun getLastMessages(chatIds: List<String>): Flow<List<Message>>
     suspend fun upsertMessage(message: Message)
@@ -33,6 +34,7 @@ interface IChatsDataSource {
 
 private const val MESSAGE_COLLECTION = "message"
 private const val CHAT_COLLECTION = "chat"
+private const val BLACK_LIST_COLLECTION = "blackList"
 
 private const val CHAT_ID_FIELD = "chatId"
 private const val MEMBERS_FIELD = "members"
@@ -127,6 +129,7 @@ class FirebaseChatsDataSource @Inject constructor(
     }
 
     override suspend fun deleteChat(chatId: String) {
+        // TODO delete messages too
         chats.document(chatId)
             .delete()
             .await()

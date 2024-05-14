@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.presentation.common.component.FSpace
@@ -42,7 +43,7 @@ fun ChatListScreen(
         onAddGroupClick = viewModel::onAddGroupClick,
         onChatRequestListClick = viewModel::onChatRequestListClick,
         onChatClick = viewModel::onChatClick,
-        onEditChatClick = viewModel::onEditChatClick,
+        onBlockProfileClick = viewModel::onBlockProfileClick,
         onDeleteChatClick = viewModel::onDeleteChatClick,
         onBackPressed = viewModel::onBackPressed,
     )
@@ -55,12 +56,14 @@ private fun ChatListContent(
     onChatRequestListClick: () -> Unit,
     onAddGroupClick: () -> Unit,
     onChatClick: (String) -> Unit,
-    onEditChatClick: () -> Unit,
+    onBlockProfileClick: (chatId: String, profileId: String) -> Unit,
     onDeleteChatClick: (String) -> Unit,
     onBackPressed: () -> Unit,
 ) {
     var isShowDeleteChatDialog by remember { mutableStateOf(false) }
+    var isShowBlockProfileDialog by remember { mutableStateOf(false) }
     var chatToDeleteId by remember { mutableStateOf("") }
+    var profileIdToBlock by remember { mutableStateOf("") }
     if (isShowDeleteChatDialog) {
         LensaAlertDialog(
             onConfirmClick = {
@@ -73,6 +76,22 @@ private fun ChatListContent(
                     "ДЛЯ ВАС И ДЛЯ СОБЕСЕДНИКОВ. " +
                     "ВЫ УВЕРЕНЫ?",
             confirmText = "УДАЛИТЬ",
+            dismissText = "ОТМЕНИТЬ"
+        )
+    }
+
+    if (isShowBlockProfileDialog) {
+        LensaAlertDialog(
+            onConfirmClick = {
+                onBlockProfileClick.invoke(chatToDeleteId, profileIdToBlock)
+                isShowBlockProfileDialog = false
+            },
+            onDismissClick = { isShowBlockProfileDialog = false },
+            title = "ЗАБЛОКИРОВАТЬ ПОЛЬЗОВАТЕЛЯ",
+            subtitle = "ТЕКУЩИЙ ДИАЛОГ БУДЕТ УДАЛЕН ДЛЯ ВАС И ДЛЯ СОБЕСЕДНИКА. " +
+                    "СОБЕСЕДНИК БОЛЬШЕ НЕ СМОЖЕТ НАЧАТЬ С ВАМИ ЧАТ. " +
+                    "ВЫ УВЕРЕНЫ?",
+            confirmText = "ЗАБЛОКИРОВАТЬ",
             dismissText = "ОТМЕНИТЬ"
         )
     }
@@ -101,7 +120,13 @@ private fun ChatListContent(
                         onClick = {
                             onChatClick.invoke(chat.chatId)
                         },
-                        onEditClick = onEditChatClick,
+                        onBlockClick = {
+                            chatToDeleteId = chat.chatId
+                            profileIdToBlock = chat.members.find {
+                                it != state.currentUserId
+                            }.orEmpty()
+                            isShowBlockProfileDialog = true
+                        },
                         onDeleteClick = {
                             chatToDeleteId = chat.chatId
                             isShowDeleteChatDialog = true
@@ -112,12 +137,14 @@ private fun ChatListContent(
             }
         } else {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize()
+                    .padding(horizontal = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 FSpace()
                 Text(
-                    text = "НА ДАННЫЙ МОМЕНТ У ВАС НЕТ ЧАТОВ",
+                    textAlign = TextAlign.Center,
+                    text = "НА ДАННЫЙ МОМЕНТ \nУ ВАС НЕТ ЧАТОВ",
                     style = LensaTheme.typography.header3,
                     color = LensaTheme.colors.textColor,
                 )

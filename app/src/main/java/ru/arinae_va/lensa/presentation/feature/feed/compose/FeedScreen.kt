@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.launch
-import ru.arinae_va.lensa.domain.model.OrderType
+import ru.arinae_va.lensa.domain.model.user.OrderType
 import ru.arinae_va.lensa.presentation.common.component.LensaActionBar
 import ru.arinae_va.lensa.presentation.common.component.LensaReplaceLoader
 import ru.arinae_va.lensa.presentation.common.component.LensaTextButton

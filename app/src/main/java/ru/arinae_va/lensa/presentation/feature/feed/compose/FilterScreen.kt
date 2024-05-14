@@ -17,9 +17,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.R
-import ru.arinae_va.lensa.domain.model.ORDER_TYPE_RATING_ASC_TEXT
-import ru.arinae_va.lensa.domain.model.ORDER_TYPE_RATING_DESC_TEXT
-import ru.arinae_va.lensa.domain.model.OrderType
+import ru.arinae_va.lensa.domain.model.user.ORDER_TYPE_RATING_ASC_TEXT
+import ru.arinae_va.lensa.domain.model.user.ORDER_TYPE_RATING_DESC_TEXT
+import ru.arinae_va.lensa.domain.model.user.OrderType
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.HSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaButton

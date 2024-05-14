@@ -9,9 +9,9 @@ import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.arinae_va.lensa.domain.model.Chat
-import ru.arinae_va.lensa.domain.model.DialogData
-import ru.arinae_va.lensa.domain.model.Review
+import ru.arinae_va.lensa.domain.model.chats.Chat
+import ru.arinae_va.lensa.domain.model.chats.DialogData
+import ru.arinae_va.lensa.domain.model.user.Review
 import ru.arinae_va.lensa.domain.repository.IAuthRepository
 import ru.arinae_va.lensa.domain.repository.IChatRepository
 import ru.arinae_va.lensa.domain.repository.IFavouritesRepository
@@ -164,48 +164,69 @@ class ProfileDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             // TODO Проверка, что чат уже существует
             userProfileRepository.currentUserProfile()?.let { currentProfile ->
-                val chatId = getChatId(
-                    currentUserId = currentProfile.profileId,
-                    recipientId = recipientProfileId,
-                )
-                if (chatRepository.isChatExist(chatId)) {
-                    navHostController.navigate(
-                        LensaScreens.CHAT_SCREEN.name + "/${chatId}"
+                if (state.value.userProfileModel.blackList.contains(currentProfile.profileId)) {
+                    snackbarHostState.value.showSnackbar(
+                        message = "Данный пользователь добавил вас в черный список",
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Long,
                     )
-                } else {
-                    val chat = Chat(
-                        chatId = chatId,
-                        creatorProfileId = currentProfile.profileId,
-                        members = listOf(
-                            currentProfile.profileId,
-                            recipientProfileId,
-                        ),
-                        name = "",
-                        avatarUrl = "",
-                        createTime = LocalDateTime.now(),
-                        dialogData = DialogData(
-                            authorMemberName = currentProfile.profileId,
-                            authorAvatarUrl = currentProfile.avatarUrl,
-                            targetMemberName = state.value.userProfileModel.name + " " +
-                                    state.value.userProfileModel.surname,
-                            targetAvatarUrl = state.value.userProfileModel.avatarUrl,
-                            targetSpecialization = state.value.userProfileModel.specialization,
-                            authorSpecialization = currentProfile.specialization,
-                        )
-                    )
-                    chatRepository.upsertChat(chat)
+                } else if (currentProfile.blackList.contains(recipientProfileId)) {
                     val result = snackbarHostState.value.showSnackbar(
-                        message = "Чат создан",
-                        actionLabel = "ПЕРЕЙТИ",
+                        message = "Данный пользователь у вас в черном списке",
+                        actionLabel = "РАЗБЛОКИРОВАТЬ",
                         withDismissAction = true,
                         duration = SnackbarDuration.Long,
                     )
                     when (result) {
-                        SnackbarResult.ActionPerformed -> navHostController.navigate(
+                        SnackbarResult.ActionPerformed -> {
+                            userProfileRepository.removeProfileFromBlackList(recipientProfileId)
+                        }
+                        SnackbarResult.Dismissed -> {}
+                    }
+                }
+                else {
+                    val chatId = getChatId(
+                        currentUserId = currentProfile.profileId,
+                        recipientId = recipientProfileId,
+                    )
+                    if (chatRepository.isChatExist(chatId)) {
+                        navHostController.navigate(
                             LensaScreens.CHAT_SCREEN.name + "/${chatId}"
                         )
-
-                        SnackbarResult.Dismissed -> {}
+                    } else {
+                        val chat = Chat(
+                            chatId = chatId,
+                            creatorProfileId = currentProfile.profileId,
+                            members = listOf(
+                                currentProfile.profileId,
+                                recipientProfileId,
+                            ),
+                            name = "",
+                            avatarUrl = "",
+                            createTime = LocalDateTime.now(),
+                            dialogData = DialogData(
+                                authorMemberName = currentProfile.profileId,
+                                authorAvatarUrl = currentProfile.avatarUrl,
+                                targetMemberName = state.value.userProfileModel.name + " " +
+                                        state.value.userProfileModel.surname,
+                                targetAvatarUrl = state.value.userProfileModel.avatarUrl,
+                                targetSpecialization = state.value.userProfileModel.specialization,
+                                authorSpecialization = currentProfile.specialization,
+                            )
+                        )
+                        chatRepository.upsertChat(chat)
+                        val result = snackbarHostState.value.showSnackbar(
+                            message = "Чат создан",
+                            actionLabel = "ПЕРЕЙТИ",
+                            withDismissAction = true,
+                            duration = SnackbarDuration.Long,
+                        )
+                        when (result) {
+                            SnackbarResult.ActionPerformed -> navHostController.navigate(
+                                LensaScreens.CHAT_SCREEN.name + "/${chatId}"
+                            )
+                            SnackbarResult.Dismissed -> {}
+                        }
                     }
                 }
             }

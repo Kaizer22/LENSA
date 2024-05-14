@@ -2,7 +2,7 @@ package ru.arinae_va.lensa.data.repositroy
 
 import kotlinx.coroutines.flow.Flow
 import ru.arinae_va.lensa.data.datasource.remote.IChatsDataSource
-import ru.arinae_va.lensa.domain.model.Message
+import ru.arinae_va.lensa.domain.model.chats.Message
 import ru.arinae_va.lensa.domain.repository.IMessageRepository
 import javax.inject.Inject
 

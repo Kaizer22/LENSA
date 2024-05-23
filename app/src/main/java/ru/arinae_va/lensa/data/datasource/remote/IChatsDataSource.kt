@@ -21,6 +21,8 @@ interface IChatsDataSource {
 
     fun getMessages(chatId: String): Flow<List<Message>>
     fun getLastMessages(chatIds: List<String>): Flow<List<Message>>
+
+    suspend fun setMessagesRead(messagesToRead: List<Message>)
     suspend fun upsertMessage(message: Message)
     suspend fun deleteMessage(messageId: String)
 
@@ -37,10 +39,11 @@ private const val CHAT_COLLECTION = "chat"
 private const val BLACK_LIST_COLLECTION = "blackList"
 
 private const val CHAT_ID_FIELD = "chatId"
+private const val MESSAGE_ID_FIELD = "messageId"
 private const val MEMBERS_FIELD = "members"
 
 class FirebaseChatsDataSource @Inject constructor(
-    database: FirebaseFirestore,
+    private val database: FirebaseFirestore,
 ) : IChatsDataSource {
     private val chats = database.collection(CHAT_COLLECTION)
     private val messages = database.collection(MESSAGE_COLLECTION)
@@ -86,6 +89,17 @@ class FirebaseChatsDataSource @Inject constructor(
             }
         awaitClose {
             listener.remove()
+        }
+    }
+
+    override suspend fun setMessagesRead(messagesToRead: List<Message>) {
+        val readMessages = messagesToRead.filter { !it.isRead }
+            .map { it.copy(isRead = true) }
+        database.runBatch { batch ->
+            readMessages.forEach { message ->
+                val ref = messages.document(message.messageId)
+                batch.set(ref, message.toMessageResponse())
+            }
         }
     }
 

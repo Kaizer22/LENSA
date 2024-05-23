@@ -6,9 +6,14 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import ru.arinae_va.lensa.data.datasource.remote.IUserProfileDataSource
 import ru.arinae_va.lensa.domain.repository.IAuthRepository
+import ru.arinae_va.lensa.domain.repository.IPresenceRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -38,6 +43,7 @@ sealed class PhoneVerificationStatus {
 class AuthRepository @Inject constructor(
     private val userProfileRepository: IUserProfileRepository,
     private val userInfoDataSource: IUserProfileDataSource,
+    private val presenceRepository: IPresenceRepository,
 ) : IAuthRepository {
     override fun currentUserId(): String? = Firebase.auth.currentUser?.uid
 
@@ -140,13 +146,20 @@ class AuthRepository @Inject constructor(
 //            }
     }
 
+    private val coroutineContext = Dispatchers.IO + Job()
+    private val coroutineScope = CoroutineScope(coroutineContext)
     override fun logOut(
         isFullLogOut: Boolean,
     ) {
-        userProfileRepository.clearCurrentUser()
-        // TODO clear cache and database
-        if (isFullLogOut) {
-            Firebase.auth.signOut()
+        coroutineScope.launch {
+            userProfileRepository.currentProfileId()?.let {
+                presenceRepository.setOffline()
+            }
+            userProfileRepository.clearCurrentUser()
+            // TODO clear cache and database
+            if (isFullLogOut) {
+                Firebase.auth.signOut()
+            }
         }
     }
 

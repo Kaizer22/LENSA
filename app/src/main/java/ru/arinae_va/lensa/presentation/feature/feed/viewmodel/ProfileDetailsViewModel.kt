@@ -205,7 +205,7 @@ class ProfileDetailsViewModel @Inject constructor(
                             avatarUrl = "",
                             createTime = LocalDateTime.now(),
                             dialogData = DialogData(
-                                authorMemberName = currentProfile.profileId,
+                                authorMemberName = currentProfile.name + " " + currentProfile.surname,
                                 authorAvatarUrl = currentProfile.avatarUrl,
                                 targetMemberName = state.value.userProfileModel.name + " " +
                                         state.value.userProfileModel.surname,

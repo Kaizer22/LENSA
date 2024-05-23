@@ -4,13 +4,17 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.domain.model.chat.Chat
 import ru.arinae_va.lensa.domain.model.chat.Message
+import ru.arinae_va.lensa.domain.model.user.Presence
 import ru.arinae_va.lensa.domain.repository.IChatRepository
 import ru.arinae_va.lensa.domain.repository.IMessageRepository
+import ru.arinae_va.lensa.domain.repository.IPresenceRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
 import ru.arinae_va.lensa.presentation.common.StateViewModel
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
@@ -23,16 +27,19 @@ class ChatViewModel @Inject constructor(
     private val navHostController: NavHostController,
     private val chatRepository: IChatRepository,
     private val messageRepository: IMessageRepository,
+    private val presenceRepository: IPresenceRepository,
     userProfileRepository: IUserProfileRepository,
-): StateViewModel<ChatScreenState>(
+) : StateViewModel<ChatScreenState>(
     initialState = ChatScreenState(
         currentProfileId = userProfileRepository.currentProfileId().orEmpty(),
         isLoading = true,
         chat = null,
+        interlocutorPresence = null,
         messages = emptyList(),
         messageInput = "",
     )
 ) {
+    private var presenceJob: Job? = null
     fun onAttach(chatId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val currentChat = chatRepository.getChat(chatId)
@@ -46,19 +53,45 @@ class ChatViewModel @Inject constructor(
 
     private suspend fun observeLatestMessages(messages: Flow<List<Message>>) {
         messages.collectLatest { latestMessages ->
-            update(
+            updateSuspending(
                 state.value.copy(
                     messages = latestMessages,
                 )
             )
+            if (state.value.messages.any {
+                    it.authorProfileId != state.value.currentProfileId && !it.isRead
+                }) {
+                messageRepository.setMessagesRead(latestMessages)
+            }
         }
     }
 
     private suspend fun observeCurrentChat(chat: Flow<Chat>) {
         chat.collectLatest { newChat ->
-            update(
+            presenceJob?.cancelChildren()
+            presenceJob?.cancel()
+            updateSuspending(
                 state.value.copy(
                     chat = newChat,
+                )
+            )
+
+            if ((state.value.chat?.members?.size ?: 0) > 1) {
+                presenceJob = viewModelScope.launch(Dispatchers.IO) {
+                    val presence = presenceRepository.getPresence(state.value.chat?.members!!)
+                    observePresence(presence)
+                }
+            }
+        }
+    }
+
+    private suspend fun observePresence(presence: Flow<List<Presence>>) {
+        presence.collectLatest { membersLatestPresence ->
+            update(
+                state.value.copy(
+                    interlocutorPresence = membersLatestPresence.firstOrNull {
+                        it.profileId != state.value.currentProfileId
+                    }
                 )
             )
         }

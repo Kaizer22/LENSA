@@ -6,7 +6,7 @@ import ru.arinae_va.lensa.utils.parseIsoDatetime
 data class MessageResponse(
     val messageId: String? = null,
     val authorProfileId: String? = null,
-    val isRead: Boolean? = null,
+    val read: Boolean? = null,
     val chatId: String? = null,
     val message: String? = null,
     val dateTime: String? = null,
@@ -17,7 +17,7 @@ data class MessageResponse(
         chatId = chatId.orEmpty(),
         message = message.orEmpty(),
         dateTime = parseIsoDatetime(dateTime.orEmpty()),
-        isRead = isRead ?: false,
+        isRead = read ?: false,
     )
 }
 
@@ -27,4 +27,5 @@ fun Message.toMessageResponse() = MessageResponse(
     chatId = chatId,
     message = message,
     dateTime = dateTime.toString(),
+    read = isRead,
 )

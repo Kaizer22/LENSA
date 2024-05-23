@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.chat.Chat
 import ru.arinae_va.lensa.domain.model.chat.Message
+import ru.arinae_va.lensa.domain.model.user.Presence
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.HSpace
 import ru.arinae_va.lensa.presentation.common.component.LensaAvatar
@@ -37,6 +38,7 @@ import ru.arinae_va.lensa.presentation.common.utils.setSystemUiColor
 import ru.arinae_va.lensa.presentation.feature.chat.viewmodel.ChatScreenState
 import ru.arinae_va.lensa.presentation.feature.chat.viewmodel.ChatViewModel
 import ru.arinae_va.lensa.presentation.theme.LensaTheme
+import ru.arinae_va.lensa.utils.formatPrettyDatetime
 
 @Composable
 fun ChatScreen(
@@ -76,6 +78,7 @@ fun ChatScreenContent(
             ChatTopBar(
                 currentProfileId = state.currentProfileId,
                 chat = state.chat,
+                presence = state.interlocutorPresence,
                 onAvatarClick = onAvatarClick,
                 onBackPressed = onBackPressed,
             )
@@ -100,15 +103,16 @@ fun ChatScreenContent(
             }
         }
         Box(
-            modifier = Modifier.fillMaxSize().background(color = LensaTheme.colors.backgroundColor),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = LensaTheme.colors.backgroundColor),
             contentAlignment = Alignment.BottomCenter,
         ) {
             LazyColumn(
                 state = scrollState,
                 modifier = Modifier
                     .padding(paddingValues)
-                    .padding(horizontal = 16.dp)
-                ,
+                    .padding(horizontal = 16.dp),
             ) {
                 itemsIndexed(state.messages) { index, message ->
                     if (isNeedToShowDay(state.messages, index, message)) {
@@ -143,14 +147,16 @@ fun isNeedToShowArrow(messages: List<Message>, index: Int, message: Message): Bo
 fun ChatTopBar(
     currentProfileId: String,
     chat: Chat?,
+    presence: Presence?,
     onAvatarClick: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
     Column(
-        modifier = Modifier.background(color = LensaTheme.colors.backgroundColor)
+        modifier = Modifier
+            .background(color = LensaTheme.colors.backgroundColor)
             .padding(
-            horizontal = 16.dp,
-        )
+                horizontal = 16.dp,
+            )
     ) {
         Row(
             modifier = Modifier
@@ -170,9 +176,9 @@ fun ChatTopBar(
             val chatName = remember(chat) {
                 chat?.getChatName(currentProfileId)
             }
-            val specialization = remember(chat) {
-                chat?.getSpecailization(currentProfileId)
-            }
+//            val specialization = remember(chat) {
+//                chat?.getSpecailization(currentProfileId)
+//            }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -181,13 +187,24 @@ fun ChatTopBar(
                     style = LensaTheme.typography.name,
                     color = LensaTheme.colors.textColor,
                 )
-                specialization?.let {
+                presence?.let {
                     Text(
-                        text = specialization,
+                        text = if (it.isOnline) "В сети" else "Был(-а) в сети ${
+                            formatPrettyDatetime(
+                                it.lastOnline
+                            )
+                        }",
                         style = LensaTheme.typography.signature,
                         color = LensaTheme.colors.textColorSecondary,
                     )
                 }
+//                specialization?.let {
+//                    Text(
+//                        text = specialization,
+//                        style = LensaTheme.typography.signature,
+//                        color = LensaTheme.colors.textColorSecondary,
+//                    )
+//                }
             }
             FSpace()
             LensaAvatar(

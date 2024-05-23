@@ -11,9 +11,11 @@ import ru.arinae_va.lensa.data.datasource.local.SettingsStorage
 import ru.arinae_va.lensa.data.datasource.remote.FirebaseChatsDataSource
 import ru.arinae_va.lensa.data.datasource.remote.FirebaseFeedbackDataSource
 import ru.arinae_va.lensa.data.datasource.remote.FirebaseReviewDataSource
+import ru.arinae_va.lensa.data.datasource.remote.FirebasePresenceDataSource
 import ru.arinae_va.lensa.data.datasource.remote.FirebaseUserProfileDataSource
 import ru.arinae_va.lensa.data.datasource.remote.IChatsDataSource
 import ru.arinae_va.lensa.data.datasource.remote.IFeedbackDataSource
+import ru.arinae_va.lensa.data.datasource.remote.IPresenceDataSource
 import ru.arinae_va.lensa.data.datasource.remote.IReviewDataSource
 import ru.arinae_va.lensa.data.datasource.remote.IUserProfileDataSource
 import ru.arinae_va.lensa.data.datasource.remote.legacy.FirebaseChatRequestsDataSource
@@ -47,5 +49,8 @@ abstract class DataSourceModule {
 
     @Binds
     abstract fun chatRequestsDataSource(chatRequestsDataSource: FirebaseChatRequestsDataSource): IChatRequestsDataSource
+
+    @Binds
+    abstract fun presenceDataSource(presenceDataSource: FirebasePresenceDataSource): IPresenceDataSource
     // endregion
 }

@@ -1,7 +1,6 @@
 package ru.arinae_va.lensa
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.MutableState
@@ -24,9 +23,10 @@ import javax.inject.Inject
 // DONE переключение аккаунтов
 // DONE вычисление средней оценки специалиста
 // DONE возможность оставить только один отзыв
+// DONE доработка избранного
 
 // TODO редактирование своего отзыва
-// TODO доработка избранного
+
 
 // TODO фикс анимаций текстовых кнопок!
 
@@ -42,10 +42,13 @@ import javax.inject.Inject
 // TODO кэширование (текущий пользователь, лента)
 // TODO пагинация ленты + доработка фильтрации
 
-// TODO чаты
+// TODO чаты:
+// - закрепеленные сообщения
+// - DONE статус "в сети"
+// - DONE отметка прочитанных сообщений
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : PresenceAwareActivity() {
 
     @Inject
     lateinit var navHostController: NavHostController

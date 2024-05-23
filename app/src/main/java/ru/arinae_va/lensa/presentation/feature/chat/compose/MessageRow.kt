@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -18,8 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.arinae_va.lensa.R
 import ru.arinae_va.lensa.domain.model.chat.Message
 import ru.arinae_va.lensa.presentation.common.component.FSpace
 import ru.arinae_va.lensa.presentation.common.component.HSpace
@@ -52,8 +55,8 @@ fun MessageRow(
         Column(
             modifier = Modifier
                 .background(
-                    color = if (isReceived) LensaTheme.colors.receivedMessage
-                    else LensaTheme.colors.sentMessageColor,
+                    color = LensaTheme.colors.receivedMessage, //if (isReceived)
+                    //else LensaTheme.colors.sentMessageColor,
                     shape = if (showArrow) {
                         if (isReceived) {
                             LensaTheme.shapes.receivedMessageShape
@@ -123,6 +126,15 @@ fun MessageRow(
                         text = formatMessageDatetime(message.dateTime),
                         style = LensaTheme.typography.smallAccent,
                         color = LensaTheme.colors.textColorSecondary,
+                    )
+                }
+                if (!isReceived) {
+                    Icon(
+                        painter = painterResource(
+                            id = if (message.isRead)
+                                R.drawable.ic_message_read else R.drawable.ic_message_sent
+                        ),
+                        contentDescription = null
                     )
                 }
             }

@@ -21,4 +21,7 @@ class MessageRepository @Inject constructor(
         chatsDataSource.getLastMessages(chatIds)
 
     override fun getMessages(chatId: String) = chatsDataSource.getMessages(chatId)
+    override suspend fun setMessagesRead(messages: List<Message>) {
+        chatsDataSource.setMessagesRead(messages)
+    }
 }

@@ -9,6 +9,7 @@ data class Chat(
     val name: String,
     val avatarUrl: String,
     val createTime: LocalDateTime,
+    val pinnedMessageId: String? = null,
     val dialogData: DialogData? = null,
 ) {
     fun isDialog() = dialogData != null

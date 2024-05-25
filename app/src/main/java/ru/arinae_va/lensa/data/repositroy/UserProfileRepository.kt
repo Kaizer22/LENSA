@@ -48,6 +48,7 @@ class UserProfileRepository @Inject constructor(
             model.copy(profileId = newProfileUuid)
         } else model
         userInfoStorage.upsertProfile(profile = processedModel)
+        // TODO use WorkManager to upload images
         avatarUri?.let {
             if (!isHttpsUrl(it.toString())) {
                 userInfoStorage.uploadAvatarImage(processedModel.profileId, it)

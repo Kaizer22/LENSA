@@ -18,6 +18,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -63,6 +65,7 @@ fun LensaButton(
     iconWidth: Dp = 24.dp,
     isFillMaxWidth: Boolean = false,
     @DrawableRes icon: Int? = null,
+    iconTint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
 ) {
     val iconLeftPainter = icon?.let { painterResource(id = it) }
     CompositionLocalProvider(
@@ -95,6 +98,7 @@ fun LensaButton(
                     Spacer(modifier = Modifier.width(iconPadding))
                     Icon(
                         painter = it,
+                        tint = iconTint,
                         contentDescription = null,
                         modifier = Modifier
                             .height(iconHeight)
@@ -112,10 +116,12 @@ fun LensaIconButton(
     onClick: () -> Unit,
     @DrawableRes icon: Int,
     iconSize: Dp,
+    iconTint: Color = LensaTheme.colors.textColor,
 ) {
     LensaButton(
         modifier = modifier,
         icon = icon,
+        iconTint = iconTint,
         text = "",
         onClick = onClick,
         contentPadding = PaddingValues(0.dp),

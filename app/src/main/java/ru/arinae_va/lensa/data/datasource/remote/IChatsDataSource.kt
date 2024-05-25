@@ -21,7 +21,6 @@ interface IChatsDataSource {
 
     fun getMessages(chatId: String): Flow<List<Message>>
     fun getLastMessages(chatIds: List<String>): Flow<List<Message>>
-
     suspend fun setMessagesRead(messagesToRead: List<Message>)
     suspend fun upsertMessage(message: Message)
     suspend fun deleteMessage(messageId: String)
@@ -32,6 +31,8 @@ interface IChatsDataSource {
     fun getChat(chatId: String): Flow<Chat>
     suspend fun isChatExist(chatId: String): Boolean
 
+    suspend fun pinMessage(chatId: String, messageId: String)
+
 }
 
 private const val MESSAGE_COLLECTION = "message"
@@ -41,6 +42,7 @@ private const val BLACK_LIST_COLLECTION = "blackList"
 private const val CHAT_ID_FIELD = "chatId"
 private const val MESSAGE_ID_FIELD = "messageId"
 private const val MEMBERS_FIELD = "members"
+private const val PINNED_MESSAGE_ID_FIELD = "pinnedMessageId"
 
 class FirebaseChatsDataSource @Inject constructor(
     private val database: FirebaseFirestore,
@@ -172,4 +174,10 @@ class FirebaseChatsDataSource @Inject constructor(
             .get()
             .await()
             .documents.size > 0
+
+    override suspend fun pinMessage(chatId: String, messageId: String) {
+        chats.document(chatId)
+            .update(PINNED_MESSAGE_ID_FIELD, messageId)
+            .await()
+    }
 }

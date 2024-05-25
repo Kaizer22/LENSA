@@ -55,7 +55,9 @@ fun LensaInput(
     showTrailingIcon: Boolean = false,
     onTrailingIconClick: () -> Unit = {},
     trailingIconRes: Int = R.drawable.ic_4_star,
+    trailingIconTint: Color = LensaTheme.colors.textColor,
     leadingIconRes: Int = R.drawable.ic_4_star,
+    leadingIconTint: Color = LensaTheme.colors.textColor,
     focusRequester: FocusRequester = remember { FocusRequester() },
 ) {
     var input by remember(value) { mutableStateOf(value) }
@@ -129,6 +131,7 @@ fun LensaInput(
                         LensaIconButton(
                             onClick = onLeadingIconClick,
                             icon = leadingIconRes,
+                            iconTint = leadingIconTint,
                             iconSize = 24.dp,
                         )
                         HSpace(w = 12.dp)
@@ -151,9 +154,14 @@ fun LensaInput(
                             R.drawable.ic_4_star
                         else
                             trailingIconRes
+                        val iconTint = if(needToDrawRequiredIcon)
+                            LensaTheme.colors.textColorAccent
+                        else
+                            trailingIconTint
                         HSpace(w = 12.dp)
                         LensaIconButton(
                             onClick = onTrailingIconClick,
+                            iconTint = iconTint,
                             icon = iconRes,
                             iconSize = 24.dp,
                         )

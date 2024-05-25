@@ -37,6 +37,7 @@ class ChatViewModel @Inject constructor(
         interlocutorPresence = null,
         messages = emptyList(),
         messageInput = "",
+        pinnedMessage = null,
     )
 ) {
     private var presenceJob: Job? = null
@@ -63,6 +64,7 @@ class ChatViewModel @Inject constructor(
                 }) {
                 messageRepository.setMessagesRead(latestMessages)
             }
+            updatePinnedMessage()
         }
     }
 
@@ -75,6 +77,7 @@ class ChatViewModel @Inject constructor(
                     chat = newChat,
                 )
             )
+            updatePinnedMessage()
 
             if ((state.value.chat?.members?.size ?: 0) > 1) {
                 presenceJob = viewModelScope.launch(Dispatchers.IO) {
@@ -82,6 +85,18 @@ class ChatViewModel @Inject constructor(
                     observePresence(presence)
                 }
             }
+        }
+    }
+
+    private fun updatePinnedMessage() {
+        if (state.value.chat?.pinnedMessageId != null) {
+            update(
+                state.value.copy(
+                    pinnedMessage = state.value.messages.firstOrNull {
+                        it.messageId == state.value.chat?.pinnedMessageId
+                    }
+                )
+            )
         }
     }
 
@@ -174,5 +189,16 @@ class ChatViewModel @Inject constructor(
             )
         }
 
+    }
+
+    fun onPinMessageClick(messageId: String) {
+        viewModelScope.launch {
+            state.value.chat?.chatId?.let { chatId ->
+                messageRepository.pinMessage(
+                    chatId = chatId,
+                    messageId = messageId,
+                )
+            }
+        }
     }
 }

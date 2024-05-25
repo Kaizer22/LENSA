@@ -12,6 +12,7 @@ data class ChatResponse(
     val avatarUrl: String? = null,
     val createTime: String? = null,
     val dialogData: DialogDataResponse? = null,
+    val pinnedMessageId: String? = null,
 ) {
     fun toChat() = Chat(
         chatId = chatId.orEmpty(),
@@ -21,8 +22,20 @@ data class ChatResponse(
         name = name.orEmpty(),
         createTime = parseIsoDatetime(createTime.orEmpty()),
         dialogData = dialogData?.toDialogData(),
+        pinnedMessageId = pinnedMessageId,
     )
 }
+
+fun Chat.toChatResponse() = ChatResponse(
+    chatId = chatId,
+    creatorProfileId = creatorProfileId,
+    members = members,
+    name = name,
+    avatarUrl = avatarUrl,
+    createTime = createTime.toString(),
+    dialogData = dialogData.toDialogDataResponse(),
+    pinnedMessageId = pinnedMessageId,
+)
 
 data class DialogDataResponse(
     val authorMemberName: String? = null,
@@ -41,16 +54,6 @@ data class DialogDataResponse(
         targetSpecialization = targetSpecialization.orEmpty(),
     )
 }
-
-fun Chat.toChatResponse() = ChatResponse(
-    chatId = chatId,
-    creatorProfileId = creatorProfileId,
-    members = members,
-    name = name,
-    avatarUrl = avatarUrl,
-    createTime = createTime.toString(),
-    dialogData = dialogData.toDialogDataResponse(),
-)
 
 private fun DialogData?.toDialogDataResponse() = DialogDataResponse(
     targetMemberName = this?.targetMemberName,

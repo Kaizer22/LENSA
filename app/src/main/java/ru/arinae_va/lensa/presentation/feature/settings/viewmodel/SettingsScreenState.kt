@@ -4,6 +4,7 @@ import ru.arinae_va.lensa.domain.model.user.UserProfileModel
 
 data class SettingsScreenState(
     val userProfiles: List<UserProfileModel>,
+    val isDarkModeEnabled: Boolean,
     val isLoading: Boolean,
     val isShowDeleteProfileDialog: Boolean,
     val isShowExitDialog: Boolean,

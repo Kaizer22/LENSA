@@ -81,7 +81,7 @@ fun LensaButton(
             colors = buttonColors,
             contentPadding = contentPadding,
             border = borderStroke,
-            elevation = elevation
+            elevation = elevation,
         ) {
             Row(
                 modifier = if (isFillMaxWidth) Modifier.fillMaxWidth() else Modifier,//.background(color = Color.Red),
@@ -132,6 +132,7 @@ fun LensaIconButton(
         ),
         elevation = ButtonDefaults.elevation(
             defaultElevation = 0.dp,
+            pressedElevation = 0.dp,
         ),
         iconWidth = iconSize,
         iconHeight = iconSize,
@@ -164,6 +165,7 @@ fun LensaButtonWithIcon(
         ),
         elevation = ButtonDefaults.elevation(
             defaultElevation = 0.dp,
+            pressedElevation = 0.dp,
         ),
         iconPadding = 4.dp,
         contentPadding = contentPadding,
@@ -202,6 +204,7 @@ fun LensaTextButton(
         ),
         elevation = ButtonDefaults.elevation(
             defaultElevation = 0.dp,
+            pressedElevation = 0.dp,
         ),
         contentPadding = PaddingValues(0.dp),
         textStyle = when (type) {

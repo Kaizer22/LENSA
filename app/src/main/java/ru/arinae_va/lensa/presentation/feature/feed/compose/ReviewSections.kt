@@ -6,6 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.arinae_va.lensa.domain.model.user.Review
@@ -114,6 +119,16 @@ fun AddReviewSection(
     onReviewChanged: (String) -> Unit,
     onPostReview: () -> Unit,
 ) {
+    var currentUserReview: Review? by remember { mutableStateOf(null) }
+    LaunchedEffect(key1 = state.userProfileModel.reviews) {
+        state.userProfileModel.reviews?.let { reviews ->
+            currentUserReview = reviews.firstOrNull { it.authorId == state.currentUserId }
+            currentUserReview?.let {
+                onRatingChanged.invoke(it.rating)
+                onReviewChanged.invoke(it.text)
+            }
+        }
+    }
     Text(
         text = "ОЦЕНИТЬ",
         style = LensaTheme.typography.header2,
@@ -136,7 +151,7 @@ fun AddReviewSection(
         horizontalArrangement = Arrangement.End,
     ) {
         LensaTextButton(
-            text = "ОПУБЛИКОВАТЬ",
+            text = if (currentUserReview != null) "РЕДАКТИРОВАТЬ" else "ОПУБЛИКОВАТЬ",
             onClick = onPostReview,
             type = LensaTextButtonType.DEFAULT,
         )

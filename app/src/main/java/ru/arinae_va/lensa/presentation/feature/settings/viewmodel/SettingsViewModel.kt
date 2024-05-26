@@ -1,5 +1,6 @@
 package ru.arinae_va.lensa.presentation.feature.settings.viewmodel
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -8,6 +9,7 @@ import ru.arinae_va.lensa.domain.repository.IAuthRepository
 import ru.arinae_va.lensa.domain.repository.IFeedbackRepository
 import ru.arinae_va.lensa.domain.repository.ISettingsRepository
 import ru.arinae_va.lensa.domain.repository.IUserProfileRepository
+import ru.arinae_va.lensa.presentation.AppThemeManager
 import ru.arinae_va.lensa.presentation.common.StateViewModel
 import ru.arinae_va.lensa.presentation.navigation.LensaScreens
 import ru.arinae_va.lensa.utils.Constants
@@ -15,6 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    private val appThemeManager: AppThemeManager,
     private val userProfileRepository: IUserProfileRepository,
     private val authRepository: IAuthRepository,
     private val feedbackRepository: IFeedbackRepository,
@@ -22,6 +25,7 @@ class SettingsViewModel @Inject constructor(
     private val settingsRepository: ISettingsRepository,
 ) : StateViewModel<SettingsScreenState>(
     initialState = SettingsScreenState(
+        isDarkModeEnabled = appThemeManager.isDarkTheme(),
         isLoading = false,
         isShowDeleteProfileDialog = false,
         isShowExitDialog = false,
@@ -46,7 +50,12 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun onThemeSwitched(isDark: Boolean) {
-
+        update(
+            state.value.copy(
+                isDarkModeEnabled = isDark,
+            )
+        )
+        appThemeManager.setTheme(isDark)
     }
 
     fun onDeleteAccountClick() {

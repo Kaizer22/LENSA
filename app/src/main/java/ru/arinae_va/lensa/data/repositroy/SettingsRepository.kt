@@ -7,6 +7,8 @@ import javax.inject.Inject
 class SettingsRepository @Inject constructor(
     private val settingsStorage: ISettingsStorage,
 ): ISettingsRepository {
+    override fun isDarkMode(): Boolean = settingsStorage.isDarkModeOn
+
     override fun isNeedToShowOnboarding(): Boolean = settingsStorage.isNeedToShowOnboarding
     override fun lastLoggedInUser(): String? = settingsStorage.lastLoggedInUser
 
@@ -20,5 +22,9 @@ class SettingsRepository @Inject constructor(
 
     override fun setOnboardingShown() {
         settingsStorage.isNeedToShowOnboarding = false
+    }
+
+    override fun setAppTheme(isDark: Boolean) {
+        settingsStorage.isDarkModeOn = isDark
     }
 }

@@ -3,6 +3,7 @@ package ru.arinae_va.lensa.presentation.feature.feed.viewmodel
 import ru.arinae_va.lensa.domain.model.user.UserProfileModel
 
 data class ProfileDetailsState(
+    val currentUserId: String,
     val userProfileModel: UserProfileModel,
     val isNeedToScrollToReviews: Boolean,
     val reviewText: String,
@@ -13,6 +14,7 @@ data class ProfileDetailsState(
 ) {
     companion object {
         val INITIAL = ProfileDetailsState(
+            currentUserId = "",
             userProfileModel = UserProfileModel.EMPTY,
             isNeedToScrollToReviews = false,
             reviewText = "",

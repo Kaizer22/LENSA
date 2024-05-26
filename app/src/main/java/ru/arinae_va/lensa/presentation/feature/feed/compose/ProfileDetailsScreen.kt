@@ -285,6 +285,7 @@ fun SpecialistDetailsScreenPreview() {
                 ),
                 reviewText = "",
                 rating = 0f,
+                currentUserId = "",
                 isSelf = false,
                 isLoading = false,
                 isAddedToFavourites = false,

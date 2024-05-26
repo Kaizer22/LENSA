@@ -25,7 +25,7 @@ class SettingsStorage @Inject constructor(
         get() = prefs.getBoolean(KEY_FLAG_DARK_MODE, false)
         set(value) {
             prefs.edit {
-                putBoolean(KEY_FLAG_ONBOARDING, value)
+                putBoolean(KEY_FLAG_DARK_MODE, value)
             }
         }
 

@@ -81,7 +81,7 @@ fun MessageRow(
         ) {
             if (!isReceived) {
                 DropdownMenu(
-                    modifier = Modifier.background(color = LensaTheme.colors.fadeColor),
+                    modifier = Modifier.background(color = LensaTheme.colors.backgroundColor),
                     expanded = isActionMenuVisible,
                     onDismissRequest = { isActionMenuVisible = false }) {
                     DropdownMenuItem(

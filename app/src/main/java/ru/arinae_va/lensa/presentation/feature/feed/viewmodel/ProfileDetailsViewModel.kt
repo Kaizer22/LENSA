@@ -52,6 +52,7 @@ class ProfileDetailsViewModel @Inject constructor(
             )
             update(
                 state.value.copy(
+                    currentUserId = userProfileRepository.currentProfileId() ?: "",
                     userProfileModel = result,
                     isNeedToScrollToReviews = isNeedToScrollToReviews,
                     isSelf = isSelf,

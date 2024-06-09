@@ -177,6 +177,7 @@ fun LensaButtonWithIcon(
         },
         iconHeight = iconSize,
         iconWidth = iconSize,
+        iconTint = LensaTheme.colors.textColor,
     )
 }
 
